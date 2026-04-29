@@ -106,7 +106,7 @@ Regressivo em **dias corridos** — atenção: 720 dias corridos ≠ 2 anos.
 |---|---|---|---|---|---|
 | Invest Fácil | 5% do CDI | ~0,73% a.a. | ~0,061% a.m. | Sim | Sim |
 | CDB Baixa Automática | 50% do CDI | ~7,33% a.a. | ~0,577% a.m. | Sim | Sim |
-| LCA DI | 87% do CDI | ~12,75% a.a. | ~1,004% a.m. | Não | Não |
+| LCA DI | 84% do CDI | ~12,31% a.a. | ~0,970% a.m. | Não | Não |
 | CDB DI | 100% do CDI | ~14,65% a.a. | ~1,154% a.m. | Sim | Sim |
 
 ### Referências de Mercado
@@ -128,4 +128,4 @@ Tesouro Selic capitaliza diariamente em dias úteis (mesma convenção do CDI).
 - **TR:** não é insignificante — usar premissa de 0,131% a.m.
 - **Tesouro Direto:** sempre descontar 0,20% a.a. de custódia antes de comparar
 - **LCA no secundário:** pode servir como liquidez mesmo sem ser produto de liquidez diária
-- **Isenção vs tributado:** LCA DI a 87% CDI equivale a ~102,4% CDI bruto para prazo acima de 720 dias corridos (IR 15%)
+- **Isenção vs tributado:** LCA DI a 84% CDI equivale a ~98,8% CDI bruto para prazo acima de 720 dias corridos (IR 15%)
