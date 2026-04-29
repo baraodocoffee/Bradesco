@@ -107,7 +107,7 @@
     </div>
     <div class="divider"></div>
     <div class="section-label">Taxas de Mercado</div>
-    <div class="field"><label>SELIC atual <span class="sub">(% a.a.)</span></label><div class="input-wrap"><input type="number" id="selic" value="14.75" min="0" max="50" step="0.25"/><span class="input-suffix">% a.a.</span></div></div>
+    <div class="field"><label>SELIC atual <span class="sub">(% a.a.)</span></label><div class="input-wrap"><input type="number" id="selic" value="14.50" min="0" max="50" step="0.25"/><span class="input-suffix">% a.a.</span></div></div>
     <div class="field" style="margin-bottom:0"><label>IPCA esperado <span class="sub">(inflação)</span></label><div class="input-wrap"><input type="number" id="ipca" value="5.00" min="0" max="30" step="0.25"/><span class="input-suffix">% a.a.</span></div></div>
     <div class="info-box yellow"><div class="info-title">Regra da Poupança</div><div class="info-text" id="poupanca-rule-text"></div></div>
   </div>
@@ -263,7 +263,7 @@ function render(){
   const pv=parseFloat(document.getElementById('pv').value)||0;
   const aporte=parseFloat(document.getElementById('aporte').value)||0;
   const anos=Math.max(parseInt(document.getElementById('anos').value)||1,1);
-  const selic=parseFloat(document.getElementById('selic').value)||14.75;
+  const selic=parseFloat(document.getElementById('selic').value)||14.50;
   atualizaRegraPoupanca(selic);
   renderAtivos(selic);
   renderGrafico(pv,aporte,anos,selic);
