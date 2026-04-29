@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CDB × LCI × LCA — Tributado vs Isento</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red:#CC1417;--red-dark:#A50F11;--red-light:#F9E5E5;
+      --gray-900:#1A1A1A;--gray-700:#3D3D3D;--gray-500:#6B6B6B;
+      --gray-300:#C0C0C0;--gray-200:#E8E8E8;--gray-100:#F5F5F5;
+      --white:#FFFFFF;--green:#1A7F4B;--green-light:#E6F4ED;
+      --blue:#1565C0;--blue-light:#E8F0FD;
+      --yellow:#B97500;--yellow-light:#FFF4DC;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.6;background:var(--gray-100);color:var(--gray-900);}
+    .top-bar{height:5px;background:var(--red);}
+    .page-header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;}
+    .page-header-left h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:var(--gray-900);}
+    .page-header-left p{font-size:13px;color:var(--gray-500);margin-top:2px;}
+    .nav-back{font-size:13px;font-weight:600;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s;}
+    .nav-back:hover{color:var(--red);}
+    .container{max-width:960px;margin:0 auto;padding:24px 16px 80px;}
+    .grid-3{display:grid;grid-template-columns:280px 1fr 1fr;gap:16px;margin-bottom:16px;}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+    .card{background:var(--white);border-radius:14px;border:1px solid var(--gray-200);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+    .card.winner{border-color:var(--green);background:var(--green-light);}
+    .card.loser{border-color:var(--gray-200);}
+    .section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-500);margin-bottom:14px;}
+    .field{margin-bottom:14px;}
+    .field label{display:block;font-size:13px;color:var(--gray-700);margin-bottom:6px;}
+    .input-wrap{display:flex;align-items:center;border:1.5px solid var(--gray-200);border-radius:9px;padding:10px 14px;background:var(--white);transition:border-color .15s;}
+    .input-wrap:focus-within{border-color:var(--gray-500);}
+    .input-wrap input{flex:1;border:none;outline:none;font-size:16px;font-family:'Inter',sans-serif;color:var(--gray-900);background:transparent;min-width:0;}
+    .input-suffix{font-size:13px;color:var(--gray-500);margin-left:6px;flex-shrink:0;}
+    .quick-btns{display:flex;gap:8px;margin-top:8px;}
+    .quick-btn{flex:1;padding:7px 0;border-radius:7px;border:1.5px solid var(--gray-200);background:var(--white);font-size:13px;font-weight:600;color:var(--gray-500);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;text-align:center;}
+    .quick-btn:hover{border-color:var(--red);color:var(--red);}
+    .quick-btn.active{background:var(--gray-900);border-color:var(--gray-900);color:var(--white);}
+    .product-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .product-title{display:flex;align-items:center;gap:8px;}
+    .product-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--white);flex-shrink:0;font-family:'Plus Jakarta Sans',sans-serif;}
+    .product-name{font-size:15px;font-weight:700;color:var(--gray-900);font-family:'Plus Jakarta Sans',sans-serif;}
+    .badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;font-family:'Inter',sans-serif;}
+    .badge-ir{background:var(--gray-100);color:var(--gray-500);border:1px solid var(--gray-200);}
+    .badge-isento{background:var(--green-light);color:var(--green);border:1px solid var(--green);}
+    .mode-toggle{display:flex;border:1.5px solid var(--gray-200);border-radius:8px;overflow:hidden;margin-bottom:12px;}
+    .mode-btn{flex:1;padding:7px 10px;border:none;background:var(--white);font-size:12px;font-weight:600;color:var(--gray-500);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;text-align:center;}
+    .mode-btn.active{background:var(--gray-900);color:var(--white);}
+    .tab-toggle{display:flex;gap:6px;margin-bottom:12px;}
+    .tab-btn{padding:5px 14px;border-radius:20px;border:1.5px solid var(--gray-200);background:var(--white);font-size:12px;font-weight:700;color:var(--gray-500);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;}
+    .tab-btn.active{background:var(--green);border-color:var(--green);color:var(--white);}
+    /* Result cards */
+    .result-label{font-size:13px;color:var(--gray-500);margin-bottom:4px;}
+    .result-product-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+    .result-product-name{font-size:16px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;color:var(--gray-900);}
+    .result-product-sub{font-size:12px;color:var(--gray-500);}
+    .winner-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--yellow);color:var(--white);font-family:'Inter',sans-serif;}
+    .result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--gray-200);}
+    .result-row:last-of-type{border-bottom:none;}
+    .result-row .rlabel{font-size:14px;color:var(--gray-500);}
+    .result-row .rvalue{font-size:14px;font-weight:600;color:var(--gray-900);}
+    .result-row .rvalue.neg{color:var(--red);}
+    .result-row .rvalue.isento-tag{color:var(--green);font-size:13px;}
+    .result-total{margin-top:14px;padding-top:14px;border-top:2px solid var(--gray-200);}
+    .result-total .rlabel{font-size:14px;font-weight:700;color:var(--gray-900);}
+    .result-total .rvalue{font-size:22px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;color:var(--gray-900);}
+    .result-footer{margin-top:10px;display:flex;justify-content:space-between;}
+    .result-footer span{font-size:13px;color:var(--gray-500);}
+    .result-footer strong{color:var(--gray-700);}
+    /* Summary bar */
+    .summary-bar{background:var(--white);border-radius:14px;border:1px solid var(--gray-200);padding:18px 20px;margin-bottom:16px;text-align:center;font-size:15px;color:var(--gray-700);}
+    .summary-bar strong{font-size:17px;}
+    .summary-bar .highlight{color:var(--green);font-weight:700;}
+    .summary-bar .highlight.red{color:var(--red);}
+    /* Taxas equivalentes */
+    .equiv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;}
+    .equiv-card{border-radius:10px;padding:14px 16px;}
+    .equiv-card.blue-card{background:var(--blue-light);border:1px solid #BBDEFB;}
+    .equiv-card.green-card{background:var(--green-light);border:1px solid #A5D6A7;}
+    .equiv-label{font-size:12px;color:var(--gray-500);margin-bottom:6px;line-height:1.4;}
+    .equiv-value{font-size:24px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;color:var(--gray-900);}
+    .ir-note{text-align:center;font-size:12px;color:var(--gray-500);margin-top:6px;}
+    .disclaimer{text-align:center;font-size:12px;color:var(--gray-500);line-height:1.6;margin-top:16px;}
+    @media(max-width:700px){
+      .grid-3{grid-template-columns:1fr;}
+      .grid-2{grid-template-columns:1fr;}
+      .equiv-grid{grid-template-columns:1fr;}
+      .page-header{flex-direction:column;align-items:flex-start;gap:8px;}
+    }
+  </style>
+</head>
+<body>
+<div class="top-bar"></div>
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Comparador de Renda Fixa</h1>
+    <p>CDB × LCI × LCA — tributado vs isento</p>
+  </div>
+  <a href="../" class="nav-back">← Início</a>
+</div>
+
+<div class="container">
+  <div class="grid-3">
+    <!-- PARÂMETROS -->
+    <div class="card">
+      <div class="section-label">Parâmetros</div>
+      <div class="field">
+        <label>Valor investido</label>
+        <div class="input-wrap">
+          <span style="font-size:13px;color:var(--gray-500);margin-right:6px">R$</span>
+          <input type="number" id="valor" value="10000" min="0" step="1000"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>Prazo (dias corridos)</label>
+        <div class="input-wrap">
+          <input type="number" id="dc" value="365" min="1" max="3650"/>
+          <span class="input-suffix">dias</span>
+        </div>
+        <div class="quick-btns">
+          <button class="quick-btn" onclick="setDC(180,this)">6 meses</button>
+          <button class="quick-btn active" onclick="setDC(365,this)">1 ano</button>
+          <button class="quick-btn" onclick="setDC(730,this)">2 anos</button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>CDI atual (% a.a.)</label>
+        <div class="input-wrap">
+          <input type="number" id="cdi" value="14.40" min="0" max="50" step="0.25"/>
+          <span class="input-suffix">% a.a.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CDB -->
+    <div class="card">
+      <div class="product-header">
+        <div class="product-title">
+          <div class="product-avatar" style="background:#1565C0">C</div>
+          <span class="product-name">CDB</span>
+        </div>
+        <span class="badge badge-ir">Tributado</span>
+      </div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="cdb-btn-cdi" onclick="setMode('cdb','cdi')">% do CDI</button>
+        <button class="mode-btn" id="cdb-btn-pre" onclick="setMode('cdb','pre')">% a.a. Pré</button>
+      </div>
+      <div class="input-wrap">
+        <input type="number" id="cdb-val" value="100" min="0" step="0.5"/>
+        <span class="input-suffix" id="cdb-suffix">% CDI</span>
+      </div>
+    </div>
+
+    <!-- ISENTO -->
+    <div class="card">
+      <div class="product-header">
+        <div class="product-title">
+          <div class="tab-toggle" style="margin-bottom:0">
+            <button class="tab-btn" id="tab-lci" onclick="setTipo('lci')">LCI</button>
+            <button class="tab-btn active" id="tab-lca" onclick="setTipo('lca')">LCA</button>
+          </div>
+        </div>
+        <span class="badge badge-isento">Isento IR</span>
+      </div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="iso-btn-cdi" onclick="setMode('iso','cdi')">% do CDI</button>
+        <button class="mode-btn" id="iso-btn-pre" onclick="setMode('iso','pre')">% a.a. Pré</button>
+      </div>
+      <div class="input-wrap">
+        <input type="number" id="iso-val" value="86" min="0" step="0.5"/>
+        <span class="input-suffix" id="iso-suffix">% CDI</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADOS -->
+  <div class="grid-2" id="results-grid"></div>
+
+  <!-- RESUMO -->
+  <div class="summary-bar" id="summary-bar"></div>
+
+  <!-- TAXAS EQUIVALENTES -->
+  <div class="card">
+    <div class="section-label">Taxas Equivalentes</div>
+    <div class="equiv-grid">
+      <div class="equiv-card blue-card">
+        <div class="equiv-label" id="eq1-label"></div>
+        <div class="equiv-value" id="eq1-value"></div>
+      </div>
+      <div class="equiv-card green-card">
+        <div class="equiv-label" id="eq2-label"></div>
+        <div class="equiv-value" id="eq2-value"></div>
+      </div>
+    </div>
+    <div class="ir-note" id="ir-note"></div>
+  </div>
+
+  <div class="disclaimer">
+    Simulação com fins informativos. Não constitui oferta ou recomendação de investimento.<br>
+    IR calculado em dias corridos sobre o ganho bruto no resgate.
+  </div>
+</div>
+
+<script>
+const DEFAULTS = {
+  cdb: { cdi: 100, pre: 13.5 },
+  iso: { cdi: 86,  pre: 11.0 }
+};
+
+let state = {
+  valor: 10000, dc: 365, cdi: 14.40,
+  cdb_mode: 'cdi', cdb_val: 100,
+  iso_mode: 'cdi', iso_val: 86,
+  tipo: 'lca'
+};
+
+function getIR(dc) {
+  if (dc <= 180) return { rate: 0.225, label: 'Até 180 dias (22,5%)' };
+  if (dc <= 360) return { rate: 0.200, label: '181–360 dias (20,0%)' };
+  if (dc <= 720) return { rate: 0.175, label: '361–720 dias (17,5%)' };
+  return { rate: 0.150, label: 'Acima de 720 dias (15,0%)' };
+}
+
+function calcBruto(valor, annual_rate_pct, dc) {
+  return valor * (Math.pow(1 + annual_rate_pct / 100, dc / 365) - 1);
+}
+
+function getAnnualRate(mode, val, cdi) {
+  return mode === 'cdi' ? cdi * val / 100 : val;
+}
+
+function brl(v) {
+  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function pct(v, decimals=2) {
+  return v.toFixed(decimals).replace('.', ',') + '%';
+}
+
+function render() {
+  const { valor, dc, cdi, cdb_mode, cdb_val, iso_mode, iso_val, tipo } = state;
+  const ir = getIR(dc);
+
+  const cdb_rate = getAnnualRate(cdb_mode, cdb_val, cdi);
+  const iso_rate = getAnnualRate(iso_mode, iso_val, cdi);
+
+  const cdb_bruto = calcBruto(valor, cdb_rate, dc);
+  const cdb_ir    = cdb_bruto * ir.rate;
+  const cdb_liq   = cdb_bruto - cdb_ir;
+  const cdb_final = valor + cdb_liq;
+  const cdb_liq_aa = (Math.pow(1 + cdb_liq / valor, 365 / dc) - 1) * 100;
+
+  const iso_bruto = calcBruto(valor, iso_rate, dc);
+  const iso_liq   = iso_bruto;
+  const iso_final = valor + iso_liq;
+  const iso_liq_aa = (Math.pow(1 + iso_liq / valor, 365 / dc) - 1) * 100;
+
+  const cdb_wins = cdb_liq >= iso_liq;
+  const diff = Math.abs(cdb_liq - iso_liq);
+  const winner_name = cdb_wins ? 'CDB' : tipo.toUpperCase();
+
+  const cdb_label = cdb_mode === 'cdi' ? `${cdb_val}% do CDI` : `${String(cdb_val).replace('.',',')}% a.a. Pré`;
+  const iso_label = iso_mode === 'cdi' ? `${iso_val}% do CDI` : `${String(iso_val).replace('.',',')}% a.a. Pré`;
+
+  // Results
+  document.getElementById('results-grid').innerHTML = `
+    <div class="card ${cdb_wins ? 'winner' : 'loser'}">
+      <div class="result-product-header">
+        <div class="product-avatar" style="background:#1565C0">C</div>
+        <div>
+          <div class="result-product-name">CDB${cdb_wins ? ' <span class="winner-badge">★ Mais rentável</span>' : ''}</div>
+          <div class="result-product-sub">${cdb_label} · IR ${pct(ir.rate*100,1)}</div>
+        </div>
+      </div>
+      <div class="result-row"><span class="rlabel">Rendimento bruto</span><span class="rvalue">${brl(cdb_bruto)}</span></div>
+      <div class="result-row"><span class="rlabel">IR (${pct(ir.rate*100,1)})</span><span class="rvalue neg">− ${brl(cdb_ir)}</span></div>
+      <div class="result-total result-row"><span class="rlabel">Rendimento líquido</span><span class="rvalue">${brl(cdb_liq)}</span></div>
+      <div class="result-footer">
+        <span>Montante final <strong>${brl(cdb_final)}</strong></span>
+        <span>Rent. líq. a.a. <strong>${pct(cdb_liq_aa)}</strong></span>
+      </div>
+    </div>
+    <div class="card ${!cdb_wins ? 'winner' : 'loser'}">
+      <div class="result-product-header">
+        <div class="product-avatar" style="background:#1A7F4B">${tipo.toUpperCase().charAt(0)}</div>
+        <div>
+          <div class="result-product-name">${tipo.toUpperCase()}${!cdb_wins ? ' <span class="winner-badge">★ Mais rentável</span>' : ''}</div>
+          <div class="result-product-sub">${iso_label} · Isento IR</div>
+        </div>
+      </div>
+      <div class="result-row"><span class="rlabel">Rendimento bruto</span><span class="rvalue">${brl(iso_bruto)}</span></div>
+      <div class="result-row"><span class="rlabel">IR</span><span class="rvalue isento-tag">Isento</span></div>
+      <div class="result-total result-row"><span class="rlabel">Rendimento líquido</span><span class="rvalue">${brl(iso_liq)}</span></div>
+      <div class="result-footer">
+        <span>Montante final <strong>${brl(iso_final)}</strong></span>
+        <span>Rent. líq. a.a. <strong>${pct(iso_liq_aa)}</strong></span>
+      </div>
+    </div>
+  `;
+
+  // Summary
+  document.getElementById('summary-bar').innerHTML =
+    `O <strong>${winner_name}</strong> rende <span class="highlight ${cdb_wins ? 'red' : ''}">${brl(diff)} a mais</span> no período`;
+
+  // Equivalências (sempre em % CDI)
+  const cdb_bruto_needed = iso_liq / (1 - ir.rate);
+  const cdb_rate_needed  = (Math.pow(1 + cdb_bruto_needed / valor, 365 / dc) - 1);
+  const cdb_pct_needed   = cdb_rate_needed / (cdi / 100);
+
+  const iso_liq_from_cdb = cdb_bruto * (1 - ir.rate);
+  const iso_rate_needed  = (Math.pow(1 + iso_liq_from_cdb / valor, 365 / dc) - 1);
+  const iso_pct_needed   = iso_rate_needed / (cdi / 100);
+
+  document.getElementById('eq1-label').textContent = `Para empatar o ${tipo.toUpperCase()}, o CDB precisa pagar`;
+  document.getElementById('eq1-value').textContent  = pct(cdb_pct_needed * 100) + ' CDI';
+  document.getElementById('eq2-label').textContent = `Para empatar o CDB, o ${tipo.toUpperCase()} precisa pagar`;
+  document.getElementById('eq2-value').textContent  = pct(iso_pct_needed * 100) + ' CDI';
+  document.getElementById('ir-note').textContent   = `${dc} dias corridos · Faixa IR: ${ir.label}`;
+}
+
+function setMode(produto, mode) {
+  if (produto === 'cdb') {
+    state.cdb_mode = mode;
+    state.cdb_val  = DEFAULTS.cdb[mode];
+    document.getElementById('cdb-val').value = DEFAULTS.cdb[mode];
+    document.getElementById('cdb-suffix').textContent = mode === 'cdi' ? '% CDI' : '% a.a.';
+    document.getElementById('cdb-btn-cdi').classList.toggle('active', mode === 'cdi');
+    document.getElementById('cdb-btn-pre').classList.toggle('active', mode === 'pre');
+  } else {
+    state.iso_mode = mode;
+    state.iso_val  = DEFAULTS.iso[mode];
+    document.getElementById('iso-val').value = DEFAULTS.iso[mode];
+    document.getElementById('iso-suffix').textContent = mode === 'cdi' ? '% CDI' : '% a.a.';
+    document.getElementById('iso-btn-cdi').classList.toggle('active', mode === 'cdi');
+    document.getElementById('iso-btn-pre').classList.toggle('active', mode === 'pre');
+  }
+  render();
+}
+
+function setTipo(tipo) {
+  state.tipo = tipo;
+  document.getElementById('tab-lci').classList.toggle('active', tipo === 'lci');
+  document.getElementById('tab-lca').classList.toggle('active', tipo === 'lca');
+  render();
+}
+
+function setDC(dc, btn) {
+  state.dc = dc;
+  document.getElementById('dc').value = dc;
+  document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+// Input listeners
+document.getElementById('valor').addEventListener('input', e => { state.valor = parseFloat(e.target.value) || 0; render(); });
+document.getElementById('dc').addEventListener('input', e => {
+  state.dc = parseInt(e.target.value) || 1;
+  const v = state.dc;
+  document.querySelectorAll('.quick-btn').forEach(b => {
+    b.classList.toggle('active', (b.textContent === '6 meses' && v===180) || (b.textContent === '1 ano' && v===365) || (b.textContent === '2 anos' && v===730));
+  });
+  render();
+});
+document.getElementById('cdi').addEventListener('input', e => { state.cdi = parseFloat(e.target.value) || 0; render(); });
+document.getElementById('cdb-val').addEventListener('input', e => { state.cdb_val = parseFloat(e.target.value) || 0; render(); });
+document.getElementById('iso-val').addEventListener('input', e => { state.iso_val = parseFloat(e.target.value) || 0; render(); });
+
+render();
+</script>
+</body>
+</html>
