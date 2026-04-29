@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comparador de Renda Fixa — Bradesco</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red:       #CC1417;
+      --red-dark:  #A50F11;
+      --red-light: #F9E5E5;
+      --gray-900:  #1A1A1A;
+      --gray-700:  #3D3D3D;
+      --gray-500:  #6B6B6B;
+      --gray-200:  #E8E8E8;
+      --gray-100:  #F5F5F5;
+      --white:     #FFFFFF;
+      --green:     #1A7F4B;
+      --green-light: #E6F4ED;
+      --yellow:    #B97500;
+      --yellow-light: #FFF4DC;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gray-100);
+      color: var(--gray-900);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--white);
+      border-bottom: 3px solid var(--red);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--red);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: -1px;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    .logo-text span {
+      color: var(--red);
+    }
+
+    .header-right {
+      font-size: 13px;
+      color: var(--gray-500);
+    }
+
+    /* MAIN */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* HERO */
+    .hero {
+      margin-bottom: 36px;
+    }
+
+    .hero h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--gray-500);
+    }
+
+    /* INDICADORES */
+    .indicadores {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .indicador-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 20px 24px;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .indicador-card .label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gray-500);
+      margin-bottom: 6px;
+    }
+
+    .indicador-card .valor {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .indicador-card .valor span {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--gray-500);
+    }
+
+    .indicador-card.destaque {
+      border-color: var(--red);
+      background: var(--red-light);
+    }
+
+    .indicador-card.destaque .valor {
+      color: var(--red-dark);
+    }
+
+    /* PERFIL SELECTOR */
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gray-500);
+      margin-bottom: 12px;
+    }
+
+    .perfil-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .perfil-btn {
+      padding: 10px 22px;
+      border-radius: 8px;
+      border: 2px solid var(--gray-200);
+      background: var(--white);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-500);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .perfil-btn:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .perfil-btn.active {
+      background: var(--red);
+      border-color: var(--red);
+      color: var(--white);
+    }
+
+    /* META CARD */
+    .meta-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 20px 24px;
+      border: 1px solid var(--gray-200);
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .meta-card .meta-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--red-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .meta-card .meta-info .meta-label {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-bottom: 2px;
+    }
+
+    .meta-card .meta-info .meta-valor {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--red-dark);
+    }
+
+    .meta-card .meta-info .meta-sub {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+
+    /* COMPARADOR */
+    .comparador-titulo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 16px;
+    }
+
+    .produto-card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--gray-200);
+      padding: 20px 24px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      transition: box-shadow 0.15s;
+    }
+
+    .produto-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+    }
+
+    .produto-card.destaque-card {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .produto-card.alerta-card {
+      border-color: var(--yellow);
+      background: var(--yellow-light);
+    }
+
+    .produto-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .produto-nome-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .produto-nome {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-isento {
+      background: var(--green-light);
+      color: var(--green);
+      border: 1px solid var(--green);
+    }
+
+    .badge-tributado {
+      background: var(--gray-100);
+      color: var(--gray-500);
+      border: 1px solid var(--gray-200);
+    }
+
+    .badge-atencao {
+      background: var(--yellow-light);
+      color: var(--yellow);
+      border: 1px solid var(--yellow);
+    }
+
+    .produto-rentabilidade {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .produto-rentabilidade.verde { color: var(--green); }
+    .produto-rentabilidade.amarelo { color: var(--yellow); }
+
+    .barra-wrap {
+      margin-bottom: 10px;
+    }
+
+    .barra-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-bottom: 5px;
+    }
+
+    .barra-bg {
+      height: 10px;
+      background: var(--gray-200);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .barra-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .barra-fill.verde  { background: var(--green); }
+    .barra-fill.vermelho { background: var(--red); }
+    .barra-fill.amarelo { background: #E8A000; }
+    .barra-fill.cinza  { background: var(--gray-500); }
+
+    .produto-detalhes {
+      display: flex;
+      gap: 24px;
+      margin-top: 10px;
+    }
+
+    .detalhe {
+      font-size: 13px;
+      color: var(--gray-500);
+    }
+
+    .detalhe strong {
+      color: var(--gray-700);
+      font-weight: 600;
+    }
+
+    /* META LINE */
+    .meta-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .meta-line-bar {
+      position: relative;
+      flex: 1;
+      height: 2px;
+      background: var(--gray-200);
+    }
+
+    .meta-marker {
+      position: absolute;
+      top: -5px;
+      width: 2px;
+      height: 12px;
+      background: var(--red);
+    }
+
+    .meta-marker-label {
+      position: absolute;
+      top: -20px;
+      font-size: 10px;
+      color: var(--red);
+      font-weight: 600;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    /* NOTA */
+    .nota {
+      margin-top: 32px;
+      padding: 16px 20px;
+      background: var(--white);
+      border-radius: 10px;
+      border-left: 4px solid var(--red);
+      font-size: 13px;
+      color: var(--gray-500);
+      line-height: 1.6;
+    }
+
+    .nota strong {
+      color: var(--gray-700);
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--gray-500);
+      border-top: 1px solid var(--gray-200);
+      background: var(--white);
+    }
+
+    @media (max-width: 640px) {
+      .indicadores { grid-template-columns: 1fr; }
+      .perfil-selector { flex-wrap: wrap; }
+      header { padding: 0 16px; }
+      main { padding: 24px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">B</div>
+    <div class="logo-text">Bradesco <span>Investimentos</span></div>
+  </div>
+  <div class="header-right">Ferramentas de Planejamento Financeiro</div>
+</header>
+
+<main>
+
+  <div class="hero">
+    <h1>Comparador de Renda Fixa</h1>
+    <p>Veja o rendimento líquido de cada produto e compare com sua meta de retorno.</p>
+  </div>
+
+  <!-- INDICADORES -->
+  <div class="indicadores">
+    <div class="indicador-card destaque">
+      <div class="label">CDI</div>
+      <div class="valor">14,65% <span>a.a.</span></div>
+    </div>
+    <div class="indicador-card">
+      <div class="label">SELIC</div>
+      <div class="valor">14,75% <span>a.a.</span></div>
+    </div>
+    <div class="indicador-card">
+      <div class="label">IPCA Projetado</div>
+      <div class="valor">5,00% <span>a.a.</span></div>
+    </div>
+  </div>
+
+  <!-- PERFIL -->
+  <div class="section-title">Selecione seu perfil de investidor</div>
+  <div class="perfil-selector">
+    <button class="perfil-btn" onclick="setPerfil('conservador', this)">Conservador</button>
+    <button class="perfil-btn active" onclick="setPerfil('moderado', this)">Moderado</button>
+    <button class="perfil-btn" onclick="setPerfil('arrojado', this)">Arrojado</button>
+  </div>
+
+  <!-- META -->
+  <div class="meta-card">
+    <div class="meta-icon">🎯</div>
+    <div class="meta-info">
+      <div class="meta-label">Meta de retorno para o perfil selecionado</div>
+      <div class="meta-valor" id="meta-valor">11,3% a.a.</div>
+      <div class="meta-sub" id="meta-sub">6% acima da inflação projetada (IPCA 5%)</div>
+    </div>
+  </div>
+
+  <!-- COMPARADOR -->
+  <div class="comparador-titulo">Produtos disponíveis</div>
+  <div id="produtos"></div>
+
+  <div class="nota">
+    <strong>Importante:</strong> Rentabilidades calculadas com CDI a 14,65% a.a. IR calculado em dias corridos (não em anos).
+    Comparativo considera resgate após 720 dias corridos (alíquota mínima de 15% para produtos tributados).
+    A poupança capitaliza mensalmente; demais produtos capitalizam diariamente em dias úteis (252 du/ano).
+  </div>
+
+</main>
+
+<footer>
+  Simulação com fins informativos. Não constitui oferta ou recomendação de investimento. Rentabilidade passada não garante rentabilidade futura.
+</footer>
+
+<script>
+  const CDI = 14.65;
+  const IPCA = 5.00;
+  const META = { conservador: 9.2, moderado: 11.3, arrojado: 13.4 };
+  const META_LABEL = {
+    conservador: '4% acima da inflação projetada (IPCA 5%)',
+    moderado: '6% acima da inflação projetada (IPCA 5%)',
+    arrojado: '8% acima da inflação projetada (IPCA 5%)',
+  };
+
+  const IR15 = 0.15;
+
+  function liquidoTributado(brutoAA, aliquotaIR) {
+    return brutoAA * (1 - aliquotaIR);
+  }
+
+  const produtos = [
+    {
+      nome: 'CDB DI',
+      subtitulo: 'Banco Bradesco',
+      pct: 100,
+      tipo: 'cdi',
+      isento: false,
+      iof: true,
+      fgc: true,
+    },
+    {
+      nome: 'LCA DI',
+      subtitulo: 'Banco Bradesco',
+      pct: 87,
+      tipo: 'cdi',
+      isento: true,
+      iof: false,
+      fgc: true,
+    },
+    {
+      nome: 'Tesouro Selic',
+      subtitulo: 'Tesouro Nacional',
+      pct: 100,
+      tipo: 'selic',
+      custodia: 0.20,
+      isento: false,
+      iof: false,
+      fgc: false,
+    },
+    {
+      nome: 'Poupança',
+      subtitulo: 'Banco Bradesco',
+      pct: null,
+      tipo: 'poupanca',
+      isento: true,
+      iof: false,
+      fgc: true,
+    },
+    {
+      nome: 'CDB Baixa Automática',
+      subtitulo: 'Banco Bradesco',
+      pct: 50,
+      tipo: 'cdi',
+      isento: false,
+      iof: true,
+      fgc: true,
+    },
+    {
+      nome: 'Invest Fácil',
+      subtitulo: 'Conta remunerada · Banco Bradesco',
+      pct: 5,
+      tipo: 'cdi',
+      isento: false,
+      iof: true,
+      fgc: true,
+    },
+  ];
+
+  function calcBruto(p) {
+    if (p.tipo === 'poupanca') return 7.82;
+    if (p.tipo === 'selic') return 14.75 * (p.pct / 100) - (p.custodia || 0);
+    return CDI * (p.pct / 100);
+  }
+
+  function calcLiquido(p) {
+    const bruto = calcBruto(p);
+    if (p.isento) return bruto;
+    return liquidoTributado(bruto, IR15);
+  }
+
+  function barColor(liquido, meta) {
+    if (liquido >= meta) return 'verde';
+    if (liquido >= meta * 0.75) return 'amarelo';
+    return 'cinza';
+  }
+
+  function rentColor(liquido, meta) {
+    if (liquido >= meta) return 'verde';
+    if (liquido >= meta * 0.75) return 'amarelo';
+    return '';
+  }
+
+  let perfilAtual = 'moderado';
+
+  function setPerfil(perfil, btn) {
+    perfilAtual = perfil;
+    document.querySelectorAll('.perfil-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('meta-valor').textContent = META[perfil].toFixed(1).replace('.', ',') + '% a.a.';
+    document.getElementById('meta-sub').textContent = META_LABEL[perfil];
+    renderProdutos();
+  }
+
+  function renderProdutos() {
+    const meta = META[perfilAtual];
+    const maxVal = CDI * 1.05;
+
+    const sorted = [...produtos].sort((a, b) => calcLiquido(b) - calcLiquido(a));
+
+    let html = '';
+    sorted.forEach(p => {
+      const bruto = calcBruto(p);
+      const liquido = calcLiquido(p);
+      const pctBarra = Math.min((liquido / maxVal) * 100, 100);
+      const pctMeta = Math.min((meta / maxVal) * 100, 100);
+      const cor = barColor(liquido, meta);
+      const rentCor = rentColor(liquido, meta);
+
+      const badeIR = p.isento
+        ? '<span class="badge badge-isento">Isento IR</span>'
+        : '<span class="badge badge-tributado">IR 15%</span>';
+
+      const cardClass = liquido >= meta
+        ? 'produto-card destaque-card'
+        : liquido < 5
+          ? 'produto-card alerta-card'
+          : 'produto-card';
+
+      const fgcText = p.fgc ? '✓ FGC até R$250k' : '✗ Sem FGC (garantia Tesouro Nacional)';
+      const iofText = p.iof ? 'IOF nos primeiros 30 dias' : 'Sem IOF';
+      const brutoLabel = p.tipo === 'poupanca' ? `0,5%/mês + TR` : `${p.pct}% do ${p.tipo === 'selic' ? 'SELIC' : 'CDI'}`;
+
+      html += `
+        <div class="${cardClass}">
+          <div class="produto-header">
+            <div class="produto-nome-wrap">
+              <div>
+                <div class="produto-nome">${p.nome}</div>
+                <div style="font-size:12px;color:var(--gray-500);margin-top:2px">${p.subtitulo}</div>
+              </div>
+              ${badeIR}
+            </div>
+            <div class="produto-rentabilidade ${rentCor}">${liquido.toFixed(2).replace('.', ',')}% <span style="font-size:14px;font-weight:400;color:var(--gray-500)">a.a. líq.</span></div>
+          </div>
+
+          <div class="barra-wrap">
+            <div class="barra-labels">
+              <span>Rentabilidade líquida</span>
+              <span style="color:var(--red);font-weight:600">Meta: ${meta.toFixed(1).replace('.', ',')}%</span>
+            </div>
+            <div class="barra-bg" style="position:relative">
+              <div class="barra-fill ${cor}" style="width:${pctBarra}%"></div>
+              <div style="position:absolute;top:0;left:${pctMeta}%;width:2px;height:100%;background:var(--red);opacity:0.7"></div>
+            </div>
+          </div>
+
+          <div class="produto-detalhes">
+            <div class="detalhe">Bruto: <strong>${bruto.toFixed(2).replace('.', ',')}% a.a.</strong></div>
+            <div class="detalhe">Rentabilidade: <strong>${brutoLabel}</strong></div>
+            <div class="detalhe">${iofText}</div>
+            <div class="detalhe">${fgcText}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    document.getElementById('produtos').innerHTML = html;
+  }
+
+  renderProdutos();
+</script>
+</body>
+</html>
