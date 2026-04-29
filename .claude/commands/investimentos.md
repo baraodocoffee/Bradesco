@@ -9,8 +9,8 @@ Contexto: uso interno por especialistas do Bradesco e atendimento a clientes inv
 
 | Indicador | Valor |
 |---|---|
-| SELIC | 14,75% a.a. |
-| CDI | 14,65% a.a. (SELIC - 0,10%) |
+| SELIC | 14,50% a.a. |
+| CDI | 14,40% a.a. (SELIC - 0,10%) |
 | IPCA projetado (premissa padrão) | 5,00% a.a. |
 | TR (premissa conservadora) | 0,131% a.m. |
 
@@ -22,8 +22,8 @@ Contexto: uso interno por especialistas do Bradesco e atendimento a clientes inv
 - Capitalização **diária em dias úteis (du)**
 - Convenção: **252 du/ano | 21 du/mês**
 - Taxa diária: `(1 + taxa anual)^(1/252) - 1`
-- CDI diário atual: ~0,05466% a.d.
-- CDI mensal atual (21 du): ~1,1538% a.m.
+- CDI diário atual: ~0,05343% a.d.
+- CDI mensal atual (21 du): ~1,1279% a.m.
 
 ### Poupança
 - Capitalização **mensal em dias corridos** (data de aniversário)
@@ -104,17 +104,17 @@ Regressivo em **dias corridos** — atenção: 720 dias corridos ≠ 2 anos.
 
 | Produto | Rentabilidade | Equiv. Anual Bruto | Equiv. Mensal Bruto | IR | IOF |
 |---|---|---|---|---|---|
-| Invest Fácil | 5% do CDI | ~0,73% a.a. | ~0,061% a.m. | Sim | Sim |
-| CDB Baixa Automática | 50% do CDI | ~7,33% a.a. | ~0,577% a.m. | Sim | Sim |
-| LCA DI | 84% do CDI | ~12,31% a.a. | ~0,970% a.m. | Não | Não |
-| CDB DI | 100% do CDI | ~14,65% a.a. | ~1,154% a.m. | Sim | Sim |
+| Invest Fácil | 5% do CDI | ~0,72% a.a. | ~0,060% a.m. | Sim | Sim |
+| CDB Baixa Automática | 50% do CDI | ~7,20% a.a. | ~0,582% a.m. | Sim | Sim |
+| LCA DI | 84% do CDI | ~12,10% a.a. | ~0,957% a.m. | Não | Não |
+| CDB DI | 100% do CDI | ~14,40% a.a. | ~1,128% a.m. | Sim | Sim |
 
 ### Referências de Mercado
 
 | Produto | Rentabilidade | Equiv. Anual Bruto | Equiv. Mensal Bruto | IR | IOF | Custódia |
 |---|---|---|---|---|---|---|
 | Poupança | 0,5% a.m. + TR | ~7,82% a.a. | ~0,631% a.m. | Não | Não | Não |
-| Tesouro Selic | ~100% SELIC | ~14,55% a.a.* | ~1,142% a.m.* | Sim | Não | 0,20% a.a. (B3) |
+| Tesouro Selic | ~100% SELIC | ~14,30% a.a.* | ~1,121% a.m.* | Sim | Não | 0,20% a.a. (B3) |
 
 *Já descontada a taxa de custódia de 0,20% a.a. — sempre descontar antes de comparativos.
 Tesouro Selic capitaliza diariamente em dias úteis (mesma convenção do CDI).
