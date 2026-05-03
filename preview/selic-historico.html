@@ -114,7 +114,7 @@ body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.6;background:va
       <span class="ctrl-label">Período</span>
       <button class="periodo-btn" data-anos="5" onclick="setPeriodo(5)">5 anos</button>
       <button class="periodo-btn" data-anos="10" onclick="setPeriodo(10)">10 anos</button>
-      <button class="periodo-btn active" data-anos="0" onclick="setPeriodo(0)">Tudo</button>
+      <button class="periodo-btn active" data-anos="0" onclick="setPeriodo(0)">Desde 2010</button>
     </div>
     <div class="toggle-wrap">
       <span class="toggle-label">Exibir IPCA</span>
@@ -367,6 +367,21 @@ function calcInsights() {
   let mesesTR = 0, mesesSelicReg = 0;
   ALL_SELIC.forEach(v => { if (v > 8.5) mesesTR++; else mesesSelicReg++; });
 
+  // Ciclo de corte atual
+  let firstCutIdx = -1;
+  for (let i = 1; i < N; i++) {
+    if (ALL_SELIC[i] < ALL_SELIC[i-1] && ALL_SELIC[i-1] >= maxS) { firstCutIdx = i; break; }
+  }
+  const firstCutLabel = firstCutIdx !== -1 ? ALL_LABELS[firstCutIdx] : '—';
+  const corteAcum = maxS - selicAtual;
+  const mesesNoPico = ALL_SELIC.filter(v => v === maxS).length;
+  let nCortes = 0, prevCorte = maxS;
+  if (firstCutIdx !== -1) {
+    for (let i = firstCutIdx; i < N; i++) {
+      if (ALL_SELIC[i] < prevCorte) { nCortes++; prevCorte = ALL_SELIC[i]; }
+    }
+  }
+
   const fmt  = v => v.toFixed(2).replace('.',',');
   const fmt1 = v => v.toFixed(1).replace('.',',');
   const fmtMeses = m => {
@@ -417,10 +432,10 @@ function calcInsights() {
       <div class="ic-value">${fmt(minIPCA)}%</div>
       <div class="ic-sub">Acumulado 12m mais baixo em ${ALL_LABELS[minIPCAIdx]}</div>
     </div>
-    <div class="insight-card">
-      <div class="ic-label">Regime Poupança TR</div>
-      <div class="ic-value">${fmtMeses(mesesTR)}</div>
-      <div class="ic-sub">${(mesesTR/N*100).toFixed(0)}% do período · 0,5% a.m. + TR</div>
+    <div class="insight-card azul">
+      <div class="ic-label">Ciclo de Corte Atual</div>
+      <div class="ic-value">−${fmt(corteAcum)} p.p.</div>
+      <div class="ic-sub">Início em ${firstCutLabel} · pico de ${fmt(maxS)}% por ${mesesNoPico} ${mesesNoPico === 1 ? 'mês' : 'meses'} · ${nCortes} corte${nCortes !== 1 ? 's' : ''} realizados</div>
     </div>
   `;
 
@@ -462,11 +477,15 @@ const chart = new Chart(ctx, {
         ticks: {
           font: { family: 'Inter', size: 11 },
           color: '#6B6B6B',
-          maxTicksLimit: 14,
+          maxTicksLimit: 20,
           maxRotation: 0,
-          callback(val) {
+          callback(val, idx) {
             const lbl = this.getLabelForValue(val);
-            return lbl && lbl.startsWith('01/') ? lbl.slice(3) : '';
+            if (!lbl) return '';
+            const [mm, yyyy] = lbl.split('/');
+            if (mm === '01') return yyyy;
+            if (idx === 0) return yyyy;
+            return '';
           }
         }
       },
