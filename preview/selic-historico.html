@@ -474,18 +474,25 @@ const chart = new Chart(ctx, {
     scales: {
       x: {
         grid: { color: '#F0F0F0' },
+        afterBuildTicks(axis) {
+          const labels = axis.chart.data.labels || [];
+          const ticks = [];
+          // primeiro ponto visível (se não for janeiro, mostra o ano mesmo assim)
+          if (labels.length > 0 && !labels[0].startsWith('01/')) {
+            ticks.push({ value: 0 });
+          }
+          labels.forEach((lbl, i) => {
+            if (lbl && lbl.startsWith('01/')) ticks.push({ value: i });
+          });
+          axis.ticks = ticks;
+        },
         ticks: {
           font: { family: 'Inter', size: 11 },
           color: '#6B6B6B',
-          maxTicksLimit: 20,
           maxRotation: 0,
-          callback(val, idx) {
+          callback(val) {
             const lbl = this.getLabelForValue(val);
-            if (!lbl) return '';
-            const [mm, yyyy] = lbl.split('/');
-            if (mm === '01') return yyyy;
-            if (idx === 0) return yyyy;
-            return '';
+            return lbl ? lbl.slice(3) : '';
           }
         }
       },
