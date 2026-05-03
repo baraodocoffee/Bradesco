@@ -329,7 +329,7 @@ function calcInsights() {
   // Máx/Mín SELIC
   const maxS = Math.max(...ALL_SELIC);
   const minS = Math.min(...ALL_SELIC);
-  const maxSIdx = ALL_SELIC.lastIndexOf(maxS);
+  const maxSIdx = ALL_SELIC.indexOf(maxS);
   const minSIdx = ALL_SELIC.indexOf(minS);
 
   // IPCA 12m mais recente (último valor não-null)
@@ -405,7 +405,7 @@ function calcInsights() {
     <div class="insight-card">
       <div class="ic-label">Máximo Histórico</div>
       <div class="ic-value">${fmt(maxS)}%</div>
-      <div class="ic-sub">Atingido em ${ALL_LABELS[maxSIdx]} · pico do ciclo atual</div>
+      <div class="ic-sub">Atingido em ${ALL_LABELS[maxSIdx]} · pico do último ciclo de alta</div>
     </div>
     <div class="insight-card verde">
       <div class="ic-label">Mínimo Histórico</div>
