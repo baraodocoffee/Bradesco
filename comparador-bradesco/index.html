@@ -17,9 +17,11 @@
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.6;background:var(--gray-100);color:var(--gray-900);}
     .top-bar{height:5px;background:var(--red);}
-    .page-header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:20px 24px 18px;}
-    .page-header h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:var(--gray-900);margin-bottom:4px;}
-    .page-header p{font-size:14px;color:var(--gray-500);}
+    .page-header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;}
+    .page-header-left h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:var(--gray-900);}
+    .page-header-left p{font-size:13px;color:var(--gray-500);margin-top:2px;}
+    .nav-back{font-size:13px;font-weight:600;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s;}
+    .nav-back:hover{color:var(--red);}
     .container{max-width:680px;margin:0 auto;padding:24px 16px 80px;}
     .card{background:var(--white);border-radius:16px;border:1px solid var(--gray-200);padding:24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
     .section-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray-500);margin-bottom:16px;}
@@ -86,9 +88,11 @@
 <body>
 <div class="top-bar"></div>
 <div class="page-header">
-  <a href="../" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--gray-500);text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:10px;">← Início</a>
-  <h1>Comparador de Investimentos</h1>
-  <p>Veja o rendimento líquido dos produtos Bradesco ao longo do tempo</p>
+  <div class="page-header-left">
+    <h1>Comparador de Investimentos</h1>
+    <p>Veja o rendimento líquido dos produtos Bradesco ao longo do tempo</p>
+  </div>
+  <a href="../" class="nav-back">← Início</a>
 </div>
 <div class="container">
   <div class="card">
