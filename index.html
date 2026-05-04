@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Ferramentas de Investimentos</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --red:#CC1417;--red-dark:#A50F11;--red-light:#F9E5E5;
+  --gray-900:#1A1A1A;--gray-700:#3D3D3D;--gray-500:#6B6B6B;
+  --gray-200:#E8E8E8;--gray-100:#F5F5F5;--white:#FFFFFF;
+  --green:#1A7F4B;--green-light:#E6F4ED;
+  --yellow:#B97500;--yellow-light:#FFF4DC;
+  --blue:#1A5FA5;--blue-light:#E8F0FA;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.6;background:var(--gray-100);color:var(--gray-900);min-height:100vh;}
+.top-bar{height:5px;background:var(--red);}
+.container{max-width:960px;margin:0 auto;padding:0 24px;}
+
+/* Hero */
+.hero{padding:56px 0 40px;}
+.hero-tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--red);font-family:'Inter';background:var(--red-light);border:1px solid var(--red);border-radius:20px;padding:4px 12px;margin-bottom:18px;}
+.hero-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:36px;font-weight:700;color:var(--gray-900);line-height:1.2;margin-bottom:12px;}
+.hero-sub{font-size:17px;color:var(--gray-500);max-width:520px;line-height:1.7;}
+
+/* Divider */
+.divider{height:1px;background:var(--gray-200);margin:8px 0 36px;}
+
+/* Grid de ferramentas */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:48px;}
+
+.tool-card{background:var(--white);border-radius:16px;border:1px solid var(--gray-200);padding:28px 24px;box-shadow:0 1px 4px rgba(0,0,0,.04);display:flex;flex-direction:column;gap:16px;text-decoration:none;color:inherit;transition:box-shadow .2s, border-color .2s, transform .15s;}
+.tool-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.10);border-color:var(--red);transform:translateY(-2px);}
+
+.tool-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.tool-icon.vermelho{background:var(--red-light);}
+.tool-icon.verde{background:var(--green-light);}
+.tool-icon.azul{background:var(--blue-light);}
+
+.tool-body{flex:1;}
+.tool-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;color:var(--gray-900);margin-bottom:6px;line-height:1.3;}
+.tool-desc{font-size:14px;color:var(--gray-500);line-height:1.6;}
+
+.tool-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--gray-200);}
+.tool-badge{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-family:'Inter';padding:3px 8px;border-radius:20px;}
+.tool-badge.renda-fixa{background:var(--blue-light);color:var(--blue);}
+.tool-badge.mercado{background:var(--green-light);color:var(--green);}
+.tool-badge.analise{background:var(--yellow-light);color:var(--yellow);}
+.tool-cta{font-size:13px;font-weight:600;color:var(--red);font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:4px;}
+.tool-cta svg{transition:transform .15s;}
+.tool-card:hover .tool-cta svg{transform:translateX(3px);}
+
+/* Nota */
+.nota{padding:16px 20px;background:var(--white);border-radius:10px;border-left:4px solid var(--red);font-size:13px;color:var(--gray-500);line-height:1.6;margin-bottom:40px;}
+
+@media(max-width:700px){
+  .tools-grid{grid-template-columns:1fr;}
+  .hero-title{font-size:26px;}
+  .container{padding:0 16px;}
+}
+@media(min-width:701px) and (max-width:860px){
+  .tools-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<div class="top-bar"></div>
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-tag">Especialistas de Investimentos</div>
+    <h1 class="hero-title">Ferramentas de<br>Planejamento Financeiro</h1>
+    <p class="hero-sub">Simuladores e análises para apoio ao atendimento e planejamento de investimentos para clientes pessoa física.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="tools-grid">
+
+    <a href="comparador-bradesco/" class="tool-card">
+      <div class="tool-icon vermelho">📊</div>
+      <div class="tool-body">
+        <div class="tool-name">Comparador de Investimentos</div>
+        <div class="tool-desc">Compara Invest Fácil, CDB, LCA DI e Poupança com gráfico de evolução patrimonial e custo de oportunidade.</div>
+      </div>
+      <div class="tool-footer">
+        <span class="tool-badge renda-fixa">Renda Fixa</span>
+        <span class="tool-cta">Acessar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+      </div>
+    </a>
+
+    <a href="comparador-tributado-isento/" class="tool-card">
+      <div class="tool-icon verde">⚖️</div>
+      <div class="tool-body">
+        <div class="tool-name">CDB × LCA / LCI</div>
+        <div class="tool-desc">Compara produtos tributados e isentos de IR, calcula equivalências de taxa e aponta o mais rentável no prazo escolhido.</div>
+      </div>
+      <div class="tool-footer">
+        <span class="tool-badge renda-fixa">Renda Fixa</span>
+        <span class="tool-cta">Acessar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+      </div>
+    </a>
+
+    <a href="selic-historico/" class="tool-card">
+      <div class="tool-icon azul">📈</div>
+      <div class="tool-body">
+        <div class="tool-name">Trajetória da SELIC</div>
+        <div class="tool-desc">Histórico da taxa básica desde 2010 com curva de IPCA, análise de ciclos monetários e principais indicadores.</div>
+      </div>
+      <div class="tool-footer">
+        <span class="tool-badge analise">Análise</span>
+        <span class="tool-cta">Acessar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="nota">
+    Simulações com fins informativos. Não constituem oferta ou recomendação de investimento. Rentabilidade passada não garante rentabilidade futura. Indicadores atualizados conforme fontes oficiais (BCB e IBGE).
+  </div>
+
+</div>
+</body>
+</html>
