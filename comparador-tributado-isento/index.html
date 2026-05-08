@@ -27,6 +27,7 @@
     .container{max-width:960px;margin:0 auto;padding:24px 16px 80px;}
     .grid-3{display:grid;grid-template-columns:280px 1fr 1fr;gap:16px;margin-bottom:16px;}
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+    #results-grid{margin-left:6px;margin-right:6px;}
     .card{background:var(--white);border-radius:14px;border:1px solid var(--gray-200);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
     .card.winner{border-color:var(--green);background:var(--green-light);}
     .card.loser{border-color:var(--gray-200);}
@@ -188,7 +189,7 @@
   <div class="summary-bar" id="summary-bar"></div>
 
   <!-- TAXAS EQUIVALENTES -->
-  <div class="card">
+  <div class="card" id="taxas-card">
     <div class="section-label">Taxas Equivalentes</div>
     <div class="equiv-grid">
       <div class="equiv-card blue-card">
@@ -415,12 +416,18 @@ async function gerarPDF() {
 
     let y = 32;
 
-    // Oculta btn-pdf durante captura
+    // Oculta btn-pdf durante captura para não aparecer no PDF
     btn.style.visibility = 'hidden';
 
-    const blocos = ['.grid-3', '#results-grid', '#summary-bar', '.card:last-of-type'];
+    // Ordem: parâmetros → resultados → taxas equivalentes (sem summary-bar)
+    // Para cada bloco capturamos 2px além da borda do elemento (evita corte de bordas)
+    const blocos = [
+      { sel: '.grid-3',          gap: 8 },
+      { sel: '#results-grid',    gap: 8 },
+      { sel: '#taxas-card',      gap: 0 },
+    ];
 
-    for (const sel of blocos) {
+    for (const { sel, gap } of blocos) {
       const el = document.querySelector(sel);
       if (!el) continue;
 
@@ -428,9 +435,14 @@ async function gerarPDF() {
         scale: 2,
         useCORS: true,
         backgroundColor: '#FFFFFF',
-        logging: false
+        logging: false,
+        windowWidth: 960,
+        x: -2,
+        width: el.offsetWidth + 4,
       });
 
+      // A captura tem 4px extras de largura (2px de cada lado);
+      // compensamos devolvendo esses pixels ao espaço do PDF
       const imgW = contentW;
       const imgH = canvas.height * imgW / canvas.width;
 
@@ -440,7 +452,7 @@ async function gerarPDF() {
       }
 
       pdf.addImage(canvas.toDataURL('image/png'), 'PNG', M, y, imgW, imgH);
-      y += imgH + 8;
+      y += imgH + gap;
     }
 
     btn.style.visibility = 'visible';
