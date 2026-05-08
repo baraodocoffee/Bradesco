@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CDB × LCI × LCA — Tributado vs Isento</title>
+  <title>CDB × LCA / LCI — Tributado vs Isento</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <style>
     :root {
       --red:#CC1417;--red-dark:#A50F11;--red-light:#F9E5E5;
@@ -38,7 +40,7 @@
     .quick-btns{display:flex;gap:8px;margin-top:8px;}
     .quick-btn{flex:1;padding:7px 0;border-radius:7px;border:1.5px solid var(--gray-200);background:var(--white);font-size:13px;font-weight:600;color:var(--gray-500);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;text-align:center;}
     .quick-btn:hover{border-color:var(--red);color:var(--red);}
-    .quick-btn.active{background:var(--gray-900);border-color:var(--gray-900);color:var(--white);}
+    .quick-btn.active{background:var(--red);border-color:var(--red);color:var(--white);}
     .product-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
     .product-title{display:flex;align-items:center;gap:8px;}
     .product-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--white);flex-shrink:0;font-family:'Plus Jakarta Sans',sans-serif;}
@@ -48,10 +50,10 @@
     .badge-isento{background:var(--green-light);color:var(--green);border:1px solid var(--green);}
     .mode-toggle{display:flex;border:1.5px solid var(--gray-200);border-radius:8px;overflow:hidden;margin-bottom:12px;}
     .mode-btn{flex:1;padding:7px 10px;border:none;background:var(--white);font-size:12px;font-weight:600;color:var(--gray-500);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;text-align:center;}
-    .mode-btn.active{background:var(--gray-900);color:var(--white);}
+    .mode-btn.active{background:var(--red);color:var(--white);}
     .tab-toggle{display:flex;gap:6px;margin-bottom:12px;}
     .tab-btn{padding:5px 14px;border-radius:20px;border:1.5px solid var(--gray-200);background:var(--white);font-size:12px;font-weight:700;color:var(--gray-500);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;}
-    .tab-btn.active{background:var(--green);border-color:var(--green);color:var(--white);}
+    .tab-btn.active{background:var(--red);border-color:var(--red);color:var(--white);}
     /* Result cards */
     .result-label{font-size:13px;color:var(--gray-500);margin-bottom:4px;}
     .result-product-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
@@ -71,10 +73,13 @@
     .result-footer span{font-size:13px;color:var(--gray-500);}
     .result-footer strong{color:var(--gray-700);}
     /* Summary bar */
-    .summary-bar{background:var(--white);border-radius:14px;border:1px solid var(--gray-200);padding:18px 20px;margin-bottom:16px;text-align:center;font-size:15px;color:var(--gray-700);}
+    .summary-bar{background:var(--white);border-radius:14px;border:1px solid var(--gray-200);padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:15px;color:var(--gray-700);}
     .summary-bar strong{font-size:17px;}
     .summary-bar .highlight{color:var(--green);font-weight:700;}
     .summary-bar .highlight.red{color:var(--red);}
+    .btn-pdf{background:var(--red);color:white;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:background .15s;flex-shrink:0;}
+    .btn-pdf:hover{background:var(--red-dark);}
+    .btn-pdf:disabled{opacity:.6;cursor:not-allowed;}
     /* Taxas equivalentes */
     .equiv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;}
     .equiv-card{border-radius:10px;padding:14px 16px;}
@@ -97,7 +102,7 @@
 <div class="page-header">
   <div class="page-header-left">
     <h1>Comparador de Renda Fixa</h1>
-    <p>CDB × LCI × LCA — tributado vs isento</p>
+    <p>CDB × LCA / LCI — tributado vs isento</p>
   </div>
   <a href="../" class="nav-back">← Início</a>
 </div>
@@ -302,8 +307,10 @@ function render() {
   `;
 
   // Summary
+  const article = cdb_wins ? 'O' : 'A'; // CDB é masculino; LCA/LCI são femininos (Letra)
   document.getElementById('summary-bar').innerHTML =
-    `O <strong>${winner_name}</strong> rende <span class="highlight ${cdb_wins ? 'red' : ''}">${brl(diff)} a mais</span> no período`;
+    `<span>${article} <strong>${winner_name}</strong> rende <span class="highlight ${cdb_wins ? 'red' : ''}">${brl(diff)} a mais</span> no período</span>
+     <button class="btn-pdf" id="btn-pdf" onclick="gerarPDF()">📄 Gerar PDF</button>`;
 
   // Equivalências (sempre em % CDI)
   const cdb_bruto_needed = iso_liq / (1 - ir.rate);
@@ -368,6 +375,99 @@ document.getElementById('dc').addEventListener('input', e => {
 document.getElementById('cdi').addEventListener('input', e => { state.cdi = parseFloat(e.target.value) || 0; render(); });
 document.getElementById('cdb-val').addEventListener('input', e => { state.cdb_val = parseFloat(e.target.value) || 0; render(); });
 document.getElementById('iso-val').addEventListener('input', e => { state.iso_val = parseFloat(e.target.value) || 0; render(); });
+
+// ─── PDF ───────────────────────────────────────────────────────────────────
+async function gerarPDF() {
+  const btn = document.getElementById('btn-pdf');
+  const txtOriginal = btn.innerHTML;
+  btn.innerHTML = 'Gerando...';
+  btn.disabled = true;
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const W = 210, H = 297, M = 15;
+    const contentW = W - 2 * M;
+
+    // Cabeçalho
+    pdf.setFillColor(204, 20, 23);
+    pdf.rect(0, 0, W, 4, 'F');
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(18);
+    pdf.setTextColor(26, 26, 26);
+    pdf.text('Comparador de Renda Fixa', M, 18);
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10);
+    pdf.setTextColor(107, 107, 107);
+    const tipoLabel = state.tipo.toUpperCase();
+    const dcLabel = state.dc === 180 ? '6 meses' : state.dc === 365 ? '1 ano' : state.dc === 730 ? '2 anos' : `${state.dc} dias`;
+    pdf.text(`CDB x ${tipoLabel} — ${dcLabel} · CDI ${String(state.cdi).replace('.',',')}% a.a. · Investimento ${brl(state.valor)}`, M, 24);
+
+    const dataGer = new Date().toLocaleDateString('pt-BR');
+    pdf.setFontSize(9);
+    pdf.text(`Gerado em ${dataGer}`, W - M, 18, { align: 'right' });
+
+    pdf.setDrawColor(232, 232, 232);
+    pdf.setLineWidth(0.3);
+    pdf.line(M, 28, W - M, 28);
+
+    let y = 32;
+
+    // Oculta btn-pdf durante captura
+    btn.style.visibility = 'hidden';
+
+    const blocos = ['.grid-3', '#results-grid', '#summary-bar', '.card:last-of-type'];
+
+    for (const sel of blocos) {
+      const el = document.querySelector(sel);
+      if (!el) continue;
+
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#FFFFFF',
+        logging: false
+      });
+
+      const imgW = contentW;
+      const imgH = canvas.height * imgW / canvas.width;
+
+      if (y + imgH > H - 18) {
+        pdf.addPage();
+        y = M;
+      }
+
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', M, y, imgW, imgH);
+      y += imgH + 8;
+    }
+
+    btn.style.visibility = 'visible';
+
+    // Rodapé
+    const totalPaginas = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPaginas; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(107, 107, 107);
+      pdf.text(
+        'Simulacao informativa, nao constitui oferta ou recomendacao de investimento.',
+        M, H - 8
+      );
+      pdf.text(`Pagina ${i} de ${totalPaginas}`, W - M, H - 8, { align: 'right' });
+    }
+
+    const dataArq = new Date().toISOString().slice(0, 10);
+    pdf.save(`comparador-cdb-${state.tipo}-${dataArq}.pdf`);
+  } catch (err) {
+    console.error('Erro ao gerar PDF:', err);
+    alert('Erro ao gerar PDF. Detalhes no console.');
+  } finally {
+    const b = document.getElementById('btn-pdf');
+    if (b) { b.innerHTML = txtOriginal; b.disabled = false; b.style.visibility = 'visible'; }
+  }
+}
 
 render();
 </script>
