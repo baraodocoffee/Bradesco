@@ -24,10 +24,9 @@
     .page-header-left p{font-size:13px;color:var(--gray-500);margin-top:2px;}
     .nav-back{font-size:13px;font-weight:600;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s;}
     .nav-back:hover{color:var(--red);}
-    .container{max-width:960px;margin:0 auto;padding:24px 16px 80px;}
+    .container{max-width:960px;margin:0 auto;padding:24px 22px 80px;}
     .grid-3{display:grid;grid-template-columns:280px 1fr 1fr;gap:16px;margin-bottom:16px;}
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-    #results-grid{margin-left:6px;margin-right:6px;}
     .card{background:var(--white);border-radius:14px;border:1px solid var(--gray-200);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
     .card.winner{border-color:var(--green);background:var(--green-light);}
     .card.loser{border-color:var(--gray-200);}
@@ -419,40 +418,40 @@ async function gerarPDF() {
     // Oculta btn-pdf durante captura para não aparecer no PDF
     btn.style.visibility = 'hidden';
 
-    // Ordem: parâmetros → resultados → taxas equivalentes (sem summary-bar)
-    // Para cada bloco capturamos 2px além da borda do elemento (evita corte de bordas)
-    const blocos = [
-      { sel: '.grid-3',          gap: 8 },
-      { sel: '#results-grid',    gap: 8 },
-      { sel: '#taxas-card',      gap: 0 },
-    ];
+    // ── Parâmetros (grid-3) ──────────────────────────────────────────────────
+    const elGrid3 = document.querySelector('.grid-3');
+    if (elGrid3) {
+      const c = await html2canvas(elGrid3, { scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false });
+      const h = c.height * contentW / c.width;
+      pdf.addImage(c.toDataURL('image/png'), 'PNG', M, y, contentW, h);
+      y += h + 8;
+    }
 
-    for (const { sel, gap } of blocos) {
-      const el = document.querySelector(sel);
-      if (!el) continue;
+    // ── Resultados (grid-2) — zeramos o margin para bordas perfeitas, depois reduzimos tamanho ──
+    const rg = document.getElementById('results-grid');
+    if (rg) {
+      const prevMargin = rg.style.margin;
+      rg.style.margin = '0';
+      await new Promise(r => setTimeout(r, 40)); // aguarda reflow
+      const c = await html2canvas(rg, { scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false });
+      rg.style.margin = prevMargin;
+      // Reduz para 88% da largura útil e centraliza — cards menores e com bordas intactas
+      const rW = contentW * 0.88;
+      const rH = c.height * rW / c.width;
+      const rX = M + (contentW - rW) / 2;
+      if (y + rH > H - 18) { pdf.addPage(); y = M; }
+      pdf.addImage(c.toDataURL('image/png'), 'PNG', rX, y, rW, rH);
+      y += rH + 8;
+    }
 
-      const canvas = await html2canvas(el, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#FFFFFF',
-        logging: false,
-        windowWidth: 960,
-        x: -2,
-        width: el.offsetWidth + 4,
-      });
-
-      // A captura tem 4px extras de largura (2px de cada lado);
-      // compensamos devolvendo esses pixels ao espaço do PDF
-      const imgW = contentW;
-      const imgH = canvas.height * imgW / canvas.width;
-
-      if (y + imgH > H - 18) {
-        pdf.addPage();
-        y = M;
-      }
-
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', M, y, imgW, imgH);
-      y += imgH + gap;
+    // ── Taxas equivalentes ───────────────────────────────────────────────────
+    const elTaxas = document.getElementById('taxas-card');
+    if (elTaxas) {
+      const c = await html2canvas(elTaxas, { scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false });
+      const h = c.height * contentW / c.width;
+      if (y + h > H - 18) { pdf.addPage(); y = M; }
+      pdf.addImage(c.toDataURL('image/png'), 'PNG', M, y, contentW, h);
+      y += h;
     }
 
     btn.style.visibility = 'visible';
