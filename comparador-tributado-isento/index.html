@@ -424,7 +424,10 @@ async function gerarPDF() {
       const prevMargin = elGrid3.style.margin;
       elGrid3.style.margin = '0';
       await new Promise(r => setTimeout(r, 40));
-      const c = await html2canvas(elGrid3, { scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false });
+      const c = await html2canvas(elGrid3, {
+        scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false,
+        x: -3, width: elGrid3.offsetWidth + 6,
+      });
       elGrid3.style.margin = prevMargin;
       const gW = contentW * 0.88;
       const gH = c.height * gW / c.width;
