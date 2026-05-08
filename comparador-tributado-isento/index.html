@@ -418,31 +418,36 @@ async function gerarPDF() {
     // Oculta btn-pdf durante captura para não aparecer no PDF
     btn.style.visibility = 'hidden';
 
-    // ── Parâmetros (grid-3) — reduzido para 88% e centralizado (3 colunas ficam compactas no A4) ──
+    // Captura um elemento envolvendo-o em wrapper com padding para preservar bordas
+    async function captureEl(el) {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'padding:6px;background:#F5F5F5;box-sizing:content-box;';
+      el.parentNode.insertBefore(wrap, el);
+      wrap.appendChild(el);
+      await new Promise(r => setTimeout(r, 40));
+      const canvas = await html2canvas(wrap, { scale:2, useCORS:true, backgroundColor:'#F5F5F5', logging:false });
+      wrap.parentNode.insertBefore(el, wrap);
+      wrap.parentNode.removeChild(wrap);
+      return canvas;
+    }
+
+    // ── Parâmetros (grid-3) — 88% centralizado ──────────────────────────────
     const elGrid3 = document.querySelector('.grid-3');
     if (elGrid3) {
       const prevMargin = elGrid3.style.margin;
       elGrid3.style.margin = '0';
-      await new Promise(r => setTimeout(r, 40));
-      const c = await html2canvas(elGrid3, {
-        scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false,
-        x: -3, width: elGrid3.offsetWidth + 6,
-      });
+      const c = await captureEl(elGrid3);
       elGrid3.style.margin = prevMargin;
       const gW = contentW * 0.88;
       const gH = c.height * gW / c.width;
-      const gX = M + (contentW - gW) / 2;
-      pdf.addImage(c.toDataURL('image/png'), 'PNG', gX, y, gW, gH);
+      pdf.addImage(c.toDataURL('image/png'), 'PNG', M + (contentW - gW) / 2, y, gW, gH);
       y += gH + 8;
     }
 
-    // ── Resultados (grid-2) — largura total com bordas perfeitas ────────────
+    // ── Resultados (grid-2) ──────────────────────────────────────────────────
     const rg = document.getElementById('results-grid');
     if (rg) {
-      const c = await html2canvas(rg, {
-        scale: 2, useCORS: true, backgroundColor: '#FFFFFF', logging: false,
-        x: -3, width: rg.offsetWidth + 6,
-      });
+      const c = await captureEl(rg);
       const rH = c.height * contentW / c.width;
       if (y + rH > H - 18) { pdf.addPage(); y = M; }
       pdf.addImage(c.toDataURL('image/png'), 'PNG', M, y, contentW, rH);
@@ -452,7 +457,7 @@ async function gerarPDF() {
     // ── Taxas equivalentes ───────────────────────────────────────────────────
     const elTaxas = document.getElementById('taxas-card');
     if (elTaxas) {
-      const c = await html2canvas(elTaxas, { scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false });
+      const c = await captureEl(elTaxas);
       const h = c.height * contentW / c.width;
       if (y + h > H - 18) { pdf.addPage(); y = M; }
       pdf.addImage(c.toDataURL('image/png'), 'PNG', M, y, contentW, h);
