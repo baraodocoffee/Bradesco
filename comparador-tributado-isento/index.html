@@ -130,6 +130,11 @@
           <button class="quick-btn active" onclick="setDC(365,this)">1 ano</button>
           <button class="quick-btn" onclick="setDC(730,this)">2 anos</button>
         </div>
+        <div class="quick-btns" style="margin-top:6px;">
+          <button class="quick-btn" onclick="setDC(1095,this)">3 anos</button>
+          <button class="quick-btn" onclick="setDC(1460,this)">4 anos</button>
+          <button class="quick-btn" onclick="setDC(1825,this)">5 anos</button>
+        </div>
       </div>
       <div class="field" style="margin-bottom:0">
         <label>CDI atual (% a.a.)</label>
@@ -321,9 +326,10 @@ function render() {
   const iso_rate_needed  = (Math.pow(1 + iso_liq_from_cdb / valor, 365 / dc) - 1);
   const iso_pct_needed   = iso_rate_needed / (cdi / 100);
 
-  document.getElementById('eq1-label').textContent = `Para empatar o ${tipo.toUpperCase()}, o CDB precisa pagar`;
+  const tipoArt = tipo === 'lca' ? 'a LCA' : 'a LCI';
+  document.getElementById('eq1-label').textContent = `Para empatar com ${tipoArt}, o CDB precisa pagar`;
   document.getElementById('eq1-value').textContent  = pct(cdb_pct_needed * 100) + ' CDI';
-  document.getElementById('eq2-label').textContent = `Para empatar o CDB, o ${tipo.toUpperCase()} precisa pagar`;
+  document.getElementById('eq2-label').textContent = `Para empatar com o CDB, ${tipoArt} precisa pagar`;
   document.getElementById('eq2-value').textContent  = pct(iso_pct_needed * 100) + ' CDI';
   document.getElementById('ir-note').textContent   = `${dc} dias corridos · Faixa IR: ${ir.label}`;
 }
@@ -367,8 +373,9 @@ document.getElementById('valor').addEventListener('input', e => { state.valor = 
 document.getElementById('dc').addEventListener('input', e => {
   state.dc = parseInt(e.target.value) || 1;
   const v = state.dc;
+  const dcMap = {'6 meses':180,'1 ano':365,'2 anos':730,'3 anos':1095,'4 anos':1460,'5 anos':1825};
   document.querySelectorAll('.quick-btn').forEach(b => {
-    b.classList.toggle('active', (b.textContent === '6 meses' && v===180) || (b.textContent === '1 ano' && v===365) || (b.textContent === '2 anos' && v===730));
+    b.classList.toggle('active', dcMap[b.textContent] === v);
   });
   render();
 });
@@ -402,7 +409,8 @@ async function gerarPDF() {
     pdf.setFontSize(10);
     pdf.setTextColor(107, 107, 107);
     const tipoLabel = state.tipo.toUpperCase();
-    const dcLabel = state.dc === 180 ? '6 meses' : state.dc === 365 ? '1 ano' : state.dc === 730 ? '2 anos' : `${state.dc} dias`;
+    const dcLabels = {180:'6 meses',365:'1 ano',730:'2 anos',1095:'3 anos',1460:'4 anos',1825:'5 anos'};
+    const dcLabel = dcLabels[state.dc] || `${state.dc} dias`;
     pdf.text(`CDB x ${tipoLabel} — ${dcLabel} · CDI ${String(state.cdi).replace('.',',')}% a.a. · Investimento ${brl(state.valor)}`, M, 24);
 
     const dataGer = new Date().toLocaleDateString('pt-BR');
