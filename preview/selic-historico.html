@@ -6,6 +6,8 @@
 <title>Trajetória da SELIC</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 :root{
   --red:#CC1417;--red-dark:#A50F11;--red-light:#F9E5E5;
@@ -20,11 +22,15 @@ body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.6;background:va
 .top-bar{height:5px;background:var(--red);}
 .container{max-width:960px;margin:0 auto;padding:0 24px;}
 
-.header{padding:32px 0 24px;}
-.nav-back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--gray-500);text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:20px;}
+.page-header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.page-header-left h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:var(--gray-900);}
+.page-header-left p{font-size:13px;color:var(--gray-500);margin-top:2px;}
+.nav-back{font-size:13px;font-weight:600;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s;}
 .nav-back:hover{color:var(--red);}
-.page-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:30px;font-weight:700;color:var(--gray-900);margin-bottom:6px;}
-.page-sub{font-size:15px;color:var(--gray-500);}
+.page-header-actions{display:flex;align-items:center;gap:14px;}
+.btn-pdf{background:var(--red);color:white;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;}
+.btn-pdf:hover{background:var(--red-dark);}
+.btn-pdf:disabled{opacity:.6;cursor:not-allowed;}
 
 .controls{background:var(--white);border-radius:12px;border:1px solid var(--gray-200);padding:18px 24px;margin-bottom:20px;display:flex;align-items:center;flex-wrap:wrap;gap:16px;}
 .ctrl-group{display:flex;align-items:center;gap:10px;}
@@ -101,13 +107,17 @@ body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.6;background:va
 </head>
 <body>
 <div class="top-bar"></div>
-<div class="container">
-
-  <div class="header">
-    <a href="../" class="nav-back">← Início</a>
-    <h1 class="page-title">Trajetória da SELIC</h1>
-    <p class="page-sub">Taxa básica de juros do Brasil — histórico desde janeiro de 2010</p>
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Trajetória da SELIC</h1>
+    <p>Taxa básica de juros do Brasil — histórico desde janeiro de 2010</p>
   </div>
+  <div class="page-header-actions">
+    <button class="btn-pdf" id="btn-pdf" onclick="gerarPDF()">📄 Gerar PDF</button>
+    <a href="../" class="nav-back">← Início</a>
+  </div>
+</div>
+<div class="container">
 
   <div class="controls">
     <div class="ctrl-group">
@@ -571,6 +581,109 @@ function setPeriodo(anos) {
 function toggleIPCA() {
   showIPCA = document.getElementById('toggle-ipca').checked;
   updateChart();
+}
+
+// ─── PDF ───────────────────────────────────────────────────────────────────
+async function gerarPDF() {
+  const btn = document.getElementById('btn-pdf');
+  const txtOriginal = btn.innerHTML;
+  btn.innerHTML = 'Gerando...';
+  btn.disabled = true;
+
+  try {
+    // 1. Salva estado atual e força IPCA on
+    const ipcaAntes = showIPCA;
+    if (!showIPCA) {
+      document.getElementById('toggle-ipca').checked = true;
+      toggleIPCA();
+      await new Promise(r => setTimeout(r, 600));
+    }
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const W = 210, H = 297, M = 15;
+    const contentW = W - 2 * M;
+
+    // 2. Cabeçalho do PDF
+    pdf.setFillColor(204, 20, 23);
+    pdf.rect(0, 0, W, 4, 'F');
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(18);
+    pdf.setTextColor(26, 26, 26);
+    pdf.text('Trajetoria da SELIC', M, 18);
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10);
+    pdf.setTextColor(107, 107, 107);
+    pdf.text('Taxa basica de juros do Brasil - historico desde janeiro de 2010', M, 24);
+
+    const dataGer = new Date().toLocaleDateString('pt-BR');
+    pdf.setFontSize(9);
+    pdf.text(`Gerado em ${dataGer}`, W - M, 18, { align: 'right' });
+
+    pdf.setDrawColor(232, 232, 232);
+    pdf.setLineWidth(0.3);
+    pdf.line(M, 28, W - M, 28);
+
+    let y = 32;
+
+    // 3. Captura cada bloco e insere com paginação
+    const blocos = ['.chart-card', '.insights-grid', '.ciclos-card', '.poupanca-card'];
+
+    for (const sel of blocos) {
+      const el = document.querySelector(sel);
+      if (!el) continue;
+
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#FFFFFF',
+        logging: false
+      });
+
+      const imgW = contentW;
+      const imgH = canvas.height * imgW / canvas.width;
+
+      // Quebra página se não couber
+      if (y + imgH > H - 18) {
+        pdf.addPage();
+        y = M;
+      }
+
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', M, y, imgW, imgH);
+      y += imgH + 6;
+    }
+
+    // 4. Rodapé em todas as páginas
+    const totalPaginas = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPaginas; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(107, 107, 107);
+      pdf.text(
+        'Fonte: Banco Central do Brasil e IBGE  |  Simulacao informativa, nao constitui oferta ou recomendacao',
+        M, H - 8
+      );
+      pdf.text(`Pagina ${i} de ${totalPaginas}`, W - M, H - 8, { align: 'right' });
+    }
+
+    // 5. Download
+    const dataArq = new Date().toISOString().slice(0, 10);
+    pdf.save(`selic-historica-${dataArq}.pdf`);
+
+    // 6. Restaura estado
+    if (!ipcaAntes) {
+      document.getElementById('toggle-ipca').checked = false;
+      toggleIPCA();
+    }
+  } catch (err) {
+    console.error('Erro ao gerar PDF:', err);
+    alert('Erro ao gerar PDF. Detalhes no console.');
+  } finally {
+    btn.innerHTML = txtOriginal;
+    btn.disabled = false;
+  }
 }
 
 // ─── INIT ──────────────────────────────────────────────────────────────────
