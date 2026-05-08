@@ -24,8 +24,8 @@
     .page-header-left p{font-size:13px;color:var(--gray-500);margin-top:2px;}
     .nav-back{font-size:13px;font-weight:600;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s;}
     .nav-back:hover{color:var(--red);}
-    .container{max-width:960px;margin:0 auto;padding:24px 22px 80px;}
-    .grid-3{display:grid;grid-template-columns:280px 1fr 1fr;gap:16px;margin-bottom:16px;}
+    .container{max-width:960px;margin:0 auto;padding:24px 16px 80px;}
+    .grid-3{display:grid;grid-template-columns:280px 1fr 1fr;gap:16px;margin:0 6px 16px;}
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
     .card{background:var(--white);border-radius:14px;border:1px solid var(--gray-200);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
     .card.winner{border-color:var(--green);background:var(--green-light);}
@@ -418,29 +418,31 @@ async function gerarPDF() {
     // Oculta btn-pdf durante captura para não aparecer no PDF
     btn.style.visibility = 'hidden';
 
-    // ── Parâmetros (grid-3) ──────────────────────────────────────────────────
+    // ── Parâmetros (grid-3) — reduzido para 88% e centralizado (3 colunas ficam compactas no A4) ──
     const elGrid3 = document.querySelector('.grid-3');
     if (elGrid3) {
+      const prevMargin = elGrid3.style.margin;
+      elGrid3.style.margin = '0';
+      await new Promise(r => setTimeout(r, 40));
       const c = await html2canvas(elGrid3, { scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false });
-      const h = c.height * contentW / c.width;
-      pdf.addImage(c.toDataURL('image/png'), 'PNG', M, y, contentW, h);
-      y += h + 8;
+      elGrid3.style.margin = prevMargin;
+      const gW = contentW * 0.88;
+      const gH = c.height * gW / c.width;
+      const gX = M + (contentW - gW) / 2;
+      pdf.addImage(c.toDataURL('image/png'), 'PNG', gX, y, gW, gH);
+      y += gH + 8;
     }
 
-    // ── Resultados (grid-2) — zeramos o margin para bordas perfeitas, depois reduzimos tamanho ──
+    // ── Resultados (grid-2) — largura total com bordas perfeitas ────────────
     const rg = document.getElementById('results-grid');
     if (rg) {
-      const prevMargin = rg.style.margin;
-      rg.style.margin = '0';
-      await new Promise(r => setTimeout(r, 40)); // aguarda reflow
-      const c = await html2canvas(rg, { scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false });
-      rg.style.margin = prevMargin;
-      // Reduz para 88% da largura útil e centraliza — cards menores e com bordas intactas
-      const rW = contentW * 0.88;
-      const rH = c.height * rW / c.width;
-      const rX = M + (contentW - rW) / 2;
+      const c = await html2canvas(rg, {
+        scale: 2, useCORS: true, backgroundColor: '#FFFFFF', logging: false,
+        x: -3, width: rg.offsetWidth + 6,
+      });
+      const rH = c.height * contentW / c.width;
       if (y + rH > H - 18) { pdf.addPage(); y = M; }
-      pdf.addImage(c.toDataURL('image/png'), 'PNG', rX, y, rW, rH);
+      pdf.addImage(c.toDataURL('image/png'), 'PNG', M, y, contentW, rH);
       y += rH + 8;
     }
 
