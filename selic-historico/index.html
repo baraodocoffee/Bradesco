@@ -144,7 +144,7 @@ body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.6;background:va
     </div>
     <div class="chart-wrap"><canvas id="chart"></canvas></div>
   </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:28px;margin-bottom:24px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:24px;">
     <span style="font-size:12px;color:var(--gray-500);">Fonte: Banco Central do Brasil · IBGE</span>
     <button class="btn-pdf" id="btn-pdf" onclick="gerarPDF()">📄 Gerar PDF</button>
   </div>
@@ -621,10 +621,17 @@ async function gerarPDF() {
     pdf.setTextColor(26, 26, 26);
     pdf.text('Trajetoria da SELIC', M, 18);
 
+    const subtitulosPDF = {
+      5:  'historico dos ultimos 5 anos',
+      10: 'historico dos ultimos 10 anos',
+      0:  'historico desde janeiro de 2010'
+    };
+    const subtituloPDF = subtitulosPDF[periodoAnos] ?? subtitulosPDF[0];
+
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(10);
     pdf.setTextColor(107, 107, 107);
-    pdf.text('Taxa basica de juros do Brasil - historico desde janeiro de 2010', M, 24);
+    pdf.text(`Taxa basica de juros do Brasil — ${subtituloPDF}`, M, 24);
 
     const dataGer = new Date().toLocaleDateString('pt-BR');
     pdf.setFontSize(9);
@@ -660,7 +667,19 @@ async function gerarPDF() {
       }
 
       pdf.addImage(canvas.toDataURL('image/png'), 'PNG', M, y, imgW, imgH);
-      y += imgH + 6;
+      y += imgH;
+
+      if (sel === '.chart-card') {
+        // Fonte bem abaixo do gráfico, espaço generoso antes dos insights
+        y += 6;
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
+        pdf.setTextColor(107, 107, 107);
+        pdf.text('Fonte: Banco Central do Brasil · IBGE', M, y);
+        y += 18;
+      } else {
+        y += 8;
+      }
     }
 
     // 4. Rodapé em todas as páginas
