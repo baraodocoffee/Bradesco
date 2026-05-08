@@ -110,10 +110,9 @@ body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.6;background:va
 <div class="page-header">
   <div class="page-header-left">
     <h1>Trajetória da SELIC</h1>
-    <p>Taxa básica de juros do Brasil — histórico desde janeiro de 2010</p>
+    <p id="page-subtitle">Taxa básica de juros do Brasil — histórico desde janeiro de 2010</p>
   </div>
   <div class="page-header-actions">
-    <button class="btn-pdf" id="btn-pdf" onclick="gerarPDF()">📄 Gerar PDF</button>
     <a href="../" class="nav-back">← Início</a>
   </div>
 </div>
@@ -145,7 +144,10 @@ body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.6;background:va
     </div>
     <div class="chart-wrap"><canvas id="chart"></canvas></div>
   </div>
-  <p style="font-size:12px;color:var(--gray-500);text-align:right;margin-top:-12px;margin-bottom:20px;">Fonte: Banco Central do Brasil · IBGE</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:28px;margin-bottom:24px;">
+    <span style="font-size:12px;color:var(--gray-500);">Fonte: Banco Central do Brasil · IBGE</span>
+    <button class="btn-pdf" id="btn-pdf" onclick="gerarPDF()">📄 Gerar PDF</button>
+  </div>
 
   <h2 class="section-title">Análises e Insights</h2>
   <div class="insights-grid" id="insights-grid"></div>
@@ -575,6 +577,12 @@ function setPeriodo(anos) {
   periodoAnos = anos;
   document.querySelectorAll('.periodo-btn').forEach(b =>
     b.classList.toggle('active', parseInt(b.dataset.anos) === anos));
+  const subtitulos = {
+    5:  'Taxa básica de juros do Brasil — histórico dos últimos 5 anos',
+    10: 'Taxa básica de juros do Brasil — histórico dos últimos 10 anos',
+    0:  'Taxa básica de juros do Brasil — histórico desde janeiro de 2010'
+  };
+  document.getElementById('page-subtitle').textContent = subtitulos[anos] || subtitulos[0];
   updateChart();
 }
 
