@@ -273,7 +273,7 @@
     <div class="field">
       <label>SELIC atual <span class="sub">(% a.a.)</span></label>
       <div class="input-wrap">
-        <input type="number" id="selic" value="14.75" min="0" max="50" step="0.25" />
+        <input type="number" id="selic" value="14.50" min="0" max="50" step="0.25" />
         <span class="input-suffix">% a.a.</span>
       </div>
     </div>
@@ -361,18 +361,16 @@ function calcSerie(produto, pv, aporte, anos, selic) {
 
   for (let m = 1; m <= meses; m++) {
     saldo = saldo * (1 + r) + aporte;
-    if (m % 12 === 0) {
-      const investido = pv + aporte * m;
-      const ganho = Math.max(saldo - investido, 0);
-      let liquido;
-      if (produto.isento) {
-        liquido = saldo;
-      } else {
-        const dc = Math.round(m * 365 / 12);
-        liquido = investido + ganho * (1 - aliquotaIR(dc));
-      }
-      serie.push(liquido);
+    const investido = pv + aporte * m;
+    const ganho = Math.max(saldo - investido, 0);
+    let liquido;
+    if (produto.isento) {
+      liquido = saldo;
+    } else {
+      const dc = Math.round(m * 365 / 12);
+      liquido = investido + ganho * (1 - aliquotaIR(dc));
     }
+    serie.push(liquido);
   }
   return serie;
 }
@@ -430,8 +428,14 @@ function renderAtivos(selic) {
 }
 
 function renderGrafico(pv, aporte, anos, selic) {
-  const labels = Array.from({length: anos}, (_, i) => `${i+1}a`);
-  const aportado = Array.from({length: anos}, (_, i) => pv + aporte * (i+1) * 12);
+  const meses = anos * 12;
+  const labels = Array.from({length: meses}, (_, i) => {
+    const m = i + 1;
+    if (m % 12 === 0) return `${m / 12}a`;
+    if (anos === 1) return `${m}m`;
+    return '';
+  });
+  const aportado = Array.from({length: meses}, (_, i) => pv + aporte * (i + 1));
 
   const datasets = [{
     label: 'Total aportado',
