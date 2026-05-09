@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Invista como o Barão — Em Breve</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{font-family:'Inter',sans-serif;min-height:100vh;overflow:hidden;background:#0D0A05;}
+
+.bg{
+  position:fixed;inset:0;
+  background:url('hero.jpg') center center / cover no-repeat;
+  z-index:0;
+}
+
+.overlay{
+  position:fixed;inset:0;
+  background:linear-gradient(
+    to bottom,
+    rgba(8,5,2,0.45) 0%,
+    rgba(8,5,2,0.62) 50%,
+    rgba(8,5,2,0.80) 100%
+  );
+  z-index:1;
+}
+
+.content{
+  position:relative;z-index:2;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:48px 24px;
+}
+
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;
+  color:#C9A84C;
+  border:1px solid rgba(201,168,76,.35);
+  border-radius:40px;padding:6px 18px;
+  margin-bottom:40px;
+  backdrop-filter:blur(4px);
+}
+.badge-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#C9A84C;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:.4;transform:scale(.8);}
+}
+
+.brand{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(40px,7vw,88px);
+  font-weight:700;
+  color:#F5E6C8;
+  line-height:1.05;
+  letter-spacing:.01em;
+  text-shadow:0 4px 32px rgba(0,0,0,.6);
+  margin-bottom:6px;
+}
+.brand em{
+  font-style:italic;font-weight:400;
+  color:#C9A84C;
+}
+
+.divider{
+  display:flex;align-items:center;gap:16px;
+  margin:32px 0;
+  width:min(320px,80vw);
+}
+.divider-line{flex:1;height:1px;background:rgba(201,168,76,.3);}
+.divider-diamond{
+  width:8px;height:8px;border:1px solid #C9A84C;
+  transform:rotate(45deg);flex-shrink:0;
+  opacity:.7;
+}
+
+.subtitle{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(16px,2.4vw,26px);
+  font-weight:400;font-style:italic;
+  color:rgba(245,230,200,.8);
+  margin-bottom:20px;
+  line-height:1.5;
+}
+
+.description{
+  font-size:clamp(13px,1.4vw,16px);
+  color:rgba(245,230,200,.5);
+  max-width:440px;
+  line-height:1.9;
+  font-weight:300;
+  letter-spacing:.01em;
+}
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="overlay"></div>
+
+<div class="content">
+
+  <div class="badge">
+    <span class="badge-dot"></span>
+    Em breve
+  </div>
+
+  <div class="brand">
+    Invista como<br><em>o Barão</em>
+  </div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-diamond"></div>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="subtitle">Planejamento financeiro com visão de longo prazo.</div>
+
+  <p class="description">
+    Uma plataforma de ferramentas e conteúdo para quem leva patrimônio e investimentos a sério.
+    Em construção — novidades em breve.
+  </p>
+
+</div>
+</body>
+</html>
