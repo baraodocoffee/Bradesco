@@ -30,13 +30,32 @@
   --blue:#5B8FD4;
   --blue-light:rgba(91,143,212,0.12);
 }
+body.light{
+  --bg-deep:#F5EFE3;
+  --bg-dark:#EDE4D3;
+  --bg-card:rgba(255,255,255,0.75);
+  --bg-card-hover:rgba(255,255,255,0.95);
+  --cream:#2A1F0A;
+  --cream-muted:rgba(42,31,10,0.72);
+  --cream-faint:rgba(42,31,10,0.45);
+  --border:rgba(42,31,10,0.12);
+  --border-gold:rgba(201,168,76,0.5);
+  --green:#1A7F4B;
+  --green-light:rgba(26,127,75,0.10);
+  --yellow:#A06800;
+  --yellow-light:rgba(160,104,0,0.10);
+  --blue:#1A5FA5;
+  --blue-light:rgba(26,95,165,0.10);
+}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;background:var(--bg-deep);color:var(--cream-muted);}
+body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;background:var(--bg-deep);color:var(--cream-muted);transition:background .3s,color .3s;}
 
 .hero-bg{
   position:fixed;inset:0;z-index:0;
   background:url('ferrovia.jpg') center center / cover no-repeat;
+  transition:opacity .3s;
 }
+body.light .hero-bg{opacity:0.18;}
 .hero-overlay{
   position:fixed;inset:0;z-index:1;
   background:linear-gradient(
@@ -45,7 +64,25 @@ body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;background:va
     rgba(8,5,2,0.82) 50%,
     rgba(8,5,2,0.92) 100%
   );
+  transition:background .3s;
 }
+body.light .hero-overlay{
+  background:linear-gradient(
+    to bottom,
+    rgba(245,239,227,0.92) 0%,
+    rgba(245,239,227,0.96) 50%,
+    rgba(245,239,227,0.98) 100%
+  );
+}
+
+.theme-btn{
+  background:none;border:1px solid var(--border-gold);
+  color:var(--gold);
+  border-radius:8px;padding:6px 12px;
+  font-size:16px;cursor:pointer;
+  transition:all .15s;line-height:1;
+}
+.theme-btn:hover{background:var(--gold-light);}
 .page-header,
 .container{position:relative;z-index:2;}
 
@@ -263,7 +300,10 @@ body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;background:va
     <h1>Trajetória da SELIC</h1>
     <p id="page-subtitle">Taxa básica de juros do Brasil — histórico desde janeiro de 2010</p>
   </div>
-  <a href="../" class="nav-back">← Início</a>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Alternar tema">🌙</button>
+    <a href="../" class="nav-back">← Início</a>
+  </div>
 </div>
 
 <div class="container">
@@ -871,9 +911,44 @@ async function gerarPDF() {
   }
 }
 
+// ─── TEMA CLARO / ESCURO ───────────────────────────────────────────────────
+function applyChartTheme(isLight) {
+  const gridColor  = isLight ? 'rgba(42,31,10,0.08)' : 'rgba(245,230,200,0.06)';
+  const tickColor  = isLight ? 'rgba(42,31,10,0.5)'  : 'rgba(245,230,200,0.35)';
+  const ipcaColor  = isLight ? 'rgba(42,31,10,0.45)' : 'rgba(245,230,200,0.5)';
+
+  chart.options.scales.x.grid.color  = gridColor;
+  chart.options.scales.y.grid.color  = gridColor;
+  chart.options.scales.x.ticks.color = tickColor;
+  chart.options.scales.y.ticks.color = tickColor;
+
+  if (chart.data.datasets[1]) {
+    chart.data.datasets[1].borderColor = ipcaColor;
+  }
+  chart.update('none');
+}
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('theme-btn').textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  applyChartTheme(isLight);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  const isLight = saved === 'light';
+  if (isLight) {
+    document.body.classList.add('light');
+    document.getElementById('theme-btn').textContent = '☀️';
+  }
+  applyChartTheme(isLight);
+}
+
 // ─── INIT ──────────────────────────────────────────────────────────────────
 calcInsights();
 updateChart();
+initTheme();
 </script>
 </body>
 </html>
