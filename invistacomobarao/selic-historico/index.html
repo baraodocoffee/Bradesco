@@ -787,12 +787,20 @@ async function gerarPDF() {
   const origContainerStyle = container.style.cssText;
   const origChartWrapStyle = chartWrap.style.cssText;
   const origChartCardStyle = chartCard.style.cssText;
+  const eraEscuro = !document.body.classList.contains('light');
 
   try {
     const ipcaAntes = showIPCA;
     if (!showIPCA) {
       document.getElementById('toggle-ipca').checked = true;
       toggleIPCA();
+    }
+
+    // Força tema claro para captura — independente do tema ativo
+    if (eraEscuro) {
+      document.body.classList.add('light');
+      setThemeUI(true);
+      applyChartTheme(true);
     }
 
     // Reset do gráfico: limpa tooltip e interação ativa antes de capturar
@@ -915,6 +923,12 @@ async function gerarPDF() {
     console.error('Erro ao gerar PDF:', err);
     alert('Erro ao gerar PDF. Detalhes no console.');
   } finally {
+    // Restaura tema original se estava escuro
+    if (eraEscuro) {
+      document.body.classList.remove('light');
+      setThemeUI(false);
+      applyChartTheme(false);
+    }
     // Restaura layout original
     container.style.cssText = origContainerStyle;
     chartCard.style.cssText = origChartCardStyle;
