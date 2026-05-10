@@ -105,7 +105,7 @@ body.light .page-header{
 .nav-back:hover{color:var(--gold);}
 
 /* ── Layout ─────────────────────────────────────────────────────────────── */
-.container{max-width:960px;margin:0 auto;padding:28px 24px 80px;}
+.container{max-width:960px;margin:0 auto;padding:28px 24px 80px;overflow:hidden;}
 
 /* Layout principal: coluna de parâmetros + coluna de comparação */
 .main-layout{
@@ -115,12 +115,18 @@ body.light .page-header{
   margin-bottom:16px;
   align-items:stretch;
 }
+/* min-width:0 evita que grid items transbordem além do container */
+.params-col,.compare-col{min-width:0;}
 /* Coluna direita: inputs e resultados empilhados e alinhados */
 .compare-col{display:flex;flex-direction:column;gap:16px;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-2 > *{min-width:0;}
 /* Card de parâmetros estica para preencher toda a altura da coluna direita */
 .params-col{display:flex;flex-direction:column;}
 .params-col .card{flex:1;}
+/* Elementos abaixo do main-layout: largura total do container */
+.summary-bar,.nota{width:100%;}
+#taxas-card{width:100%;}
 
 /* ── Cards ──────────────────────────────────────────────────────────────── */
 .card{
