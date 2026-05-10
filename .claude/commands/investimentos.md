@@ -81,8 +81,8 @@ Regressivo em **dias corridos** — atenção: 720 dias corridos ≠ 2 anos.
 
 | Produto | Prazo mínimo (PF) |
 |---|---|
-| LCI | 9 meses |
-| LCA | 12 meses |
+| LCI | 6 meses |
+| LCA | 6 meses |
 
 ---
 
