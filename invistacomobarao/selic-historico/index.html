@@ -739,6 +739,17 @@ async function gerarPDF() {
     chart.tooltip.setActiveElements([], {x: 0, y: 0});
     chart.setDatasetVisibility(0, true);
     chart.update('none');
+
+    // Força layout desktop: expande container e redimensiona o chart
+    const captureWidth = 960;
+    const container = document.querySelector('.container');
+    const chartWrap = document.querySelector('.chart-wrap');
+    const origContainerStyle = container.style.cssText;
+    const origChartWrapStyle = chartWrap.style.cssText;
+
+    container.style.cssText += ';width:' + captureWidth + 'px!important;max-width:none!important;';
+    chartWrap.style.cssText += ';width:' + (captureWidth - 48) + 'px!important;height:380px!important;';
+    chart.resize(captureWidth - 48, 380);
     await new Promise(r => setTimeout(r, 400));
 
     const { jsPDF } = window.jspdf;
@@ -784,9 +795,6 @@ async function gerarPDF() {
 
     const blocos = ['.chart-card', '.insights-grid', '.ciclos-card', '.poupanca-card'];
 
-    // Largura fixa de desktop para captura consistente independente do dispositivo
-    const captureWidth = 960;
-
     for (const sel of blocos) {
       const el = document.querySelector(sel);
       if (!el) continue;
@@ -796,7 +804,6 @@ async function gerarPDF() {
         useCORS: true,
         backgroundColor: '#0D0A05',
         logging: false,
-        width: captureWidth,
         windowWidth: captureWidth,
       });
 
@@ -848,6 +855,10 @@ async function gerarPDF() {
     console.error('Erro ao gerar PDF:', err);
     alert('Erro ao gerar PDF. Detalhes no console.');
   } finally {
+    // Restaura layout original
+    container.style.cssText = origContainerStyle;
+    chartWrap.style.cssText = origChartWrapStyle;
+    chart.resize();
     btn.innerHTML = txtOriginal;
     btn.disabled = false;
   }
