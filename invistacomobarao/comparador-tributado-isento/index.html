@@ -50,7 +50,25 @@ body.light{
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;background:var(--bg-deep);color:var(--cream-muted);transition:background .3s,color .3s;}
 
+/* ── Hero background ─────────────────────────────────────────────────────── */
+.hero-bg{
+  position:fixed;inset:0;z-index:0;
+  background:url('balanca.jpg') center center / cover no-repeat;
+  transition:opacity .3s;
+}
+body.light .hero-bg{opacity:0.15;}
+.hero-overlay{
+  position:fixed;inset:0;z-index:1;
+  background:linear-gradient(to bottom,rgba(8,5,2,0.72) 0%,rgba(8,5,2,0.82) 50%,rgba(8,5,2,0.92) 100%);
+  transition:background .3s;
+}
+body.light .hero-overlay{
+  background:linear-gradient(to bottom,rgba(245,239,227,0.92) 0%,rgba(245,239,227,0.96) 50%,rgba(245,239,227,0.98) 100%);
+}
+
 /* ── Header ─────────────────────────────────────────────────────────────── */
+.page-header,
+.container{position:relative;z-index:2;}
 .page-header{
   background:rgba(8,5,2,0.90);
   border-bottom:1px solid var(--border);
@@ -89,8 +107,17 @@ body.light .page-header{
 /* ── Layout ─────────────────────────────────────────────────────────────── */
 .container{max-width:960px;margin:0 auto;padding:28px 24px 80px;}
 
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+/* Layout principal: coluna de parâmetros + coluna de comparação */
+.main-layout{
+  display:grid;
+  grid-template-columns:1fr 2fr;
+  gap:16px;
+  margin-bottom:16px;
+  align-items:start;
+}
+/* Coluna direita: inputs e resultados empilhados e alinhados */
+.compare-col{display:flex;flex-direction:column;gap:16px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 
 /* ── Cards ──────────────────────────────────────────────────────────────── */
 .card{
@@ -263,7 +290,7 @@ body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
 }
 
 @media(max-width:700px){
-  .grid-3{grid-template-columns:1fr;}
+  .main-layout{grid-template-columns:1fr;}
   .grid-2{grid-template-columns:1fr;}
   .equiv-grid{grid-template-columns:1fr;}
   .container{padding:20px 16px 80px;}
@@ -272,6 +299,9 @@ body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
 </style>
 </head>
 <body>
+
+<div class="hero-bg"></div>
+<div class="hero-overlay"></div>
 
 <div class="page-header">
   <div class="page-header-left">
@@ -289,8 +319,8 @@ body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
 
 <div class="container">
 
-  <div class="grid-3">
-    <!-- PARÂMETROS -->
+  <div class="main-layout">
+    <!-- COLUNA ESQUERDA: Parâmetros -->
     <div class="card">
       <div class="section-label">Parâmetros</div>
       <div class="field">
@@ -326,6 +356,9 @@ body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
       </div>
     </div>
 
+    <!-- COLUNA DIREITA: inputs CDB + Isento empilhados sobre resultados -->
+    <div class="compare-col">
+    <div class="grid-2">
     <!-- CDB -->
     <div class="card">
       <div class="product-header">
@@ -365,10 +398,13 @@ body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
         <span class="input-suffix" id="iso-suffix">% CDI</span>
       </div>
     </div>
-  </div>
+    </div><!-- /grid-2 inputs -->
 
-  <!-- RESULTADOS -->
-  <div class="grid-2" id="results-grid"></div>
+    <!-- RESULTADOS (mesma grade 2 colunas, alinhada aos inputs acima) -->
+    <div class="grid-2" id="results-grid"></div>
+
+    </div><!-- /compare-col -->
+  </div><!-- /main-layout -->
 
   <!-- RESUMO -->
   <div class="summary-bar" id="summary-bar"></div>
