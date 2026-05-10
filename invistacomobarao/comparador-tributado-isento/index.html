@@ -113,11 +113,14 @@ body.light .page-header{
   grid-template-columns:1fr 2fr;
   gap:16px;
   margin-bottom:16px;
-  align-items:start;
+  align-items:stretch;
 }
 /* Coluna direita: inputs e resultados empilhados e alinhados */
 .compare-col{display:flex;flex-direction:column;gap:16px;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+/* Card de parâmetros estica para preencher toda a altura da coluna direita */
+.params-col{display:flex;flex-direction:column;}
+.params-col .card{flex:1;}
 
 /* ── Cards ──────────────────────────────────────────────────────────────── */
 .card{
@@ -321,6 +324,7 @@ body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
 
   <div class="main-layout">
     <!-- COLUNA ESQUERDA: Parâmetros -->
+    <div class="params-col">
     <div class="card">
       <div class="section-label">Parâmetros</div>
       <div class="field">
@@ -355,6 +359,7 @@ body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
         </div>
       </div>
     </div>
+    </div><!-- /params-col -->
 
     <!-- COLUNA DIREITA: inputs CDB + Isento empilhados sobre resultados -->
     <div class="compare-col">
