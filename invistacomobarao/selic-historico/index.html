@@ -807,12 +807,11 @@ async function gerarPDF() {
     chart.resize(innerWidth, 380);
     await new Promise(r => setTimeout(r, 400));
 
-    const isLightPDF = document.body.classList.contains('light');
-    const pdfBgRGB   = isLightPDF ? [255, 252, 245] : [13, 10, 5];
-    const pdfBgHex   = isLightPDF ? '#FFFCF5' : '#0D0A05';
-    const pdfTitle   = isLightPDF ? [42, 31, 10]  : [245, 230, 200];
-    const pdfSub     = isLightPDF ? [100, 85, 55] : [180, 162, 128];
-    const pdfFooter  = isLightPDF ? [120, 100, 65] : [180, 162, 128];
+    const pdfBgRGB  = [255, 252, 245];
+    const pdfBgHex  = '#FFFCF5';
+    const pdfTitle  = [42, 31, 10];
+    const pdfSub    = [100, 85, 55];
+    const pdfFooter = [120, 100, 65];
 
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -899,7 +898,7 @@ async function gerarPDF() {
       pdf.setFontSize(8);
       pdf.setTextColor(...pdfFooter);
       pdf.text(
-        'Fonte: Banco Central do Brasil e IBGE  |  Simulacao informativa, nao constitui oferta ou recomendacao',
+        'Fonte: Banco Central do Brasil e IBGE  |  Simulação informativa, não constitui oferta ou recomendação de investimento.',
         M, H - 8
       );
       pdf.text(`Pagina ${i} de ${totalPaginas}`, W - M, H - 8, { align: 'right' });
