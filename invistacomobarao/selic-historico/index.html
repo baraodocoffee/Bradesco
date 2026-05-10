@@ -740,16 +740,21 @@ async function gerarPDF() {
     chart.setDatasetVisibility(0, true);
     chart.update('none');
 
-    // Força layout desktop: expande container e redimensiona o chart
+    // Força layout desktop: expande todos os blocos e redimensiona o chart
     const captureWidth = 960;
+    const innerWidth = captureWidth - 48; // desconta padding do card (24px cada lado)
     const container = document.querySelector('.container');
     const chartWrap = document.querySelector('.chart-wrap');
+    const chartCard = document.querySelector('.chart-card');
+
     const origContainerStyle = container.style.cssText;
     const origChartWrapStyle = chartWrap.style.cssText;
+    const origChartCardStyle = chartCard.style.cssText;
 
-    container.style.cssText += ';width:' + captureWidth + 'px!important;max-width:none!important;';
-    chartWrap.style.cssText += ';width:' + (captureWidth - 48) + 'px!important;height:380px!important;';
-    chart.resize(captureWidth - 48, 380);
+    container.style.cssText  += ';width:' + captureWidth + 'px!important;max-width:none!important;';
+    chartCard.style.cssText  += ';width:' + captureWidth + 'px!important;overflow:visible!important;';
+    chartWrap.style.cssText  += ';width:' + innerWidth + 'px!important;height:380px!important;overflow:visible!important;';
+    chart.resize(innerWidth, 380);
     await new Promise(r => setTimeout(r, 400));
 
     const { jsPDF } = window.jspdf;
@@ -857,6 +862,7 @@ async function gerarPDF() {
   } finally {
     // Restaura layout original
     container.style.cssText = origContainerStyle;
+    chartCard.style.cssText = origChartCardStyle;
     chartWrap.style.cssText = origChartWrapStyle;
     chart.resize();
     btn.innerHTML = txtOriginal;
