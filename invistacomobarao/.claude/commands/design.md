@@ -1,8 +1,7 @@
-# Skill: Design System — Ferramentas de Planejamento Financeiro
+# Skill: Design System — Invista com o Barão
 
-Base de referência visual para todos os projetos web do repositório.
-Identidade inspirada no Bradesco — sem uso de marca, logo ou nome oficial.
-Público-alvo: clientes investidores PF, predominantemente 50+. Estilo: elegante, limpo, didático e visual.
+Base de referência visual para todos os projetos do site **invistacomobarao**.
+Identidade própria: dark, elegante, sofisticado. Público-alvo: investidores PF com patrimônio relevante.
 
 ---
 
@@ -12,35 +11,44 @@ Público-alvo: clientes investidores PF, predominantemente 50+. Estilo: elegante
 
 ```css
 :root {
-  /* Primária — Bradesco */
-  --red:          #CC1417;
-  --red-dark:     #A50F11;
-  --red-light:    #F9E5E5;
+  /* Primária — Gold */
+  --gold:           #C9A84C;
+  --gold-light:     rgba(201,168,76,0.15);
+  --gold-border:    rgba(201,168,76,0.35);
 
-  /* Neutros */
-  --gray-900:     #1A1A1A;  /* texto principal */
-  --gray-700:     #3D3D3D;  /* texto secundário forte */
-  --gray-500:     #6B6B6B;  /* texto auxiliar */
-  --gray-200:     #E8E8E8;  /* bordas */
-  --gray-100:     #F5F5F5;  /* fundo de página */
-  --white:        #FFFFFF;  /* fundo de cards */
+  /* Fundos */
+  --bg-deep:        #0D0A05;  /* fundo de página */
+  --bg-dark:        #080502;  /* overlay, cards escuros */
+  --bg-card:        rgba(255,255,255,0.04); /* cards sobre fundo escuro */
+  --bg-card-hover:  rgba(255,255,255,0.07);
 
-  /* Status — positivo */
-  --green:        #1A7F4B;
-  --green-light:  #E6F4ED;
+  /* Texto */
+  --cream:          #F5E6C8;  /* texto principal */
+  --cream-muted:    rgba(245,230,200,0.6);  /* texto secundário */
+  --cream-faint:    rgba(245,230,200,0.35); /* texto auxiliar/placeholder */
 
-  /* Status — atenção */
-  --yellow:       #B97500;
-  --yellow-light: #FFF4DC;
+  /* Bordas */
+  --border:         rgba(245,230,200,0.10);
+  --border-gold:    rgba(201,168,76,0.35);
+
+  /* Status */
+  --green:          #4CAF7D;
+  --green-light:    rgba(76,175,125,0.15);
+  --yellow:         #D4A017;
+  --yellow-light:   rgba(212,160,23,0.15);
+  --red:            #C0392B;
+  --red-light:      rgba(192,57,43,0.15);
 }
 ```
 
 ### Uso das Cores
-- **Vermelho:** ações primárias, destaques, elementos ativos, barra de identidade no topo
-- **Verde:** produto/resultado acima da meta, isento de IR, FGC coberto
-- **Amarelo:** produto/resultado próximo da meta (75–99%), atenção
-- **Cinza escuro:** todo texto principal — nunca usar preto puro (#000)
-- **Fundo de página:** `--gray-100` | **Fundo de cards:** `--white`
+- **Gold:** ações primárias, destaques, títulos em itálico, bordas de destaque, badges
+- **Cream:** todo texto principal — nunca branco puro (#FFF)
+- **Cream-muted:** textos secundários, subtítulos, descrições
+- **Verde:** rentabilidade positiva, acima da meta, isento de IR
+- **Amarelo:** resultado próximo da meta (75–99%), atenção
+- **Vermelho:** queda, abaixo da meta, tributado com desvantagem
+- **Fundo:** sempre `--bg-deep`; cards com `--bg-card` + borda `--border`
 
 ---
 
@@ -49,28 +57,30 @@ Público-alvo: clientes investidores PF, predominantemente 50+. Estilo: elegante
 ### Fontes
 ```html
 <!-- Sempre importar ambas -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 ```
 
 | Uso | Fonte | Peso |
 |---|---|---|
-| Títulos, headings, UI | Plus Jakarta Sans | 600–700 |
-| Subtítulos, labels | Plus Jakarta Sans | 500 |
+| Títulos, headings, marca | Playfair Display | 700 |
+| Subtítulos elegantes | Playfair Display italic | 400 italic |
 | Corpo de texto | Inter | 400 |
-| Tabelas, números, dados | Inter | 400–600 |
-| Badges, labels pequenos | Inter | 600 |
+| Labels, dados, tabelas | Inter | 500–600 |
+| Badges, caps | Inter | 500 |
 
 ### Escala Tipográfica
 
 ```css
-/* Base: 17px — otimizado para público 50+ */
-body        { font-family: 'Inter', sans-serif; font-size: 17px; line-height: 1.6; }
-h1          { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 30px; font-weight: 700; }
-h2          { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 700; }
-h3          { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 600; }
-.label-caps { font-family: 'Inter'; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-500); }
-.data-lg    { font-family: 'Inter'; font-size: 28px; font-weight: 700; }
-.data-md    { font-family: 'Inter'; font-size: 22px; font-weight: 700; }
+body        { font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; color: var(--cream-muted); background: var(--bg-deep); }
+h1          { font-family: 'Playfair Display', serif; font-size: clamp(32px,5vw,64px); font-weight: 700; color: var(--cream); }
+h2          { font-family: 'Playfair Display', serif; font-size: clamp(22px,3vw,36px); font-weight: 700; color: var(--cream); }
+h3          { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; font-style: italic; color: var(--cream); }
+.label-caps { font-family: 'Inter'; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.22em; color: var(--gold); }
+.data-lg    { font-family: 'Inter'; font-size: 32px; font-weight: 600; color: var(--cream); }
+.data-md    { font-family: 'Inter'; font-size: 22px; font-weight: 600; color: var(--cream); }
+
+/* Gold italic — elemento de marca */
+em, .brand-em { font-style: italic; color: var(--gold); }
 ```
 
 ---
@@ -87,21 +97,53 @@ h3          { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; fon
 --space-md:   20px
 --space-lg:   32px
 --space-xl:   48px
+--space-2xl:  80px
 
 /* Border radius */
---radius-sm:  8px   /* badges, botões pequenos */
---radius-md:  12px  /* cards, inputs */
---radius-lg:  16px  /* modais, painéis */
+--radius-sm:  8px    /* badges, botões pequenos */
+--radius-md:  12px   /* cards, inputs */
+--radius-lg:  20px   /* modais, painéis */
 ```
 
 ---
 
-## Barra de Identidade
+## Elementos de Identidade
 
-Substitui o header com logo. Linha vermelha fina no topo da página — referência de identidade sem uso de marca.
+### Divisor Gold (substitui barra de identidade)
 
 ```html
-<div style="height:5px; background:#CC1417;"></div>
+<div class="divider-gold">
+  <div class="divider-line"></div>
+  <div class="divider-diamond"></div>
+  <div class="divider-line"></div>
+</div>
+```
+
+```css
+.divider-gold        { display:flex; align-items:center; gap:16px; width:min(320px,80vw); margin:32px auto; }
+.divider-line        { flex:1; height:1px; background:var(--border-gold); }
+.divider-diamond     { width:8px; height:8px; border:1px solid var(--gold); transform:rotate(45deg); flex-shrink:0; opacity:.7; }
+```
+
+### Badge "Em breve" / status
+
+```html
+<div class="badge-status">
+  <span class="badge-dot"></span>
+  Em breve
+</div>
+```
+
+```css
+.badge-status {
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:11px; font-weight:500; letter-spacing:.28em; text-transform:uppercase;
+  color:var(--gold); border:1px solid var(--border-gold);
+  border-radius:40px; padding:6px 18px;
+  backdrop-filter:blur(4px);
+}
+.badge-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(.8);} }
 ```
 
 ---
@@ -109,56 +151,48 @@ Substitui o header com logo. Linha vermelha fina no topo da página — referên
 ## Componentes
 
 ### Card de Indicador
-Cards de métricas no topo (CDI, SELIC, IPCA, etc.)
 
 ```html
 <div class="indicador-card [destaque]">
-  <div class="label">CDI</div>
+  <div class="label-caps">CDI</div>
   <div class="valor">14,65% <span>a.a.</span></div>
 </div>
 ```
 
 ```css
 .indicador-card {
-  background: var(--white);
-  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 20px 24px;
-  border: 1px solid var(--gray-200);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  backdrop-filter: blur(8px);
 }
 .indicador-card.destaque {
-  border-color: var(--red);
-  background: var(--red-light);
+  border-color: var(--gold-border);
+  background: var(--gold-light);
 }
-.indicador-card .label { /* usar .label-caps */ }
-.indicador-card .valor { font-size: 26px; font-weight: 700; }
-.indicador-card .valor span { font-size: 14px; font-weight: 400; color: var(--gray-500); }
+.indicador-card .valor      { font-size: 26px; font-weight: 600; color: var(--cream); }
+.indicador-card .valor span { font-size: 13px; font-weight: 400; color: var(--cream-muted); }
 ```
 
 ---
 
 ### Card de Produto
-Exibe produto financeiro com barra de rentabilidade e marcador de meta.
 
 **Estados:**
-- `destaque-card` — rentabilidade ≥ meta (borda verde)
-- `alerta-card` — rentabilidade muito abaixo (borda amarela)
+- `destaque-card` — rentabilidade ≥ meta (borda gold/verde)
+- `alerta-card` — rentabilidade próxima da meta (borda yellow)
 - padrão — neutro
 
-**Regras de cor da barra:**
-- Verde → `liquido >= meta`
-- Amarelo → `liquido >= meta * 0.75`
-- Cinza → abaixo de 75% da meta
-
 ```css
-.produto-card          { background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 20px 24px; }
+.produto-card          { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px 24px; }
 .produto-card.destaque-card { border-color: var(--green); background: var(--green-light); }
 .produto-card.alerta-card   { border-color: var(--yellow); background: var(--yellow-light); }
 ```
 
 ---
 
-### Badges
+### Badges de Produto
 
 ```html
 <span class="badge badge-isento">Isento IR</span>
@@ -167,88 +201,97 @@ Exibe produto financeiro com barra de rentabilidade e marcador de meta.
 ```
 
 ```css
-.badge          { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Inter'; }
-.badge-isento   { background: var(--green-light); color: var(--green); border: 1px solid var(--green); }
-.badge-tributado{ background: var(--gray-100); color: var(--gray-500); border: 1px solid var(--gray-200); }
-.badge-atencao  { background: var(--yellow-light); color: var(--yellow); border: 1px solid var(--yellow); }
+.badge          { font-size:11px; font-weight:500; padding:3px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:.08em; font-family:'Inter'; }
+.badge-isento   { background:var(--green-light); color:var(--green); border:1px solid var(--green); }
+.badge-tributado{ background:var(--bg-card); color:var(--cream-muted); border:1px solid var(--border); }
+.badge-atencao  { background:var(--yellow-light); color:var(--yellow); border:1px solid var(--yellow); }
 ```
 
 ---
 
 ### Seletor de Perfil
 
-```html
-<button class="perfil-btn [active]">Conservador</button>
-<button class="perfil-btn [active]">Moderado</button>
-<button class="perfil-btn [active]">Arrojado</button>
-```
-
 ```css
 .perfil-btn {
   padding: 10px 22px; border-radius: 8px;
-  border: 2px solid var(--gray-200); background: var(--white);
-  font-size: 14px; font-weight: 600; color: var(--gray-500);
-  font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer;
+  border: 1px solid var(--border); background: var(--bg-card);
+  font-size: 14px; font-weight: 500; color: var(--cream-muted);
+  font-family: 'Inter', sans-serif; cursor: pointer;
+  transition: all 0.2s ease;
 }
-.perfil-btn:hover  { border-color: var(--red); color: var(--red); }
-.perfil-btn.active { background: var(--red); border-color: var(--red); color: var(--white); }
+.perfil-btn:hover  { border-color: var(--gold); color: var(--gold); }
+.perfil-btn.active { background: var(--gold-light); border-color: var(--gold); color: var(--gold); }
 ```
 
 ---
 
 ### Barra de Progresso com Marcador de Meta
 
+```css
+.barra-bg           { height:8px; background:var(--border); border-radius:99px; overflow:hidden; position:relative; }
+.barra-fill         { height:100%; border-radius:99px; transition:width 0.4s ease; }
+.barra-fill.verde   { background:var(--green); }
+.barra-fill.amarelo { background:var(--yellow); }
+.barra-fill.cinza   { background:var(--cream-faint); }
+.meta-marker        { position:absolute; top:0; width:2px; height:100%; background:var(--gold); opacity:.8; }
+```
+
+---
+
+### Botão Primário
+
 ```html
-<div class="barra-bg" style="position:relative">
-  <div class="barra-fill verde" style="width: X%"></div>
-  <div class="meta-marker" style="left: Y%"></div>
-</div>
+<button class="btn-primary">Ver ferramentas</button>
 ```
 
 ```css
-.barra-bg        { height: 10px; background: var(--gray-200); border-radius: 99px; overflow: hidden; }
-.barra-fill      { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
-.barra-fill.verde   { background: var(--green); }
-.barra-fill.amarelo { background: #E8A000; }
-.barra-fill.cinza   { background: var(--gray-500); }
-.meta-marker     { position: absolute; top: 0; width: 2px; height: 100%; background: var(--red); opacity: 0.7; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px; border-radius: var(--radius-sm);
+  background: var(--gold); color: var(--bg-deep);
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  border: none; cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-gold);
+  color: var(--gold);
+}
+.btn-outline:hover { background: var(--gold-light); }
 ```
 
 ---
 
 ### Gráfico de Rentabilidade Temporal
 
-Componente interativo de curvas de crescimento patrimonial por produto.
-
-**Biblioteca:** Recharts (React) ou Chart.js (vanilla)
+**Biblioteca:** Chart.js (vanilla)
 
 **Comportamento:**
-- Seletor de período pelo usuário: **1 / 2 / 3 / 5 / 10 anos**
-- Gráfico se ajusta dinamicamente ao período selecionado
-- Curvas individuais por produto, calculadas mês a mês via juros compostos
-- Linha tracejada vermelha: meta de retorno do perfil selecionado
-- Input de valor inicial (default: R$ 10.000) para exibir R$ absolutos
+- Seletor de período: **1 / 2 / 3 / 5 / 10 anos**
+- Curvas por produto, calculadas mês a mês via juros compostos
+- Linha tracejada gold: meta de retorno do perfil
+- Input de valor inicial (default: R$ 10.000)
 
-**Regras críticas de cálculo:**
-- CDI/SELIC: capitalização diária em dias úteis (252 du/ano, 21 du/mês)
-- Poupança: capitalização mensal (0,5% + TR 0,131% = 0,631% a.m.)
-- IR aplicado em **dias corridos** — não em anos:
-  - Até 180 dc → 22,5%
-  - 181–360 dc → 20,0%
-  - 361–720 dc → 17,5%
-  - Acima de 720 dc → 15,0% ← já válido antes de completar 2 anos
+**Regras de cálculo:**
+- CDI/SELIC: capitalização diária em dias úteis (252 du/ano)
+- Poupança: 0,5% + TR (0,131%) = 0,631% a.m.
+- IR em **dias corridos**: ≤180dc → 22,5% | 181–360 → 20% | 361–720 → 17,5% | >720 → 15%
 - Tesouro Selic: descontar 0,20% a.a. de custódia antes do IR
 
-**Estilo visual:**
-- Linha mais espessa para o produto em destaque (≥ meta)
-- Paleta de linhas: verde para isentos, vermelho para tributados, cinza para benchmarks fracos
-- Tooltip ao hover mostrando valor acumulado e rentabilidade no período
+**Estilo visual (dark theme):**
+- Fundo do canvas: transparente sobre `--bg-deep`
+- Grid lines: `rgba(245,230,200,0.06)`
+- Linhas: verde para isentos, gold para benchmarks, cinza para tributados fracos
+- Linha da meta: gold tracejada, mais fina
+- Tooltip: fundo `#1A1508`, borda `--border-gold`, texto `--cream`
 
 ---
 
-### Nota de Rodapé Padrão
-
-Usar em todas as ferramentas com cálculo de rentabilidade:
+### Nota de Rodapé
 
 ```html
 <div class="nota">
@@ -259,9 +302,11 @@ Usar em todas as ferramentas com cálculo de rentabilidade:
 
 ```css
 .nota {
-  padding: 16px 20px; background: var(--white);
-  border-radius: 10px; border-left: 4px solid var(--red);
-  font-size: 13px; color: var(--gray-500); line-height: 1.6;
+  padding: 16px 20px;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--border-gold);
+  font-size: 12px; color: var(--cream-faint); line-height: 1.7;
 }
 ```
 
@@ -272,20 +317,20 @@ Usar em todas as ferramentas com cálculo de rentabilidade:
 ```css
 @media (max-width: 640px) {
   .container { padding: 0 16px; }
+  h1 { font-size: 32px; }
   /* Grid de indicadores: 1 coluna */
   /* Seletor de perfil: flex-wrap */
   /* Tabelas: scroll horizontal */
-  /* Font-size h1: 24px */
 }
 ```
 
 ---
 
-## Alertas de UX para Público 50+
+## Alertas de UX
 
-- Fonte base mínima: **17px** — nunca abaixo disso
-- Contraste alto: texto principal sempre sobre fundo branco ou `--gray-100`
-- Evitar informação densa sem hierarquia clara
-- Valores monetários sempre em destaque visual (tamanho e peso)
-- Tooltips e explicações acessíveis via hover/tap — nunca esconder informação crítica só em hover
-- Preferir barras visuais e gráficos a tabelas densas quando possível
+- Fonte base mínima: **16px** — nunca abaixo disso
+- Contraste: texto `--cream` sempre sobre fundo escuro — nunca cinza claro sobre escuro
+- Valores monetários em destaque visual (tamanho e cor gold ou cream)
+- Tooltips acessíveis — nunca esconder informação crítica só em hover mobile
+- Preferir barras visuais e gráficos a tabelas densas
+- `backdrop-filter: blur()` em cards para profundidade — verificar fallback em Safari

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comparador de Investimentos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --red:#CC1417;--red-dark:#A50F11;--red-light:#F9E5E5;
+      --gray-900:#1A1A1A;--gray-700:#3D3D3D;--gray-500:#6B6B6B;
+      --gray-300:#C0C0C0;--gray-200:#E8E8E8;--gray-100:#F5F5F5;
+      --white:#FFFFFF;--green:#1A7F4B;--green-light:#E6F4ED;
+      --yellow:#B97500;--yellow-light:#FFF4DC;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.6;background:var(--gray-100);color:var(--gray-900);}
+    .top-bar{height:5px;background:var(--red);}
+    .page-header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;}
+    .page-header-left h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:var(--gray-900);}
+    .page-header-left p{font-size:13px;color:var(--gray-500);margin-top:2px;}
+    .nav-back{font-size:13px;font-weight:600;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s;}
+    .nav-back:hover{color:var(--red);}
+    .container{max-width:680px;margin:0 auto;padding:24px 16px 80px;}
+    .card{background:var(--white);border-radius:16px;border:1px solid var(--gray-200);padding:24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+    .section-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray-500);margin-bottom:16px;}
+    .field{margin-bottom:16px;}
+    .field label{display:block;font-size:15px;color:var(--gray-700);margin-bottom:8px;}
+    .field label .sub{font-size:13px;color:var(--gray-500);font-weight:400;}
+    .input-wrap{display:flex;align-items:center;background:var(--white);border:1.5px solid var(--gray-200);border-radius:10px;padding:12px 16px;transition:border-color 0.15s;}
+    .input-wrap:focus-within{border-color:var(--gray-500);}
+    .input-prefix{font-size:15px;color:var(--gray-500);margin-right:8px;flex-shrink:0;}
+    .input-suffix{font-size:15px;color:var(--gray-500);margin-left:8px;flex-shrink:0;}
+    .input-wrap input{flex:1;border:none;outline:none;font-size:17px;font-family:'Inter',sans-serif;color:var(--gray-900);background:transparent;min-width:0;}
+    .quick-btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+    .quick-btn{padding:8px 18px;border-radius:8px;border:1.5px solid var(--gray-200);background:var(--white);font-size:14px;font-weight:600;color:var(--gray-500);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.15s;}
+    .quick-btn:hover{border-color:var(--red);color:var(--red);}
+    .quick-btn.active{background:var(--gray-900);border-color:var(--gray-900);color:var(--white);}
+    .divider{height:1px;background:var(--gray-200);margin:20px 0;}
+    .info-box{border-radius:10px;padding:14px 16px;margin-top:16px;}
+    .info-box.yellow{background:var(--yellow-light);border:1px solid #E8C97A;}
+    .info-box .info-title{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:4px;}
+    .info-box .info-text{font-size:13px;color:#8B5E00;line-height:1.5;}
+    .ativos-list{display:flex;flex-direction:column;gap:10px;}
+    .ativo-toggle{display:flex;align-items:center;gap:12px;cursor:pointer;padding:10px 12px;border-radius:10px;border:1.5px solid var(--gray-200);transition:all 0.15s;user-select:none;}
+    .ativo-toggle.active{border-color:var(--gray-200);background:var(--gray-100);}
+    .ativo-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--white);flex-shrink:0;font-family:'Plus Jakarta Sans',sans-serif;}
+    .ativo-info{flex:1;}
+    .ativo-nome{font-size:15px;font-weight:600;color:var(--gray-900);font-family:'Plus Jakarta Sans',sans-serif;}
+    .ativo-taxa{font-size:13px;color:var(--gray-500);}
+    .ativo-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--gray-300);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
+    .ativo-toggle.active .ativo-check{background:var(--gray-900);border-color:var(--gray-900);}
+    .ativo-check-dot{width:6px;height:6px;border-radius:50%;background:white;display:none;}
+    .ativo-toggle.active .ativo-check-dot{display:block;}
+    .chart-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:var(--gray-900);margin-bottom:4px;}
+    .chart-subtitle{font-size:13px;color:var(--gray-500);margin-bottom:16px;}
+    .chart-legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+    .legend-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray-700);}
+    .legend-line{width:24px;height:3px;border-radius:2px;flex-shrink:0;}
+    .chart-wrap{position:relative;height:260px;}
+    .custo-card{background:#FFF0F0;border:1px solid #FCCACA;border-radius:16px;padding:24px;margin-bottom:16px;}
+    .custo-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;color:var(--red-dark);margin-bottom:8px;}
+    .custo-desc{font-size:14px;color:#CC5555;margin-bottom:16px;line-height:1.5;}
+    .custo-valor{font-family:'Plus Jakarta Sans',sans-serif;font-size:36px;font-weight:700;color:var(--red);line-height:1;margin-bottom:4px;}
+    .custo-sublabel{font-size:14px;color:#CC5555;}
+    .ranking-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;color:var(--gray-900);margin-bottom:12px;}
+    .produto-card{background:var(--white);border-radius:14px;border:1.5px solid var(--gray-200);padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
+    .produto-card.melhor{border-color:var(--green);background:var(--green-light);}
+    .produto-card.pior{border-color:#FCCACA;background:#FFF5F5;}
+    .produto-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--white);flex-shrink:0;font-family:'Plus Jakarta Sans',sans-serif;}
+    .produto-info{flex:1;min-width:0;}
+    .produto-nome{font-size:15px;font-weight:700;color:var(--gray-900);font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:2px;}
+    .produto-taxa{font-size:13px;color:var(--gray-500);}
+    .produto-resultado{text-align:right;flex-shrink:0;}
+    .produto-valor{font-size:17px;font-weight:700;color:var(--gray-900);font-family:'Plus Jakarta Sans',sans-serif;}
+    .produto-rendimento{font-size:13px;color:var(--gray-500);}
+    .badges{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;}
+    .badge-pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.04em;}
+    .bp-melhor{background:var(--green);color:white;}
+    .bp-pior{background:var(--red);color:white;}
+    .bp-isento{background:var(--green-light);color:var(--green);border:1px solid var(--green);}
+    .bp-ir{background:var(--gray-100);color:var(--gray-500);border:1px solid var(--gray-200);}
+    .disclaimer{text-align:center;font-size:12px;color:var(--gray-500);line-height:1.6;padding:0 8px;margin-top:8px;}
+    @media(max-width:480px){.produto-card{flex-wrap:wrap;}.produto-resultado{text-align:left;width:100%;}}
+  </style>
+</head>
+<body>
+<div class="top-bar"></div>
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Comparador de Investimentos</h1>
+    <p>Veja o rendimento líquido dos produtos Bradesco ao longo do tempo</p>
+  </div>
+  <a href="../" class="nav-back">← Início</a>
+</div>
+<div class="container">
+  <div class="card">
+    <div class="section-label">Investimento</div>
+    <div class="field"><label>Valor inicial</label><div class="input-wrap"><span class="input-prefix">R$</span><input type="number" id="pv" value="10000" min="0" step="1000"/></div></div>
+    <div class="field"><label>Aporte mensal</label><div class="input-wrap"><span class="input-prefix">R$</span><input type="number" id="aporte" value="0" min="0" step="100"/></div></div>
+    <div class="field" style="margin-bottom:0">
+      <label>Prazo</label>
+      <div class="input-wrap"><input type="number" id="anos" value="5" min="1" max="30"/><span class="input-suffix">anos</span></div>
+      <div class="quick-btns">
+        <button class="quick-btn" onclick="setAnos(1,this)">1a</button>
+        <button class="quick-btn" onclick="setAnos(2,this)">2a</button>
+        <button class="quick-btn" onclick="setAnos(3,this)">3a</button>
+        <button class="quick-btn active" onclick="setAnos(5,this)">5a</button>
+        <button class="quick-btn" onclick="setAnos(10,this)">10a</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Taxas de Mercado</div>
+    <div class="field"><label>SELIC atual <span class="sub">(% a.a.)</span></label><div class="input-wrap"><input type="number" id="selic" value="14.50" min="0" max="50" step="0.25"/><span class="input-suffix">% a.a.</span></div></div>
+    <div class="field" style="margin-bottom:0"><label>IPCA esperado <span class="sub">(inflação)</span></label><div class="input-wrap"><input type="number" id="ipca" value="5.00" min="0" max="30" step="0.25"/><span class="input-suffix">% a.a.</span></div></div>
+    <div class="info-box yellow"><div class="info-title">Regra da Poupança</div><div class="info-text" id="poupanca-rule-text"></div></div>
+  </div>
+  <div class="card"><div class="section-label">Ativos Comparados</div><div class="ativos-list" id="ativos-list"></div></div>
+  <div class="card">
+    <div class="chart-title">Evolução Patrimonial</div>
+    <div class="chart-subtitle">Saldo líquido (após IR) · Valores nominais</div>
+    <div class="chart-legend" id="chart-legend"></div>
+    <div class="chart-wrap"><canvas id="myChart"></canvas></div>
+  </div>
+  <div id="custo-card"></div>
+  <div class="ranking-title">Resultado por produto</div>
+  <div id="ranking"></div>
+  <div class="disclaimer">Simulação com fins informativos. Não constitui oferta ou recomendação de investimento.<br>IR calculado em dias corridos sobre o ganho bruto no resgate. TR fixada em 0,131% a.m. (média 2022–2026).</div>
+</div>
+<script>
+const TR_MENSAL=0.00131;
+const PRODUTOS=[
+  {id:'poupanca',nome:'Poupança',letra:'P',cor:'#CC1417',tipo:'poupanca',pct_cdi:null,isento:true},
+  {id:'invest',nome:'Invest Fácil',letra:'IF',cor:'#9E9E9E',tipo:'cdi',pct_cdi:5,isento:false},
+  {id:'cdb_baixa',nome:'CDB Baixa Automática',letra:'B',cor:'#E67E22',tipo:'cdi',pct_cdi:50,isento:false},
+  {id:'lca',nome:'LCA DI',letra:'L',cor:'#1A7F4B',tipo:'cdi',pct_cdi:84,isento:true},
+  {id:'cdb_di',nome:'CDB DI',letra:'D',cor:'#1565C0',tipo:'cdi',pct_cdi:100,isento:false},
+];
+PRODUTOS.forEach(p=>p.ativo=true);
+let chartInstance=null;
+
+function taxaMensal(p,selic){
+  if(p.tipo==='poupanca') return selic>8.5?(0.005+TR_MENSAL):(Math.pow(1+selic*0.70/100,1/12)-1);
+  const cdi=Math.max(selic-0.10,0);
+  return Math.pow(1+(cdi/100)*(p.pct_cdi/100),1/12)-1;
+}
+
+function aliquotaIR(dc){
+  if(dc<=180)return 0.225;
+  if(dc<=360)return 0.200;
+  if(dc<=720)return 0.175;
+  return 0.150;
+}
+
+function calcSerie(p,pv,aporte,anos,selic){
+  const r=taxaMensal(p,selic);
+  const meses=anos*12;
+  const serie=[];
+  let saldo=pv;
+  for(let m=1;m<=meses;m++){
+    saldo=saldo*(1+r)+aporte;
+    const investido=pv+aporte*m;
+    const ganho=Math.max(saldo-investido,0);
+    let liquido;
+    if(p.isento){
+      liquido=saldo;
+    }else{
+      const dc=Math.round(m*365/12);
+      liquido=investido+ganho*(1-aliquotaIR(dc));
+    }
+    serie.push(liquido);
+  }
+  return serie;
+}
+
+function valorFinal(p,pv,aporte,anos,selic){
+  const s=calcSerie(p,pv,aporte,anos,selic);
+  return s[s.length-1]??pv;
+}
+
+function brl(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+function brlK(v){
+  if(v>=1e6)return 'R$'+(v/1e6).toFixed(1).replace('.',',')+'M';
+  if(v>=1e3)return 'R$'+(v/1e3).toFixed(0)+'K';
+  return 'R$'+v.toFixed(0);
+}
+function taxaLabel(p,selic){
+  if(p.tipo==='poupanca')return selic>8.5?'0,5% a.m. + TR · Isento IR':'70% da SELIC · Isento IR';
+  const cdi=Math.max(selic-0.10,0);
+  const aa=(cdi*p.pct_cdi/100).toFixed(2).replace('.',',');
+  return `${p.pct_cdi}% do CDI = ~${aa}% a.a. ${p.isento?'· Isento IR':'· IR regressivo'}`;
+}
+
+function atualizaRegraPoupanca(selic){
+  const el=document.getElementById('poupanca-rule-text');
+  if(selic>8.5){
+    el.innerHTML='SELIC > 8,5% → rendimento <strong>travado em 0,5% a.m.</strong> + TR ≈ 6,17% a.a. + TR';
+  }else{
+    const aa=((Math.pow(1+selic*0.70/100/12,12)-1)*100).toFixed(2).replace('.',',');
+    el.innerHTML=`SELIC ≤ 8,5% → rendimento = <strong>70% da SELIC</strong> ≈ ${aa}% a.a.`;
+  }
+}
+
+function renderAtivos(selic){
+  document.getElementById('ativos-list').innerHTML=PRODUTOS.map(p=>`
+    <div class="ativo-toggle ${p.ativo?'active':''}" onclick="toggleAtivo('${p.id}')">
+      <div class="ativo-avatar" style="background:${p.cor}">${p.letra}</div>
+      <div class="ativo-info"><div class="ativo-nome">${p.nome}</div><div class="ativo-taxa">${taxaLabel(p,selic)}</div></div>
+      <div class="ativo-check"><div class="ativo-check-dot"></div></div>
+    </div>
+  `).join('');
+}
+
+function renderGrafico(pv,aporte,anos,selic){
+  const meses=anos*12;
+  const labels=Array.from({length:meses},(_,i)=>{
+    const m=i+1;
+    if(m%12===0)return `${m/12}a`;
+    if(anos===1)return `${m}m`;
+    return '';
+  });
+  const aportado=Array.from({length:meses},(_,i)=>pv+aporte*(i+1));
+  const datasets=[{label:'Total aportado',data:aportado,borderColor:'#C0C0C0',borderWidth:2,borderDash:[6,4],pointRadius:0,fill:false,tension:0}];
+  PRODUTOS.filter(p=>p.ativo).forEach(p=>{
+    datasets.push({label:p.nome,data:calcSerie(p,pv,aporte,anos,selic),borderColor:p.cor,borderWidth:2.5,pointRadius:0,pointHoverRadius:5,fill:false,tension:0.3});
+  });
+  if(chartInstance)chartInstance.destroy();
+  chartInstance=new Chart(document.getElementById('myChart').getContext('2d'),{
+    type:'line',data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${brl(ctx.raw)}`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{family:'Inter',size:12},color:'#6B6B6B'}},
+        y:{grid:{color:'#F0F0F0'},ticks:{font:{family:'Inter',size:12},color:'#6B6B6B',callback:v=>brlK(v)}}
+      }
+    }
+  });
+  document.getElementById('chart-legend').innerHTML=[
+    ...PRODUTOS.filter(p=>p.ativo).map(p=>`<div class="legend-item"><div class="legend-line" style="background:${p.cor}"></div>${p.nome}</div>`),
+    `<div class="legend-item"><div class="legend-line" style="background:repeating-linear-gradient(90deg,#C0C0C0 0,#C0C0C0 4px,transparent 4px,transparent 8px)"></div>Total aportado</div>`
+  ].join('');
+}
+
+function renderCusto(pv,aporte,anos,selic){
+  const el=document.getElementById('custo-card');
+  const melhor=PRODUTOS.reduce((m,p)=>valorFinal(p,pv,aporte,anos,selic)>valorFinal(m,pv,aporte,anos,selic)?p:m);
+  const poup=PRODUTOS.find(p=>p.id==='poupanca');
+  if(melhor.id==='poupanca'){el.innerHTML='';return;}
+  const diff=valorFinal(melhor,pv,aporte,anos,selic)-valorFinal(poup,pv,aporte,anos,selic);
+  el.innerHTML=`<div class="custo-card"><div class="custo-title">Custo de manter o dinheiro na Poupança por ${anos} ano${anos>1?'s':''}</div><div class="custo-desc">Comparando com o <strong>${melhor.nome}</strong> — produto de maior rentabilidade líquida no período.</div><div class="custo-valor">${brl(diff)}</div><div class="custo-sublabel">deixados na mesa</div></div>`;
+}
+
+function renderRanking(pv,aporte,anos,selic){
+  const investido=pv+aporte*anos*12;
+  const lista=PRODUTOS.map(p=>({...p,vf:valorFinal(p,pv,aporte,anos,selic)})).sort((a,b)=>b.vf-a.vf);
+  document.getElementById('ranking').innerHTML=lista.map((p,i)=>{
+    const ganho=p.vf-investido;
+    const pct=investido>0?((p.vf/investido-1)*100).toFixed(1).replace('.',','):'0';
+    const isMelhor=i===0,isPior=i===lista.length-1;
+    const cardClass=isMelhor?'produto-card melhor':isPior?'produto-card pior':'produto-card';
+    return `<div class="${cardClass}"><div class="produto-avatar" style="background:${p.cor}">${p.letra}</div><div class="produto-info"><div class="produto-nome">${p.nome}</div><div class="produto-taxa">${taxaLabel(p,selic)}</div><div class="badges">${isMelhor?'<span class="badge-pill bp-melhor">✓ Maior retorno</span>':''}${isPior?'<span class="badge-pill bp-pior">× Menor retorno</span>':''}${p.isento?'<span class="badge-pill bp-isento">Isento IR</span>':'<span class="badge-pill bp-ir">IR</span>'}</div></div><div class="produto-resultado"><div class="produto-valor">${brl(p.vf)}</div><div class="produto-rendimento">+${brl(ganho)} (${pct}%)</div></div></div>`;
+  }).join('');
+}
+
+function render(){
+  const pv=parseFloat(document.getElementById('pv').value)||0;
+  const aporte=parseFloat(document.getElementById('aporte').value)||0;
+  const anos=Math.max(parseInt(document.getElementById('anos').value)||1,1);
+  const selic=parseFloat(document.getElementById('selic').value)||14.50;
+  atualizaRegraPoupanca(selic);
+  renderAtivos(selic);
+  renderGrafico(pv,aporte,anos,selic);
+  renderCusto(pv,aporte,anos,selic);
+  renderRanking(pv,aporte,anos,selic);
+}
+
+function setAnos(v,btn){
+  document.getElementById('anos').value=v;
+  document.querySelectorAll('.quick-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function toggleAtivo(id){
+  const p=PRODUTOS.find(x=>x.id===id);
+  if(p){p.ativo=!p.ativo;render();}
+}
+
+document.getElementById('anos').addEventListener('input',function(){
+  const v=parseInt(this.value);
+  document.querySelectorAll('.quick-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===v));
+  render();
+});
+
+['pv','aporte','selic','ipca'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+
+render();
+</script>
+</body>
+</html>
