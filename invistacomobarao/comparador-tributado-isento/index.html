@@ -107,20 +107,23 @@ body.light .page-header{
 /* ── Layout ─────────────────────────────────────────────────────────────── */
 .container{max-width:960px;margin:0 auto;padding:28px 24px 80px;}
 
-/* Layout principal: coluna de parâmetros + coluna de comparação */
+/* Grid único: parâmetros + comparação na linha 1; demais elementos span full */
 .main-layout{
   display:grid;
   grid-template-columns:1fr 2fr;
   gap:16px;
-  margin-bottom:16px;
-  align-items:stretch;
+  align-items:start;
 }
+.params-col,.compare-col{min-width:0;align-self:stretch;}
 /* Coluna direita: inputs e resultados empilhados e alinhados */
 .compare-col{display:flex;flex-direction:column;gap:16px;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-2 > *{min-width:0;}
 /* Card de parâmetros estica para preencher toda a altura da coluna direita */
 .params-col{display:flex;flex-direction:column;}
 .params-col .card{flex:1;}
+/* Elementos de baixo: span em todas as colunas do grid → mesma largura exata */
+.span-all{grid-column:1/-1;}
 
 /* ── Cards ──────────────────────────────────────────────────────────────── */
 .card{
@@ -409,32 +412,32 @@ body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
     <div class="grid-2" id="results-grid"></div>
 
     </div><!-- /compare-col -->
-  </div><!-- /main-layout -->
 
-  <!-- RESUMO -->
-  <div class="summary-bar" id="summary-bar"></div>
+    <!-- RESUMO: span em todas as colunas do grid -->
+    <div class="summary-bar span-all" id="summary-bar"></div>
 
-  <!-- TAXAS EQUIVALENTES -->
-  <div class="card" id="taxas-card">
-    <div class="section-label">Taxas Equivalentes</div>
-    <div class="equiv-grid">
-      <div class="equiv-card blue-card">
-        <div class="equiv-label" id="eq1-label"></div>
-        <div class="equiv-value" id="eq1-value"></div>
+    <!-- TAXAS EQUIVALENTES: span em todas as colunas do grid -->
+    <div class="card span-all" id="taxas-card">
+      <div class="section-label">Taxas Equivalentes</div>
+      <div class="equiv-grid">
+        <div class="equiv-card blue-card">
+          <div class="equiv-label" id="eq1-label"></div>
+          <div class="equiv-value" id="eq1-value"></div>
+        </div>
+        <div class="equiv-card green-card">
+          <div class="equiv-label" id="eq2-label"></div>
+          <div class="equiv-value" id="eq2-value"></div>
+        </div>
       </div>
-      <div class="equiv-card green-card">
-        <div class="equiv-label" id="eq2-label"></div>
-        <div class="equiv-value" id="eq2-value"></div>
-      </div>
+      <div class="ir-note" id="ir-note"></div>
     </div>
-    <div class="ir-note" id="ir-note"></div>
-  </div>
 
-  <div class="nota">
-    Simulação com fins informativos. Não constitui oferta ou recomendação de investimento.<br>
-    IR calculado em dias corridos sobre o ganho bruto no resgate.
-  </div>
+    <div class="nota span-all">
+      Simulação com fins informativos. Não constitui oferta ou recomendação de investimento.<br>
+      IR calculado em dias corridos sobre o ganho bruto no resgate.
+    </div>
 
+  </div><!-- /main-layout -->
 
 </div>
 
