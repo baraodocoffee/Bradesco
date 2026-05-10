@@ -121,6 +121,13 @@ body.light .page-header{
 /* Card de parâmetros estica para preencher toda a altura da coluna direita */
 .params-col{display:flex;flex-direction:column;}
 .params-col .card{flex:1;}
+/* Elementos abaixo do main-layout alinhados com compare-col:
+   margin-left = 1fr + gap = (container - gap) / 3 + gap = (100% + 32px) / 3 */
+.right-col-only{
+  margin-left:calc((100% + 32px) / 3);
+  display:flex;flex-direction:column;gap:16px;
+  margin-bottom:16px;
+}
 
 /* ── Cards ──────────────────────────────────────────────────────────────── */
 .card{
@@ -296,6 +303,7 @@ body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
   .main-layout{grid-template-columns:1fr;}
   .grid-2{grid-template-columns:1fr;}
   .equiv-grid{grid-template-columns:1fr;}
+  .right-col-only{margin-left:0;}
   .container{padding:20px 16px 80px;}
   .summary-bar{flex-direction:column;align-items:flex-start;}
 }
@@ -412,10 +420,7 @@ body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
   </div><!-- /main-layout -->
 
   <!-- RESUMO -->
-  <!-- Summary + taxas + nota alinhados com a coluna direita -->
-  <div class="main-layout">
-    <div></div><!-- espaço vazio para alinhar com params-col -->
-    <div class="compare-col">
+  <div class="right-col-only">
 
   <div class="summary-bar" id="summary-bar"></div>
 
@@ -440,8 +445,7 @@ body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
     IR calculado em dias corridos sobre o ganho bruto no resgate.
   </div>
 
-    </div><!-- /compare-col -->
-  </div><!-- /main-layout alinhamento inferior -->
+  </div><!-- /right-col-only -->
 
 </div>
 
