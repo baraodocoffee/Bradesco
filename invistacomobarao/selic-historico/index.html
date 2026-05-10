@@ -728,6 +728,16 @@ async function gerarPDF() {
   btn.innerHTML = 'Gerando...';
   btn.disabled = true;
 
+  // Declaradas fora do try para ficarem acessíveis no finally
+  const captureWidth = 960;
+  const innerWidth = captureWidth - 48;
+  const container = document.querySelector('.container');
+  const chartWrap = document.querySelector('.chart-wrap');
+  const chartCard = document.querySelector('.chart-card');
+  const origContainerStyle = container.style.cssText;
+  const origChartWrapStyle = chartWrap.style.cssText;
+  const origChartCardStyle = chartCard.style.cssText;
+
   try {
     const ipcaAntes = showIPCA;
     if (!showIPCA) {
@@ -740,17 +750,7 @@ async function gerarPDF() {
     chart.setDatasetVisibility(0, true);
     chart.update('none');
 
-    // Força layout desktop: expande todos os blocos e redimensiona o chart
-    const captureWidth = 960;
-    const innerWidth = captureWidth - 48; // desconta padding do card (24px cada lado)
-    const container = document.querySelector('.container');
-    const chartWrap = document.querySelector('.chart-wrap');
-    const chartCard = document.querySelector('.chart-card');
-
-    const origContainerStyle = container.style.cssText;
-    const origChartWrapStyle = chartWrap.style.cssText;
-    const origChartCardStyle = chartCard.style.cssText;
-
+    // Força layout desktop
     container.style.cssText  += ';width:' + captureWidth + 'px!important;max-width:none!important;';
     chartCard.style.cssText  += ';width:' + captureWidth + 'px!important;overflow:visible!important;';
     chartWrap.style.cssText  += ';width:' + innerWidth + 'px!important;height:380px!important;overflow:visible!important;';
