@@ -741,12 +741,17 @@ async function gerarPDF() {
     const W = 210, H = 297, M = 15;
     const contentW = W - 2 * M;
 
+    // Fundo dark em toda a página
+    pdf.setFillColor(13, 10, 5);
+    pdf.rect(0, 0, W, H, 'F');
+
+    // Linha gold no topo
     pdf.setFillColor(201, 168, 76);
     pdf.rect(0, 0, W, 4, 'F');
 
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(18);
-    pdf.setTextColor(26, 26, 26);
+    pdf.setTextColor(245, 230, 200);
     pdf.text('Trajetoria da SELIC', M, 18);
 
     const subtitulosPDF = {
@@ -758,14 +763,15 @@ async function gerarPDF() {
 
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(10);
-    pdf.setTextColor(107, 107, 107);
+    pdf.setTextColor(245, 230, 200, 0.6);
     pdf.text(`Taxa basica de juros do Brasil — ${subtituloPDF}`, M, 24);
 
     const dataGer = new Date().toLocaleDateString('pt-BR');
     pdf.setFontSize(9);
+    pdf.setTextColor(201, 168, 76);
     pdf.text(`Gerado em ${dataGer}`, W - M, 18, { align: 'right' });
 
-    pdf.setDrawColor(232, 232, 232);
+    pdf.setDrawColor(201, 168, 76, 0.35);
     pdf.setLineWidth(0.3);
     pdf.line(M, 28, W - M, 28);
 
@@ -780,7 +786,7 @@ async function gerarPDF() {
       const canvas = await html2canvas(el, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#0D0A05',
         logging: false
       });
 
@@ -789,6 +795,9 @@ async function gerarPDF() {
 
       if (y + imgH > H - 18) {
         pdf.addPage();
+        // Fundo dark na nova página
+        pdf.setFillColor(13, 10, 5);
+        pdf.rect(0, 0, W, H, 'F');
         y = M;
       }
 
@@ -799,7 +808,7 @@ async function gerarPDF() {
         y += 6;
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(9);
-        pdf.setTextColor(107, 107, 107);
+        pdf.setTextColor(245, 230, 200, 0.4);
         pdf.text('Fonte: Banco Central do Brasil · IBGE', M, y);
         y += 18;
       } else {
@@ -811,7 +820,7 @@ async function gerarPDF() {
     for (let i = 1; i <= totalPaginas; i++) {
       pdf.setPage(i);
       pdf.setFontSize(8);
-      pdf.setTextColor(107, 107, 107);
+      pdf.setTextColor(245, 230, 200, 0.35);
       pdf.text(
         'Fonte: Banco Central do Brasil e IBGE  |  Simulacao informativa, nao constitui oferta ou recomendacao',
         M, H - 8
