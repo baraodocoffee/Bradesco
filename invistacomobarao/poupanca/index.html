@@ -327,6 +327,9 @@ tbody tr.row-mid td{background:var(--amber-light);}
       </div>
     </div>
     <div class="results-grid" id="results-grid"></div>
+    <div style="margin-top:12px;font-size:12px;color:var(--cream-faint);text-align:center;">
+      Todos os rendimentos já são líquidos de Imposto de Renda, calculados em dias corridos sobre o ganho bruto no resgate.
+    </div>
   </div>
 
   <!-- Gráfico -->
@@ -394,8 +397,8 @@ tbody tr.row-mid td{background:var(--amber-light);}
             <td class="td-name">CDB Baixa Automática</td>
             <td>50% do CDI</td>
             <td>7,20%</td>
-            <td class="td-amber">5,76%</td>
-            <td>Sim (20%)</td>
+            <td class="td-amber">5,94%</td>
+            <td>Sim (17,5%)</td>
             <td>Sim</td>
           </tr>
           <tr>
@@ -426,7 +429,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
       </table>
     </div>
     <div style="margin-top:12px;font-size:11px;color:var(--cream-faint);line-height:1.7;">
-      *IR calculado para 365 dias corridos (alíquota 17,5%), exceto CDB Baixa Automática (média 181–360 dc, 20%).
+      *IR calculado para 365 dias corridos (alíquota 17,5%) para todos os produtos tributados.
       **Já descontada a taxa de custódia B3 de 0,20% a.a.
       ***Tesouro Direto tem garantia do Tesouro Nacional (risco soberano).
     </div>
@@ -464,7 +467,7 @@ function getIR(dc){
 function calcLiquido(v0, am, meses, tributado){
   const vf    = v0 * Math.pow(1+am, meses);
   const ganho = vf - v0;
-  if(tributado && ganho>0) return v0 + ganho*(1 - getIR(meses*30));
+  if(tributado && ganho>0) return v0 + ganho*(1 - getIR(Math.round(meses*365/12)));
   return vf;
 }
 
