@@ -53,7 +53,6 @@ body.light{
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;background:var(--bg-deep);color:var(--cream-muted);transition:background .3s,color .3s;}
 
-/* ── Header ─────────────────────────────────────────────────────────────── */
 .page-header{
   background:rgba(8,5,2,0.90);
   border-bottom:1px solid var(--border);
@@ -89,10 +88,8 @@ body.light .page-header{
 }
 .nav-back:hover{color:var(--gold);}
 
-/* ── Container ──────────────────────────────────────────────────────────── */
 .container{max-width:960px;margin:0 auto;padding:28px 24px 80px;position:relative;z-index:2;}
 
-/* ── Cards ──────────────────────────────────────────────────────────────── */
 .card{
   background:var(--bg-card);
   border:1px solid var(--border);
@@ -108,7 +105,6 @@ body.light .page-header{
   margin-bottom:16px;
 }
 
-/* ── Hero statement ─────────────────────────────────────────────────────── */
 .hero-statement{
   margin-bottom:24px;
   padding:28px 30px;
@@ -128,7 +124,6 @@ body.light .page-header{
 .hero-stat-num{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--gold);}
 .hero-stat-label{font-size:14px;color:var(--cream-faint);}
 
-/* ── Indicadores ────────────────────────────────────────────────────────── */
 .indicadores-grid{
   display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;
 }
@@ -143,7 +138,6 @@ body.light .page-header{
 .ind-value span{font-size:12px;font-weight:400;color:var(--cream-faint);margin-left:3px;}
 .ind-sub{font-size:11px;color:var(--cream-faint);margin-top:4px;}
 
-/* ── Simulador ──────────────────────────────────────────────────────────── */
 .sim-controls{display:flex;align-items:flex-end;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
 .sim-field{flex:1;min-width:160px;}
 .sim-field label{display:block;font-size:13px;color:var(--cream-muted);margin-bottom:7px;font-weight:500;}
@@ -167,7 +161,6 @@ body.light .input-wrap{background:rgba(255,255,255,0.6);}
 .period-btn:hover{border-color:var(--gold-border);color:var(--gold);}
 .period-btn.active{background:var(--gold-light);border-color:var(--gold);color:var(--gold);}
 
-/* ── Resultado cards ────────────────────────────────────────────────────── */
 .results-grid{
   display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:0;
 }
@@ -192,10 +185,8 @@ body.light .input-wrap{background:rgba(255,255,255,0.6);}
 .badge-isento{background:var(--green-light);color:var(--green);border:1px solid var(--green);}
 .badge-ir{background:var(--bg-card);color:var(--cream-faint);border:1px solid var(--border);}
 
-/* ── Chart ──────────────────────────────────────────────────────────────── */
 .chart-wrap{position:relative;height:320px;margin-top:8px;}
 
-/* ── Insights ───────────────────────────────────────────────────────────── */
 .insights-grid{
   display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;
 }
@@ -216,7 +207,6 @@ body.light .input-wrap{background:rgba(255,255,255,0.6);}
 .insight-text{font-size:13px;color:var(--cream-muted);line-height:1.6;}
 .insight-text strong{color:var(--cream);}
 
-/* ── Tabela ─────────────────────────────────────────────────────────────── */
 .table-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
 thead th{
@@ -234,7 +224,6 @@ tbody tr.row-mid td{background:var(--amber-light);}
 .td-amber{color:var(--amber);font-weight:600;}
 .td-gold{color:var(--gold);font-weight:600;}
 
-/* ── Nota ────────────────────────────────────────────────────────────────── */
 .nota{
   padding:16px 20px;background:var(--bg-card);border-radius:10px;
   border-left:3px solid var(--border-gold);
@@ -270,7 +259,6 @@ tbody tr.row-mid td{background:var(--amber-light);}
 
 <div class="container">
 
-  <!-- Hero statement -->
   <div class="hero-statement">
     <h2>A poupança protege. Mas a que custo?</h2>
     <p>Com a Selic a 14,50% ao ano, manter dinheiro na poupança significa abrir mão de uma rentabilidade até <strong style="color:var(--cream)">duas vezes maior</strong> — sem sacrificar liquidez ou segurança. O FGC protege CDBs, LCIs e LCAs da mesma forma que protege a poupança.</p>
@@ -280,7 +268,6 @@ tbody tr.row-mid td{background:var(--amber-light);}
     </div>
   </div>
 
-  <!-- Indicadores -->
   <div class="indicadores-grid">
     <div class="ind-card neutral">
       <div class="ind-label">SELIC</div>
@@ -304,7 +291,6 @@ tbody tr.row-mid td{background:var(--amber-light);}
     </div>
   </div>
 
-  <!-- Simulador -->
   <div class="card" style="margin-bottom:16px;">
     <div class="section-label">Simulador — quanto rende cada produto</div>
     <div class="sim-controls">
@@ -327,9 +313,11 @@ tbody tr.row-mid td{background:var(--amber-light);}
       </div>
     </div>
     <div class="results-grid" id="results-grid"></div>
+    <div style="margin-top:12px;font-size:12px;color:var(--cream-faint);text-align:center;">
+      Todos os rendimentos já são líquidos de Imposto de Renda, calculados em dias corridos sobre o ganho bruto no resgate.
+    </div>
   </div>
 
-  <!-- Gráfico -->
   <div class="card" style="margin-bottom:24px;">
     <div class="section-label">Evolução patrimonial no período</div>
     <div class="chart-wrap">
@@ -337,7 +325,6 @@ tbody tr.row-mid td{background:var(--amber-light);}
     </div>
   </div>
 
-  <!-- Insights -->
   <div class="insights-grid">
 
     <div class="insight-card warn">
@@ -366,7 +353,6 @@ tbody tr.row-mid td{background:var(--amber-light);}
 
   </div>
 
-  <!-- Tabela comparativa -->
   <div class="card">
     <div class="section-label">Comparativo de produtos</div>
     <div class="table-wrap">
@@ -394,8 +380,8 @@ tbody tr.row-mid td{background:var(--amber-light);}
             <td class="td-name">CDB Baixa Automática</td>
             <td>50% do CDI</td>
             <td>7,20%</td>
-            <td class="td-amber">5,76%</td>
-            <td>Sim (20%)</td>
+            <td class="td-amber">5,94%</td>
+            <td>Sim (17,5%)</td>
             <td>Sim</td>
           </tr>
           <tr>
@@ -426,7 +412,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
       </table>
     </div>
     <div style="margin-top:12px;font-size:11px;color:var(--cream-faint);line-height:1.7;">
-      *IR calculado para 365 dias corridos (alíquota 17,5%), exceto CDB Baixa Automática (média 181–360 dc, 20%).
+      *IR calculado para 365 dias corridos (alíquota 17,5%) para todos os produtos tributados.
       **Já descontada a taxa de custódia B3 de 0,20% a.a.
       ***Tesouro Direto tem garantia do Tesouro Nacional (risco soberano).
     </div>
@@ -442,7 +428,6 @@ tbody tr.row-mid td{background:var(--amber-light);}
 </div>
 
 <script>
-// ── Taxas ─────────────────────────────────────────────────────────────────────
 const CDI_AA        = 0.144;
 const SELIC_AA      = 0.145;
 const IPCA_AA       = 0.050;
@@ -464,7 +449,7 @@ function getIR(dc){
 function calcLiquido(v0, am, meses, tributado){
   const vf    = v0 * Math.pow(1+am, meses);
   const ganho = vf - v0;
-  if(tributado && ganho>0) return v0 + ganho*(1 - getIR(meses*30));
+  if(tributado && ganho>0) return v0 + ganho*(1 - getIR(Math.round(meses*365/12)));
   return vf;
 }
 
@@ -472,17 +457,16 @@ function calcSerie(v0, am, meses, tributado){
   return Array.from({length:meses+1},(_,m)=>m===0?v0:calcLiquido(v0,am,m,tributado));
 }
 
-// ── Produtos ──────────────────────────────────────────────────────────────────
 const PRODUTOS = [
   {id:'poupanca', nome:'Poupança',      am:POUPANCA_AM,  trib:false, classe:'bad',
    corD:'rgba(192,57,43,0.9)',  corL:'rgba(160,40,30,0.9)'},
   {id:'cdb50',    nome:'CDB 50% CDI',  am:CDB50_AM,     trib:true,  classe:'mid',
    corD:'rgba(201,132,28,0.85)',corL:'rgba(153,96,16,0.85)'},
-  {id:'lca84',    nome:'LCA 84% CDI', am:LCA_AM,       trib:false, classe:'winner',
+  {id:'lca84',    nome:'LCA 84% CDI',  am:LCA_AM,       trib:false, classe:'winner',
    corD:'rgba(76,175,125,0.9)', corL:'rgba(26,127,75,0.9)'},
-  {id:'cdb100',   nome:'CDB 100% CDI',am:CDI_AM,       trib:true,  classe:'winner',
+  {id:'cdb100',   nome:'CDB 100% CDI', am:CDI_AM,       trib:true,  classe:'winner',
    corD:'rgba(91,143,212,0.9)', corL:'rgba(26,95,165,0.9)'},
-  {id:'tesouro',  nome:'Tesouro Selic',am:SELIC_LIQ_AM, trib:true,  classe:'winner',
+  {id:'tesouro',  nome:'Tesouro Selic', am:SELIC_LIQ_AM, trib:true,  classe:'winner',
    corD:'rgba(155,89,182,0.85)',corL:'rgba(110,50,150,0.85)'},
 ];
 
@@ -521,18 +505,14 @@ function renderResultCards(valor, meses){
 }
 
 function renderInsights(valor){
-  // Ganho real poupança: ((1 + am_anual_poupanca) / (1 + IPCA_AA) - 1)
-  const poupAnual = Math.pow(1+POUPANCA_AM,12)-1;
-  const realPoup  = ((1+poupAnual)/(1+IPCA_AA)-1)*100;
-  // Ganho real CDB 100% CDI líq 10 anos, anualizado
-  const cdb10Liq  = calcLiquido(10000, CDI_AM, 120, true);
+  const poupAnual  = Math.pow(1+POUPANCA_AM,12)-1;
+  const realPoup   = ((1+poupAnual)/(1+IPCA_AA)-1)*100;
+  const cdb10Liq   = calcLiquido(10000, CDI_AM, 120, true);
   const cdb10PctAA = (Math.pow(cdb10Liq/10000, 1/10)-1)*100;
-  const realCdb   = ((1+cdb10PctAA/100)/(1+IPCA_AA)-1)*100;
-  // 5 anos
+  const realCdb    = ((1+cdb10PctAA/100)/(1+IPCA_AA)-1)*100;
   const poup5  = calcLiquido(10000, POUPANCA_AM, 60, false);
   const cdb5   = calcLiquido(10000, CDI_AM, 60, true);
   const diff5  = cdb5 - poup5;
-  // 10 anos
   const poup10 = calcLiquido(10000, POUPANCA_AM, 120, false);
   const cdb10  = calcLiquido(10000, CDI_AM, 120, true);
   const diff10 = cdb10 - poup10;
@@ -544,13 +524,12 @@ function renderInsights(valor){
   document.getElementById('ins-10a').textContent           = brl(diff10);
   document.getElementById('ins-10a-100k').textContent      = brl(diff10*10);
 
-  // Hero stat
   const anos  = periodoMeses/12;
   const poupV = calcLiquido(10000, POUPANCA_AM, periodoMeses, false);
   const cdbV  = calcLiquido(10000, CDI_AM, periodoMeses, true);
   document.getElementById('hero-stat-num').textContent  = brl(cdbV-poupV);
   document.getElementById('hero-stat-label').textContent =
-    `a mais em ${anos} ${anos===1?'ano':'anos'} para cada R$ 10.000 — CDB 100% CDI vs Poupança`;
+    `a mais em ${anos} ${anos===1?'ano':'anos'} para cada R$ 10.000 — CDB 100% CDI vs Poupança`;
 }
 
 function renderChart(valor, meses){
@@ -571,7 +550,6 @@ function renderChart(valor, meses){
     tension:         0.3,
   }));
 
-  // IPCA reference dashed
   datasets.push({
     label:           'IPCA (inflação)',
     data:            calcSerie(valor, IPCA_AM_RATE, meses, false),
@@ -583,11 +561,11 @@ function renderChart(valor, meses){
     tension:         0.3,
   });
 
-  const gridClr  = isLight?'rgba(42,31,10,0.08)':'rgba(245,230,200,0.07)';
-  const tickClr  = isLight?'rgba(42,31,10,0.45)':'rgba(245,230,200,0.35)';
-  const bgTooltip= isLight?'rgba(245,239,227,0.97)':'rgba(13,10,5,0.95)';
-  const ttTitle  = isLight?'#2A1F0A':'#F5E6C8';
-  const ttBody   = isLight?'rgba(42,31,10,0.7)':'rgba(245,230,200,0.65)';
+  const gridClr   = isLight?'rgba(42,31,10,0.08)':'rgba(245,230,200,0.07)';
+  const tickClr   = isLight?'rgba(42,31,10,0.45)':'rgba(245,230,200,0.35)';
+  const bgTooltip = isLight?'rgba(245,239,227,0.97)':'rgba(13,10,5,0.95)';
+  const ttTitle   = isLight?'#2A1F0A':'#F5E6C8';
+  const ttBody    = isLight?'rgba(42,31,10,0.7)':'rgba(245,230,200,0.65)';
 
   if(chart){chart.destroy();chart=null;}
   chart = new Chart(document.getElementById('chart'),{
@@ -614,7 +592,6 @@ function renderChart(valor, meses){
   });
 }
 
-// ── Tema ──────────────────────────────────────────────────────────────────────
 function setThemeUI(isLight){
   document.getElementById('theme-label').textContent = isLight?'Modo escuro':'Modo claro';
   document.getElementById('theme-icon').textContent  = isLight?'🌙':'☀️';
