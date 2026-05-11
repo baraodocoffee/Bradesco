@@ -53,6 +53,23 @@ body.light{
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;background:var(--bg-deep);color:var(--cream-muted);transition:background .3s,color .3s;}
 
+/* ── Hero background ─────────────────────────────────────────────────────── */
+.hero-bg{
+  position:fixed;inset:0;z-index:0;
+  background:url('cofre.jpg') center center / cover no-repeat;
+  transition:opacity .3s;
+}
+body.light .hero-bg{opacity:0.15;}
+.hero-overlay{
+  position:fixed;inset:0;z-index:1;
+  background:linear-gradient(to bottom,rgba(8,5,2,0.72) 0%,rgba(8,5,2,0.82) 50%,rgba(8,5,2,0.92) 100%);
+  transition:background .3s;
+}
+body.light .hero-overlay{
+  background:linear-gradient(to bottom,rgba(245,239,227,0.92) 0%,rgba(245,239,227,0.96) 50%,rgba(245,239,227,0.98) 100%);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
 .page-header{
   background:rgba(8,5,2,0.90);
   border-bottom:1px solid var(--border);
@@ -88,8 +105,10 @@ body.light .page-header{
 }
 .nav-back:hover{color:var(--gold);}
 
+/* ── Container ──────────────────────────────────────────────────────────── */
 .container{max-width:960px;margin:0 auto;padding:28px 24px 80px;position:relative;z-index:2;}
 
+/* ── Cards ──────────────────────────────────────────────────────────────── */
 .card{
   background:var(--bg-card);
   border:1px solid var(--border);
@@ -105,6 +124,7 @@ body.light .page-header{
   margin-bottom:16px;
 }
 
+/* ── Hero statement ─────────────────────────────────────────────────────── */
 .hero-statement{
   margin-bottom:24px;
   padding:28px 30px;
@@ -124,6 +144,7 @@ body.light .page-header{
 .hero-stat-num{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--gold);}
 .hero-stat-label{font-size:14px;color:var(--cream-faint);}
 
+/* ── Indicadores ────────────────────────────────────────────────────────── */
 .indicadores-grid{
   display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;
 }
@@ -138,6 +159,7 @@ body.light .page-header{
 .ind-value span{font-size:12px;font-weight:400;color:var(--cream-faint);margin-left:3px;}
 .ind-sub{font-size:11px;color:var(--cream-faint);margin-top:4px;}
 
+/* ── Simulador ──────────────────────────────────────────────────────────── */
 .sim-controls{display:flex;align-items:flex-end;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
 .sim-field{flex:1;min-width:160px;}
 .sim-field label{display:block;font-size:13px;color:var(--cream-muted);margin-bottom:7px;font-weight:500;}
@@ -161,6 +183,7 @@ body.light .input-wrap{background:rgba(255,255,255,0.6);}
 .period-btn:hover{border-color:var(--gold-border);color:var(--gold);}
 .period-btn.active{background:var(--gold-light);border-color:var(--gold);color:var(--gold);}
 
+/* ── Resultado cards ────────────────────────────────────────────────────── */
 .results-grid{
   display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:0;
 }
@@ -185,8 +208,10 @@ body.light .input-wrap{background:rgba(255,255,255,0.6);}
 .badge-isento{background:var(--green-light);color:var(--green);border:1px solid var(--green);}
 .badge-ir{background:var(--bg-card);color:var(--cream-faint);border:1px solid var(--border);}
 
+/* ── Chart ──────────────────────────────────────────────────────────────── */
 .chart-wrap{position:relative;height:320px;margin-top:8px;}
 
+/* ── Insights ───────────────────────────────────────────────────────────── */
 .insights-grid{
   display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;
 }
@@ -207,6 +232,7 @@ body.light .input-wrap{background:rgba(255,255,255,0.6);}
 .insight-text{font-size:13px;color:var(--cream-muted);line-height:1.6;}
 .insight-text strong{color:var(--cream);}
 
+/* ── Tabela ─────────────────────────────────────────────────────────────── */
 .table-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
 thead th{
@@ -224,6 +250,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
 .td-amber{color:var(--amber);font-weight:600;}
 .td-gold{color:var(--gold);font-weight:600;}
 
+/* ── Nota ────────────────────────────────────────────────────────────────── */
 .nota{
   padding:16px 20px;background:var(--bg-card);border-radius:10px;
   border-left:3px solid var(--border-gold);
@@ -242,6 +269,9 @@ tbody tr.row-mid td{background:var(--amber-light);}
 </style>
 </head>
 <body>
+
+<div class="hero-bg"></div>
+<div class="hero-overlay"></div>
 
 <div class="page-header">
   <div class="page-header-left">
