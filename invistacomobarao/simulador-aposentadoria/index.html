@@ -1,1 +1,841 @@
-hello world
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Simulador de Aposentadoria</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --red:          #CC1417;
+  --red-dark:     #A50F11;
+  --red-light:    #F9E5E5;
+  --gold:         #C9A84C;
+  --gold-light:   #F5EFE3;
+  --gold-dim:     #9A7B35;
+  --gray-900:     #1A1A1A;
+  --gray-700:     #3D3D3D;
+  --gray-500:     #6B6B6B;
+  --gray-200:     #E8E8E8;
+  --gray-100:     #F5F5F5;
+  --white:        #FFFFFF;
+  --green:        #1A7F4B;
+  --green-light:  #E6F4ED;
+  --yellow:       #B97500;
+  --yellow-light: #FFF4DC;
+
+  /* dark mode tokens */
+  --bg:           #080502;
+  --surface:      #13100A;
+  --surface2:     #1E1A12;
+  --border:       rgba(201,168,76,0.18);
+  --text:         #F5EFE3;
+  --text-muted:   #A89060;
+  --accent:       #C9A84C;
+  --accent-glow:  rgba(201,168,76,0.15);
+}
+body.light {
+  --bg:           #F5EFE3;
+  --surface:      #FFFFFF;
+  --surface2:     #F0E8D5;
+  --border:       rgba(0,0,0,0.10);
+  --text:         #1A1A1A;
+  --text-muted:   #6B6B6B;
+  --accent:       #9A7B35;
+  --accent-glow:  rgba(154,123,53,0.10);
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  font-family:'Inter',sans-serif;
+  font-size:17px;
+  line-height:1.6;
+  background:var(--bg);
+  color:var(--text);
+  transition:background .3s,color .3s;
+  min-height:100vh;
+}
+
+/* ── header ── */
+.top-bar { height:5px; background:var(--red); }
+.header {
+  position:sticky; top:0; z-index:100;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+}
+.header-inner {
+  max-width:1100px; margin:0 auto;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 24px;
+  gap:16px;
+}
+.header-logo {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:16px; font-weight:700;
+  color:var(--accent);
+  text-decoration:none;
+  display:flex; align-items:center; gap:8px;
+}
+.header-logo span { opacity:.55; font-weight:400; color:var(--text-muted); }
+.header-nav { display:flex; align-items:center; gap:12px; }
+.theme-btn {
+  display:flex; align-items:center; gap:6px;
+  padding:7px 14px; border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  color:var(--text-muted);
+  font-size:13px; font-weight:600;
+  font-family:'Inter',sans-serif;
+  cursor:pointer; transition:all .2s;
+}
+.theme-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+/* ── page wrapper ── */
+.container { max-width:1100px; margin:0 auto; padding:32px 24px 64px; }
+
+/* ── hero ── */
+.hero { margin-bottom:32px; }
+.hero h1 {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:28px; font-weight:700;
+  color:var(--text);
+  margin-bottom:6px;
+}
+.hero p { color:var(--text-muted); font-size:15px; }
+.hero h1 .accent { color:var(--accent); }
+
+/* ── perfil selector ── */
+.perfil-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+.perfil-btn {
+  padding:9px 18px; border-radius:8px;
+  border:2px solid var(--border);
+  background:var(--surface2);
+  font-size:14px; font-weight:600;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  color:var(--text-muted);
+  cursor:pointer; transition:all .2s;
+}
+.perfil-btn:hover { border-color:var(--accent); color:var(--accent); }
+.perfil-btn.active { background:var(--accent); border-color:var(--accent); color:#080502; }
+
+/* ── main grid ── */
+.main-layout {
+  display:grid;
+  grid-template-columns:1fr 2fr;
+  gap:20px;
+  align-items:start;
+}
+.params-col, .results-col { min-width:0; }
+
+/* ── cards ── */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:22px 24px;
+  margin-bottom:20px;
+}
+.card:last-child { margin-bottom:0; }
+.card-title {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px; font-weight:700;
+  color:var(--text-muted);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:18px;
+  display:flex; align-items:center; gap:8px;
+}
+.card-title .dot {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--accent); flex-shrink:0;
+}
+
+/* ── form inputs ── */
+.field { margin-bottom:18px; }
+.field:last-child { margin-bottom:0; }
+.field label {
+  display:block;
+  font-size:13px; font-weight:600;
+  color:var(--text-muted);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  margin-bottom:6px;
+}
+.field-row { display:flex; align-items:center; gap:10px; }
+.field input[type=range] {
+  flex:1;
+  -webkit-appearance:none;
+  height:6px;
+  border-radius:99px;
+  background:var(--border);
+  outline:none;
+  cursor:pointer;
+}
+.field input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none;
+  width:18px; height:18px;
+  border-radius:50%;
+  background:var(--accent);
+  border:2px solid var(--bg);
+  cursor:pointer;
+}
+.field-val {
+  font-family:'Inter',sans-serif;
+  font-size:14px; font-weight:700;
+  color:var(--accent);
+  min-width:70px; text-align:right;
+}
+.field input[type=number], .field input[type=text] {
+  width:100%;
+  padding:10px 14px;
+  border-radius:8px;
+  border:1.5px solid var(--border);
+  background:var(--surface2);
+  color:var(--text);
+  font-size:15px; font-weight:600;
+  font-family:'Inter',sans-serif;
+  outline:none;
+  transition:border-color .2s;
+}
+.field input[type=number]:focus, .field input[type=text]:focus {
+  border-color:var(--accent);
+}
+.field-prefix {
+  display:flex; align-items:center;
+  border:1.5px solid var(--border);
+  border-radius:8px;
+  background:var(--surface2);
+  overflow:hidden;
+  transition:border-color .2s;
+}
+.field-prefix:focus-within { border-color:var(--accent); }
+.field-prefix span {
+  padding:10px 12px;
+  font-size:14px; font-weight:700;
+  color:var(--text-muted);
+  border-right:1px solid var(--border);
+  background:var(--surface);
+  flex-shrink:0;
+}
+.field-prefix input {
+  flex:1; padding:10px 12px;
+  border:none; background:transparent;
+  color:var(--text); font-size:15px; font-weight:600;
+  font-family:'Inter',sans-serif; outline:none;
+}
+.separator { height:1px; background:var(--border); margin:18px 0; }
+
+/* ── result cards grid ── */
+.result-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; }
+.result-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px 20px;
+  transition:border-color .2s;
+}
+.result-card.destaque { border-color:var(--green); background:rgba(26,127,75,0.07); }
+.result-card.deficit  { border-color:var(--red);   background:rgba(204,20,23,0.06); }
+.result-card.neutro   { border-color:var(--accent); background:var(--accent-glow); }
+.result-label {
+  font-size:12px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.08em;
+  color:var(--text-muted);
+  margin-bottom:6px;
+}
+.result-value {
+  font-family:'Inter',sans-serif;
+  font-size:22px; font-weight:700;
+  color:var(--text);
+  line-height:1.2;
+}
+.result-value.green { color:var(--green); }
+.result-value.red   { color:var(--red); }
+.result-value.gold  { color:var(--accent); }
+.result-sub {
+  font-size:13px; color:var(--text-muted);
+  margin-top:4px;
+}
+
+/* ── status banner ── */
+.status-banner {
+  border-radius:10px;
+  padding:14px 18px;
+  margin-bottom:20px;
+  display:flex; align-items:center; gap:12px;
+  font-weight:600; font-size:15px;
+}
+.status-banner.ok  { background:rgba(26,127,75,0.10); border:1px solid var(--green); color:var(--green); }
+.status-banner.nok { background:rgba(204,20,23,0.08); border:1px solid var(--red);   color:var(--red); }
+.status-icon { font-size:22px; }
+.status-text { flex:1; }
+.status-detail { font-size:13px; font-weight:400; opacity:.85; }
+
+/* ── chart card ── */
+.chart-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:22px 24px;
+}
+.chart-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:16px; flex-wrap:wrap; gap:10px;
+}
+.chart-legend { display:flex; gap:16px; flex-wrap:wrap; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-muted); }
+.legend-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+.legend-line { width:24px; height:3px; border-radius:99px; flex-shrink:0; }
+.chart-wrap { position:relative; height:280px; }
+
+/* ── insights span-all ── */
+.span-all { grid-column:1/-1; }
+.insights-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
+.insight-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px 20px;
+}
+.insight-icon { font-size:24px; margin-bottom:8px; }
+.insight-title {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px; font-weight:700;
+  color:var(--text);
+  margin-bottom:6px;
+}
+.insight-body { font-size:13px; color:var(--text-muted); line-height:1.6; }
+.insight-body strong { color:var(--accent); }
+
+/* ── aporte card ── */
+.aporte-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px 20px;
+  margin-bottom:20px;
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+}
+.aporte-info { flex:1; }
+.aporte-label { font-size:13px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+.aporte-value { font-size:22px; font-weight:700; font-family:'Inter',sans-serif; }
+.aporte-value.green { color:var(--green); }
+.aporte-value.red   { color:var(--red); }
+.aporte-value.gold  { color:var(--accent); }
+
+/* ── nota ── */
+.nota {
+  padding:16px 20px;
+  background:var(--surface);
+  border-radius:10px;
+  border-left:4px solid var(--red);
+  font-size:13px;
+  color:var(--text-muted);
+  line-height:1.6;
+}
+
+/* ── responsive ── */
+@media(max-width:768px){
+  .main-layout { grid-template-columns:1fr; }
+  .result-grid { grid-template-columns:1fr; }
+  .insights-grid { grid-template-columns:1fr 1fr; }
+  .params-col,.results-col { min-width:0; }
+}
+@media(max-width:480px){
+  .insights-grid { grid-template-columns:1fr; }
+  .header-inner { padding:12px 16px; }
+  .container { padding:20px 16px 48px; }
+  .hero h1 { font-size:22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+<header class="header">
+  <div class="header-inner">
+    <a class="header-logo" href="#">
+      Simulador de Aposentadoria <span>/ Invista como Barão</span>
+    </a>
+    <nav class="header-nav">
+      <button class="theme-btn" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-label">Modo escuro</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Simule sua <span class="accent">aposentadoria</span></h1>
+    <p>Descubra quanto você precisa acumular, qual renda vai gerar e se está no caminho certo.</p>
+  </div>
+
+  <!-- PERFIL -->
+  <div style="margin-bottom:20px;">
+    <div class="perfil-row" id="perfil-row">
+      <button class="perfil-btn active" data-perfil="conservador" onclick="setPerfil(this)">Conservador</button>
+      <button class="perfil-btn" data-perfil="moderado" onclick="setPerfil(this)">Moderado</button>
+      <button class="perfil-btn" data-perfil="arrojado" onclick="setPerfil(this)">Arrojado</button>
+    </div>
+    <div style="font-size:13px;color:var(--text-muted);margin-top:6px;" id="perfil-desc"></div>
+  </div>
+
+  <div class="main-layout">
+
+    <!-- ── PARAMS COL ── -->
+    <div class="params-col">
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>Seu Perfil</div>
+
+        <div class="field">
+          <label>Idade atual</label>
+          <div class="field-row">
+            <input type="range" id="idadeAtual" min="20" max="70" value="40" oninput="syncSlider('idadeAtual','vIdadeAtual',v=>v+' anos')"/>
+            <div class="field-val" id="vIdadeAtual">40 anos</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Aposentadoria aos</label>
+          <div class="field-row">
+            <input type="range" id="idadeApo" min="45" max="80" value="65" oninput="syncSlider('idadeApo','vIdadeApo',v=>v+' anos')"/>
+            <div class="field-val" id="vIdadeApo">65 anos</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Expectativa de vida</label>
+          <div class="field-row">
+            <input type="range" id="expVida" min="70" max="100" value="85" oninput="syncSlider('expVida','vExpVida',v=>v+' anos')"/>
+            <div class="field-val" id="vExpVida">85 anos</div>
+          </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="field">
+          <label>Patrimônio atual</label>
+          <div class="field-prefix">
+            <span>R$</span>
+            <input type="number" id="patrimonioAtual" value="50000" min="0" step="1000" oninput="render()"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Aporte mensal</label>
+          <div class="field-prefix">
+            <span>R$</span>
+            <input type="number" id="aporteMensal" value="1500" min="0" step="100" oninput="render()"/>
+          </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="field">
+          <label>Renda desejada na aposentadoria</label>
+          <div class="field-prefix">
+            <span>R$</span>
+            <input type="number" id="rendaDesejada" value="10000" min="500" step="500" oninput="render()"/>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:5px;">Valor mensal em reais de hoje (já corrigido pela inflação)</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ── RESULTS COL ── -->
+    <div class="results-col">
+
+      <div class="result-grid" id="result-grid">
+        <div class="result-card" id="card-acumulado">
+          <div class="result-label">Vai acumular</div>
+          <div class="result-value gold" id="val-acumulado">—</div>
+          <div class="result-sub" id="sub-acumulado"></div>
+        </div>
+        <div class="result-card" id="card-necessario">
+          <div class="result-label">Precisa acumular</div>
+          <div class="result-value" id="val-necessario">—</div>
+          <div class="result-sub" id="sub-necessario"></div>
+        </div>
+        <div class="result-card" id="card-renda">
+          <div class="result-label">Renda mensal gerada</div>
+          <div class="result-value" id="val-renda">—</div>
+          <div class="result-sub" id="sub-renda"></div>
+        </div>
+        <div class="result-card" id="card-delta">
+          <div class="result-label">Superávit / Déficit</div>
+          <div class="result-value" id="val-delta">—</div>
+          <div class="result-sub" id="sub-delta"></div>
+        </div>
+      </div>
+
+      <div id="status-banner" class="status-banner ok">
+        <div class="status-icon" id="status-icon">✅</div>
+        <div class="status-text">
+          <div id="status-msg"></div>
+          <div class="status-detail" id="status-detail"></div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="card-title" style="margin-bottom:0"><span class="dot"></span>Evolução Patrimonial</div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-line" style="background:#C9A84C;"></div> Acumulação</div>
+            <div class="legend-item"><div class="legend-line" style="background:#4C9AC9;"></div> Renda</div>
+            <div class="legend-item"><div class="legend-line" style="background:#CC1417;border-top:2px dashed #CC1417;height:0;"></div> Meta</div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chartApo"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── APORTE NECESSÁRIO (span-all) ── -->
+    <div class="span-all" id="aporte-row"></div>
+
+    <!-- ── INSIGHTS (span-all) ── -->
+    <div class="span-all">
+      <div class="insights-grid" id="insights-grid"></div>
+    </div>
+
+    <!-- ── NOTA (span-all) ── -->
+    <div class="span-all">
+      <div class="nota">
+        Simulação com fins educativos e informativos. Não constitui oferta ou recomendação de investimento. Os retornos utilizados são nominais, baseados nos perfis de risco definidos pelo planejador. Rentabilidade passada não garante rentabilidade futura. A renda na aposentadoria é calculada como anuidade sobre o patrimônio acumulado, sem garantia de valor real ao longo do tempo.
+      </div>
+    </div>
+
+  </div><!-- /main-layout -->
+</div><!-- /container -->
+
+<script>
+// ── PERFIS ──
+const PERFIS = {
+  conservador: { nome:'Conservador', aa:0.092, cor:'#6B9E7A', desc:'Retorno real de 4% a.a. acima do IPCA — perfil CDI/renda fixa. Retorno nominal ~9,2% a.a.' },
+  moderado:    { nome:'Moderado',    aa:0.113, cor:'#C9A84C', desc:'Retorno real de 6% a.a. acima do IPCA — perfil misto RF + RV. Retorno nominal ~11,3% a.a.' },
+  arrojado:    { nome:'Arrojado',    aa:0.134, cor:'#CC7A44', desc:'Retorno real de 8% a.a. acima do IPCA — perfil predominantemente renda variável. Retorno nominal ~13,4% a.a.' },
+};
+let perfilAtivo = 'conservador';
+
+function setPerfil(btn) {
+  document.querySelectorAll('.perfil-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  perfilAtivo = btn.dataset.perfil;
+  document.getElementById('perfil-desc').textContent = PERFIS[perfilAtivo].desc;
+  render();
+}
+
+// ── HELPERS ──
+function fmtBRL(v) {
+  return 'R$ ' + Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+}
+function fmtBRLsigned(v) {
+  const s = v >= 0 ? '+' : '-';
+  return s + ' ' + fmtBRL(v);
+}
+function fmtPct(v) {
+  return (v*100).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + '% a.a.';
+}
+
+function syncSlider(id, valId, fmt) {
+  const v = +document.getElementById(id).value;
+  document.getElementById(valId).textContent = fmt(v);
+  render();
+}
+
+// ── CÁLCULOS FINANCEIROS ──
+// FV de PV + PMT mensal por meses
+function calcFV(pv, pmt, rm, meses) {
+  if(rm === 0) return pv + pmt * meses;
+  return pv * Math.pow(1+rm, meses) + pmt * (Math.pow(1+rm, meses) - 1) / rm;
+}
+
+// PV de anuidade mensal por meses (valor necessário para sustentar renda)
+function calcPV(pmt, rm, meses) {
+  if(rm === 0) return pmt * meses;
+  return pmt * (1 - Math.pow(1+rm, -meses)) / rm;
+}
+
+// PMT de um capital por meses
+function calcPMT(pv, rm, meses) {
+  if(rm === 0 || meses === 0) return pv / Math.max(meses,1);
+  return pv * rm * Math.pow(1+rm, meses) / (Math.pow(1+rm, meses) - 1);
+}
+
+// PMT necessário para atingir FV em meses dado PV inicial
+function calcAporteNecessario(pv, fv, rm, meses) {
+  if(meses <= 0) return 0;
+  const fvPV = pv * Math.pow(1+rm, meses);
+  const falta = fv - fvPV;
+  if(falta <= 0) return 0;
+  return falta * rm / (Math.pow(1+rm, meses) - 1);
+}
+
+// ── CHART ──
+let chart = null;
+
+function getChartColors() {
+  const light = document.body.classList.contains('light');
+  return {
+    gridColor: light ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.07)',
+    tickColor: light ? '#6B6B6B' : '#A89060',
+    tooltipBg: light ? '#FFFFFF' : '#1E1A12',
+    tooltipBorder: light ? '#E8E8E8' : 'rgba(201,168,76,0.3)',
+    tooltipText: light ? '#1A1A1A' : '#F5EFE3',
+  };
+}
+
+function buildChart(labels, acumData, rendaData, metaLine) {
+  const ctx = document.getElementById('chartApo').getContext('2d');
+  const C = getChartColors();
+  if(chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type:'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label:'Acumulação',
+          data: acumData,
+          borderColor:'#C9A84C',
+          backgroundColor:'rgba(201,168,76,0.08)',
+          borderWidth:2.5,
+          pointRadius:0,
+          fill:true,
+          tension:.35,
+        },
+        {
+          label:'Fase de Renda',
+          data: rendaData,
+          borderColor:'#4C9AC9',
+          backgroundColor:'rgba(76,154,201,0.07)',
+          borderWidth:2.5,
+          pointRadius:0,
+          fill:true,
+          tension:.35,
+        },
+        {
+          label:'Meta (patrimônio necessário)',
+          data: metaLine,
+          borderColor:'#CC1417',
+          borderWidth:1.8,
+          borderDash:[6,4],
+          pointRadius:0,
+          fill:false,
+          tension:0,
+        },
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ display:false },
+        tooltip:{
+          backgroundColor: C.tooltipBg,
+          borderColor: C.tooltipBorder,
+          borderWidth:1,
+          titleColor: C.tooltipText,
+          bodyColor: C.tooltipText,
+          padding:12,
+          callbacks:{
+            label(ctx){
+              if(ctx.parsed.y === null) return null;
+              return `${ctx.dataset.label}: ${fmtBRL(ctx.parsed.y)}`;
+            }
+          }
+        }
+      },
+      scales:{
+        x:{
+          grid:{ color:C.gridColor },
+          ticks:{ color:C.tickColor, font:{size:12}, maxTicksLimit:10 }
+        },
+        y:{
+          grid:{ color:C.gridColor },
+          ticks:{
+            color:C.tickColor, font:{size:12},
+            callback(v){ return v >= 1e6 ? 'R$'+(v/1e6).toFixed(1)+'M' : v >= 1e3 ? 'R$'+(v/1e3).toFixed(0)+'k' : 'R$'+v; }
+          }
+        }
+      }
+    }
+  });
+}
+
+// ── RENDER ──
+function render() {
+  const idadeAtual   = +document.getElementById('idadeAtual').value;
+  const idadeApo     = +document.getElementById('idadeApo').value;
+  const expVida      = +document.getElementById('expVida').value;
+  const patrimonio   = +document.getElementById('patrimonioAtual').value || 0;
+  const aporte       = +document.getElementById('aporteMensal').value || 0;
+  const renda        = +document.getElementById('rendaDesejada').value || 0;
+
+  const perfil = PERFIS[perfilAtivo];
+  const rm = Math.pow(1 + perfil.aa, 1/12) - 1;
+
+  const mesesAcum  = Math.max((idadeApo - idadeAtual) * 12, 1);
+  const mesesRenda = Math.max((expVida - idadeApo) * 12, 1);
+
+  const acumulado   = calcFV(patrimonio, aporte, rm, mesesAcum);
+  const necessario  = calcPV(renda, rm, mesesRenda);
+  const rendaGerada = calcPMT(acumulado, rm, mesesRenda);
+  const delta       = acumulado - necessario;
+  const ok          = delta >= 0;
+
+  // Result cards
+  const elAcum = document.getElementById('val-acumulado');
+  elAcum.textContent = fmtBRL(acumulado);
+
+  const elNec = document.getElementById('val-necessario');
+  elNec.textContent = fmtBRL(necessario);
+  document.getElementById('sub-necessario').textContent = `Para renda de ${fmtBRL(renda)}/mês por ${expVida-idadeApo} anos`;
+
+  const elRenda = document.getElementById('val-renda');
+  elRenda.textContent = fmtBRL(rendaGerada) + '/mês';
+  elRenda.className = 'result-value ' + (rendaGerada >= renda ? 'green' : 'red');
+  document.getElementById('sub-renda').textContent = rendaGerada >= renda
+    ? `✓ ${Math.round((rendaGerada/renda-1)*100)}% acima da meta`
+    : `✗ ${Math.round((1-rendaGerada/renda)*100)}% abaixo da meta`;
+
+  const elDelta = document.getElementById('val-delta');
+  elDelta.textContent = fmtBRLsigned(delta);
+  elDelta.className = 'result-value ' + (ok ? 'green' : 'red');
+  document.getElementById('sub-delta').textContent = ok ? 'Patrimônio excedente' : 'Falta acumular';
+
+  document.getElementById('card-acumulado').className = 'result-card neutro';
+  document.getElementById('card-necessario').className = 'result-card';
+  document.getElementById('card-renda').className = 'result-card ' + (ok ? 'destaque' : 'deficit');
+  document.getElementById('card-delta').className = 'result-card ' + (ok ? 'destaque' : 'deficit');
+
+  document.getElementById('sub-acumulado').textContent =
+    `Em ${idadeApo} anos — ${(idadeApo-idadeAtual)} anos de acumulação — ${perfil.nome}`;
+
+  // Status banner
+  const banner = document.getElementById('status-banner');
+  banner.className = 'status-banner ' + (ok ? 'ok' : 'nok');
+  document.getElementById('status-icon').textContent = ok ? '✅' : '⚠️';
+  if(ok) {
+    document.getElementById('status-msg').textContent = 'Parabéns! Você está no caminho certo para a aposentadoria.';
+    document.getElementById('status-detail').textContent =
+      `Com os aportes atuais, você vai superar a meta em ${fmtBRL(delta)} e gerar ${fmtBRL(rendaGerada)}/mês — ${fmtBRL(rendaGerada-renda)}/mês acima do desejado.`;
+  } else {
+    const aporteNec = calcAporteNecessario(patrimonio, necessario, rm, mesesAcum);
+    document.getElementById('status-msg').textContent = 'Atenção: o aporte atual não é suficiente para a meta.';
+    document.getElementById('status-detail').textContent =
+      `Para atingir a renda desejada, você precisaria aportar ${fmtBRL(aporteNec)}/mês — ou revisar a renda esperada.`;
+  }
+
+  // Aporte necessário card
+  const aporteRow = document.getElementById('aporte-row');
+  if(!ok) {
+    const aporteNec = calcAporteNecessario(patrimonio, necessario, rm, mesesAcum);
+    const diff = aporteNec - aporte;
+    aporteRow.innerHTML = `
+      <div class="aporte-card">
+        <div class="aporte-info">
+          <div class="aporte-label">Aporte atual</div>
+          <div class="aporte-value red">${fmtBRL(aporte)}/mês</div>
+        </div>
+        <div style="font-size:28px;color:var(--text-muted);">→</div>
+        <div class="aporte-info">
+          <div class="aporte-label">Aporte necessário para a meta</div>
+          <div class="aporte-value green">${fmtBRL(aporteNec)}/mês</div>
+        </div>
+        <div class="aporte-info">
+          <div class="aporte-label">Diferença mensal</div>
+          <div class="aporte-value red">+ ${fmtBRL(diff)}/mês</div>
+        </div>
+      </div>`;
+  } else {
+    aporteRow.innerHTML = '';
+  }
+
+  // Insights
+  const anosAcum = idadeApo - idadeAtual;
+  const anosRenda = expVida - idadeApo;
+  const txEfetiva = (Math.pow(acumulado / Math.max(patrimonio + aporte * mesesAcum, 1), 1/(mesesAcum/12)) - 1) * 100;
+
+  document.getElementById('insights-grid').innerHTML = `
+    <div class="insight-card">
+      <div class="insight-icon">⏳</div>
+      <div class="insight-title">Tempo de acumulação</div>
+      <div class="insight-body">Você tem <strong>${anosAcum} anos</strong> para acumular patrimônio até os ${idadeApo} anos. Quanto mais cedo começar, menor o esforço mensal necessário — o tempo é o maior aliado dos juros compostos.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon">📊</div>
+      <div class="insight-title">Perfil ${perfil.nome}</div>
+      <div class="insight-body">Taxa de retorno nominal de <strong>${fmtPct(perfil.aa)}</strong>. ${perfilAtivo==='conservador'?'Focado em renda fixa e CDI — menor volatilidade, crescimento consistente.':perfilAtivo==='moderado'?'Misto de RF e RV — equilibra crescimento e proteção do patrimônio.':'Predominância de renda variável — maior potencial com mais volatilidade no curto prazo.'}</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon">🏦</div>
+      <div class="insight-title">Fase de renda</div>
+      <div class="insight-body">Na aposentadoria, o patrimônio precisa durar <strong>${anosRenda} anos</strong> (dos ${idadeApo} aos ${expVida} anos). ${ok?`Com ${fmtBRL(acumulado)}, você gera ${fmtBRL(rendaGerada)}/mês por esse período.`:`Com ${fmtBRL(acumulado)}, a renda gerada seria de ${fmtBRL(rendaGerada)}/mês — abaixo da meta de ${fmtBRL(renda)}/mês.`}</div>
+    </div>
+  `;
+
+  // Chart data
+  const labelsAcum = [];
+  const dataAcum = [];
+  const dataRenda = [];
+  const dataMeta = [];
+
+  for(let m=0; m<=mesesAcum; m++) {
+    const idade = idadeAtual + m/12;
+    labelsAcum.push(Number.isInteger(idade) ? idade+'a' : '');
+    const v = calcFV(patrimonio, aporte, rm, m);
+    dataAcum.push(Math.round(v));
+    dataRenda.push(null);
+    dataMeta.push(Math.round(necessario));
+  }
+
+  for(let m=1; m<=mesesRenda; m++) {
+    const idadeF = idadeApo + m/12;
+    labelsAcum.push(Number.isInteger(idadeF) ? idadeF+'a' : '');
+    const v = acumulado * Math.pow(1+rm, m) - renda * (Math.pow(1+rm, m) - 1) / rm;
+    dataAcum.push(null);
+    dataRenda.push(Math.round(Math.max(v, 0)));
+    dataMeta.push(null);
+  }
+
+  buildChart(labelsAcum, dataAcum, dataRenda, dataMeta);
+}
+
+// ── THEME ──
+function setThemeUI(isLight) {
+  document.getElementById('theme-label').textContent = isLight ? 'Modo escuro' : 'Modo claro';
+  document.getElementById('theme-icon').textContent = isLight ? '🌙' : '☀️';
+}
+function toggleTheme() {
+  const isNow = document.body.classList.toggle('light');
+  localStorage.setItem('theme', isNow ? 'light' : 'dark');
+  setThemeUI(isNow);
+  render();
+}
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  const isLight = saved !== 'dark';
+  if(isLight) document.body.classList.add('light');
+  setThemeUI(isLight);
+}
+
+// ── INIT ──
+initTheme();
+document.getElementById('perfil-desc').textContent = PERFIS[perfilAtivo].desc;
+render();
+</script>
+</body>
+</html>
