@@ -268,7 +268,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
 }
 </style>
 </head>
-<body>
+<body class="light">
 
 <div class="hero-bg"></div>
 <div class="hero-overlay"></div>
@@ -649,9 +649,8 @@ function toggleTheme(){
 }
 function initTheme(){
   const saved=localStorage.getItem('theme');
-  const isLight=saved!=='dark';
-  if(isLight) document.body.classList.add('light');
-  setThemeUI(isLight);
+  if(saved==='dark') document.body.classList.remove('light');
+  setThemeUI(document.body.classList.contains('light'));
 }
 
 initTheme();

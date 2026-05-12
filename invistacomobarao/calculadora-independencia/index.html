@@ -275,7 +275,7 @@ body.light .nota { border-left-color:rgba(154,123,53,0.55); }
 }
 </style>
 </head>
-<body>
+<body class="light">
 
 <header class="page-header">
   <div class="page-header-left">
@@ -504,10 +504,11 @@ let chart = null;
 // Plugin linha vertical
 const vertLinePlugin = {
   id: 'vertLine',
-  beforeDraw(chart, _, opts) {
-    if(opts.xIdx == null) return;
+  afterDraw(chart, _, opts) {
+    if(opts == null || opts.xIdx == null) return;
     const {ctx, chartArea, scales} = chart;
-    const xPx = scales.x.getPixelForIndex(opts.xIdx);
+    if(!scales.x || !chartArea) return;
+    const xPx = scales.x.getPixelForValue(opts.xIdx);
     if(xPx < chartArea.left || xPx > chartArea.right) return;
     ctx.save();
     ctx.beginPath();
@@ -701,9 +702,8 @@ function toggleTheme() {
 }
 function initTheme() {
   const saved = localStorage.getItem('theme');
-  const isLight = saved !== 'dark';
-  if(isLight) document.body.classList.add('light');
-  setThemeUI(isLight);
+  if(saved === 'dark') document.body.classList.remove('light');
+  setThemeUI(document.body.classList.contains('light'));
 }
 
 initTheme();

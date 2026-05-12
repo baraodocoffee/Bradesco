@@ -300,7 +300,7 @@ body.light .nota { border-left-color:rgba(154,123,53,0.55); }
 }
 </style>
 </head>
-<body>
+<body class="light">
 
 <header class="page-header">
   <div class="page-header-left">
@@ -658,9 +658,8 @@ function toggleTheme() {
 }
 function initTheme() {
   const saved = localStorage.getItem('theme');
-  const isLight = saved !== 'dark';
-  if(isLight) document.body.classList.add('light');
-  setThemeUI(isLight);
+  if(saved === 'dark') document.body.classList.remove('light');
+  setThemeUI(document.body.classList.contains('light'));
 }
 
 initTheme();
