@@ -81,6 +81,21 @@ body.light .page-header {
 .nav-back:hover { color:var(--accent); }
 
 /* ── page ── */
+/* ── Hero background (dark mode only) ── */
+.hero-bg {
+  position:fixed; inset:0; z-index:0;
+  background:url('fazenda.jpg') center center / cover no-repeat;
+  transition:opacity .3s;
+}
+body.light .hero-bg { opacity:0; pointer-events:none; }
+.hero-overlay {
+  position:fixed; inset:0; z-index:1;
+  background:linear-gradient(to bottom,rgba(8,5,2,0.70) 0%,rgba(8,5,2,0.82) 50%,rgba(8,5,2,0.92) 100%);
+  transition:opacity .3s;
+}
+body.light .hero-overlay { opacity:0; pointer-events:none; }
+
+.page-header, .container { position:relative; z-index:2; }
 .container { max-width:1060px; margin:0 auto; padding:32px 24px 64px; }
 .hero { margin-bottom:28px; }
 .hero h1 {
@@ -276,6 +291,9 @@ body.light .nota { border-left-color:rgba(154,123,53,0.55); }
 </style>
 </head>
 <body class="light">
+
+<div class="hero-bg"></div>
+<div class="hero-overlay"></div>
 
 <header class="page-header">
   <div class="page-header-left">
