@@ -81,6 +81,21 @@ body.light .page-header {
 .nav-back:hover { color:var(--accent); }
 
 /* ── page ── */
+/* ── Hero background (dark mode only) ── */
+.hero-bg {
+  position:fixed; inset:0; z-index:0;
+  background:url('fazenda.jpg') center center / cover no-repeat;
+  transition:opacity .3s;
+}
+body.light .hero-bg { opacity:0; pointer-events:none; }
+.hero-overlay {
+  position:fixed; inset:0; z-index:1;
+  background:linear-gradient(to bottom,rgba(8,5,2,0.70) 0%,rgba(8,5,2,0.82) 50%,rgba(8,5,2,0.92) 100%);
+  transition:opacity .3s;
+}
+body.light .hero-overlay { opacity:0; pointer-events:none; }
+
+.page-header, .container { position:relative; z-index:2; }
 .container { max-width:1060px; margin:0 auto; padding:32px 24px 64px; }
 .hero { margin-bottom:28px; }
 .hero h1 {
@@ -150,6 +165,7 @@ body.light .page-header {
   font-size:13px; color:var(--text-muted); pointer-events:none;
 }
 
+/* patrimônio necessário pill */
 .necessario-pill {
   display:flex; justify-content:space-between; align-items:center;
   padding:10px 14px; background:var(--accent-glow);
@@ -209,6 +225,7 @@ body.light .big-card.dark { background:#1E1A12; }
 .big-card.dark .bc-sub         { color:rgba(245,239,227,0.45); }
 .big-card.green-card .bc-sub   { color:rgba(255,255,255,0.65); }
 
+/* alerta: meta inalcançável */
 .big-card.warn { background:#3D1A0A; border:1px solid rgba(204,20,23,0.35); }
 body.light .big-card.warn { background:#F9E5E5; border-color:rgba(160,40,30,0.3); }
 .big-card.warn .bc-label { color:rgba(245,180,180,0.7); }
@@ -274,6 +291,9 @@ body.light .nota { border-left-color:rgba(154,123,53,0.55); }
 </style>
 </head>
 <body class="light">
+
+<div class="hero-bg"></div>
+<div class="hero-overlay"></div>
 
 <header class="page-header">
   <div class="page-header-left">
@@ -479,6 +499,7 @@ function calcFV(pv, pmt, rm, meses) {
   return pv * Math.pow(1 + rm, meses) + pmt * (Math.pow(1 + rm, meses) - 1) / rm;
 }
 
+// Retorna meses para atingir meta (ou null se > 600)
 function calcMesesParaMeta(pv, pmt, rm, meta) {
   if(pv >= meta) return 0;
   if(pmt <= 0 && rm > 0) {
@@ -498,6 +519,7 @@ function calcMesesParaMeta(pv, pmt, rm, meta) {
 
 let chart = null;
 
+// Plugin linha vertical
 const vertLinePlugin = {
   id: 'vertLine',
   afterDraw(chart, _, opts) {
@@ -607,18 +629,23 @@ function render() {
   const { real } = PERFIS[perfilAtivo];
   const rm = Math.pow(1 + real, 1/12) - 1;
 
+  // meta = renda × 12 / 0.04
   const meta = renda * 300;
 
   document.getElementById('val-necessario-pill').textContent = fmtBRL(meta);
   document.getElementById('val-numero').textContent = fmtBRL(meta);
   document.getElementById('lbl-meta-progress').textContent = fmtBRL(meta);
+
+  // Renda passiva hoje
   document.getElementById('val-renda-hoje').textContent = fmtBRL(patrimonio * 0.04 / 12) + '/mês';
 
+  // Progresso atual
   const progresso = meta > 0 ? Math.min(patrimonio / meta, 1) : 0;
   const pct = Math.max(Math.round(progresso * 100), 0);
   document.getElementById('val-progresso').textContent = pct + '%';
   document.getElementById('progress-fill').style.width = (pct > 0 ? Math.max(pct, 1) : 0) + '%';
 
+  // Meses para atingir a meta
   const mesesMeta = calcMesesParaMeta(patrimonio, aporte, rm, meta);
 
   const cardConquista = document.getElementById('card-conquista');
@@ -634,16 +661,12 @@ function render() {
     valConquista.textContent = 'Já atingido!';
     subConquista.textContent = 'Seu patrimônio atual já supera a meta';
     indepIdxAnual = 0;
-    document.getElementById('val-rendimentos').textContent = '—';
-    document.getElementById('sub-rendimentos').textContent = 'Meta já superada';
   } else if(mesesMeta === null) {
     cardConquista.className = 'big-card warn';
     lblConquista.textContent = 'Atenção';
     valConquista.textContent = '> 50 anos';
     subConquista.textContent = 'Aumente o aporte ou reveja a meta de renda';
     indepIdxAnual = null;
-    document.getElementById('val-rendimentos').textContent = '—';
-    document.getElementById('sub-rendimentos').textContent = 'Meta inalcançável com aportes atuais';
   } else {
     cardConquista.className = 'big-card green-card';
     const anos = Math.ceil(mesesMeta / 12);
@@ -651,12 +674,24 @@ function render() {
     valConquista.textContent = anos + (anos === 1 ? ' ano' : ' anos');
     subConquista.textContent = 'Aos ' + (idadeAtual + anos) + ' anos de idade';
     indepIdxAnual = anos;
-    const acumulado   = calcFV(patrimonio, aporte, rm, mesesMeta);
-    const totalApo    = patrimonio + aporte * mesesMeta;
-    document.getElementById('val-rendimentos').textContent = fmtBRL(acumulado - totalApo);
-    document.getElementById('sub-rendimentos').textContent = 'Sobre ' + fmtBRL(totalApo) + ' aportados';
   }
 
+  // Rendimentos projetados
+  if(mesesMeta !== null && mesesMeta > 0) {
+    const acumulado   = calcFV(patrimonio, aporte, rm, mesesMeta);
+    const totalApo    = patrimonio + aporte * mesesMeta;
+    const rendimentos = acumulado - totalApo;
+    document.getElementById('val-rendimentos').textContent = fmtBRL(rendimentos);
+    document.getElementById('sub-rendimentos').textContent = 'Sobre ' + fmtBRL(totalApo) + ' aportados';
+  } else if(mesesMeta === 0) {
+    document.getElementById('val-rendimentos').textContent = fmtBRL(patrimonio - 0);
+    document.getElementById('sub-rendimentos').textContent = 'Meta já superada';
+  } else {
+    document.getElementById('val-rendimentos').textContent = '—';
+    document.getElementById('sub-rendimentos').textContent = 'Meta inalcançável com aportes atuais';
+  }
+
+  // Chart: até 10 anos após conquista (ou 50 anos se inalcançável)
   const anosTotal = mesesMeta !== null
     ? Math.min(Math.ceil(mesesMeta / 12) + 10, 60)
     : 50;
@@ -672,6 +707,7 @@ function render() {
   buildChart(labels, dataPat, dataApo, meta, indepIdxAnual);
 }
 
+// ── theme ──
 function setThemeUI(isLight) {
   document.getElementById('theme-label').textContent = isLight ? 'Modo escuro' : 'Modo claro';
   document.getElementById('theme-icon').textContent  = isLight ? '🌙' : '☀️';
