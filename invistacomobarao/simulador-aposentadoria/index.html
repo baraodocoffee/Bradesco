@@ -47,35 +47,38 @@ body {
 }
 
 /* ── header ── */
-.top-bar { height:5px; background:var(--red); }
-.header {
-  position:sticky; top:0; z-index:100;
-  background:var(--surface);
+.page-header {
+  background:rgba(8,5,2,0.90);
   border-bottom:1px solid var(--border);
+  padding:16px 24px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
   backdrop-filter:blur(12px);
 }
-.header-inner {
-  max-width:1060px; margin:0 auto;
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 24px; gap:16px;
+body.light .page-header {
+  background:rgba(240,232,215,0.95);
+  border-bottom-color:rgba(201,168,76,0.4);
 }
-.logo {
+.page-header-left h1 {
   font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:15px; font-weight:700;
-  color:var(--accent); text-decoration:none;
-  display:flex; align-items:center; gap:8px;
+  font-size:18px; font-weight:700; color:var(--text);
 }
-.logo span { color:var(--text-muted); font-weight:400; font-size:14px; }
+.page-header-left p { font-size:12px; color:var(--text-muted); margin-top:2px; }
+.header-right { display:flex; align-items:center; gap:12px; }
 .theme-btn {
-  display:flex; align-items:center; gap:6px;
-  padding:7px 14px; border-radius:8px;
-  border:1px solid var(--border);
-  background:var(--surface2); color:var(--text-muted);
-  font-size:13px; font-weight:600;
-  font-family:'Inter',sans-serif; cursor:pointer;
-  transition:all .2s;
+  background:none; border:1px solid var(--border);
+  color:var(--accent); border-radius:8px; padding:6px 14px;
+  font-size:13px; font-weight:500; font-family:'Inter',sans-serif;
+  cursor:pointer; display:flex; align-items:center; gap:6px;
+  transition:all .15s;
 }
-.theme-btn:hover { border-color:var(--accent); color:var(--accent); }
+.theme-btn:hover { background:var(--accent-glow); }
+.nav-back {
+  font-size:12px; font-weight:500; color:var(--text-muted);
+  text-decoration:none; display:flex; align-items:center; gap:6px;
+  letter-spacing:.05em; text-transform:uppercase; transition:color .15s;
+}
+.nav-back:hover { color:var(--accent); }
 
 /* ── page ── */
 .container { max-width:1060px; margin:0 auto; padding:32px 24px 64px; }
@@ -278,9 +281,10 @@ body.light .big-card.dark { background:#1E1A12; }
 /* ── nota ── */
 .nota {
   padding:14px 18px; background:var(--surface);
-  border-radius:10px; border-left:4px solid var(--red);
+  border-radius:10px; border-left:3px solid rgba(201,168,76,0.45);
   font-size:12px; color:var(--text-muted); line-height:1.7;
 }
+body.light .nota { border-left-color:rgba(154,123,53,0.55); }
 
 /* ── responsive ── */
 @media(max-width:800px){
@@ -298,14 +302,17 @@ body.light .big-card.dark { background:#1E1A12; }
 </head>
 <body>
 
-<div class="top-bar"></div>
-<header class="header">
-  <div class="header-inner">
-    <a class="logo" href="#">Simulador de Aposentadoria <span>/ Invista como Barão</span></a>
+<header class="page-header">
+  <div class="page-header-left">
+    <h1>Simulador de Aposentadoria</h1>
+    <p>Planejamento financeiro para a independência</p>
+  </div>
+  <div class="header-right">
     <button class="theme-btn" onclick="toggleTheme()">
-      <span id="theme-icon">🌙</span>
       <span id="theme-label">Modo escuro</span>
+      <span id="theme-icon">🌙</span>
     </button>
+    <a href="../" class="nav-back">← Início</a>
   </div>
 </header>
 
