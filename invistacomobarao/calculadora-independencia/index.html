@@ -1,1 +1,695 @@
-hello world
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Calculadora de Independência Financeira</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --red:         #CC1417;
+  --gold:        #C9A84C;
+  --gold-dim:    #9A7B35;
+  --green:       #1A7F4B;
+  --green-light: rgba(26,127,75,0.12);
+
+  /* dark (default) */
+  --bg:          #080502;
+  --surface:     #13100A;
+  --surface2:    #1E1A12;
+  --border:      rgba(201,168,76,0.18);
+  --text:        #F5EFE3;
+  --text-muted:  #A89060;
+  --accent:      #C9A84C;
+  --accent-glow: rgba(201,168,76,0.12);
+}
+body.light {
+  --bg:          #F0EAD8;
+  --surface:     #FFFFFF;
+  --surface2:    #F5EFE3;
+  --border:      rgba(0,0,0,0.09);
+  --text:        #1A1A1A;
+  --text-muted:  #6B6B6B;
+  --accent:      #9A7B35;
+  --accent-glow: rgba(154,123,53,0.10);
+  --green:       #1A7F4B;
+  --green-light: rgba(26,127,75,0.10);
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:'Inter',sans-serif;
+  font-size:17px; line-height:1.6;
+  background:var(--bg); color:var(--text);
+  transition:background .3s,color .3s;
+  min-height:100vh;
+}
+
+/* ── header ── */
+.page-header {
+  background:rgba(8,5,2,0.90);
+  border-bottom:1px solid var(--border);
+  padding:16px 24px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+  backdrop-filter:blur(12px);
+}
+body.light .page-header {
+  background:rgba(240,232,215,0.95);
+  border-bottom-color:rgba(201,168,76,0.4);
+}
+.page-header-left h1 {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:18px; font-weight:700; color:var(--text);
+}
+.page-header-left p { font-size:12px; color:var(--text-muted); margin-top:2px; }
+.header-right { display:flex; align-items:center; gap:12px; }
+.theme-btn {
+  background:none; border:1px solid var(--border);
+  color:var(--accent); border-radius:8px; padding:6px 14px;
+  font-size:13px; font-weight:500; font-family:'Inter',sans-serif;
+  cursor:pointer; display:flex; align-items:center; gap:6px;
+  transition:all .15s;
+}
+.theme-btn:hover { background:var(--accent-glow); }
+.nav-back {
+  font-size:12px; font-weight:500; color:var(--text-muted);
+  text-decoration:none; display:flex; align-items:center; gap:6px;
+  letter-spacing:.05em; text-transform:uppercase; transition:color .15s;
+}
+.nav-back:hover { color:var(--accent); }
+
+/* ── page ── */
+.container { max-width:1060px; margin:0 auto; padding:32px 24px 64px; }
+.hero { margin-bottom:28px; }
+.hero h1 {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:26px; font-weight:700; color:var(--text); margin-bottom:4px;
+}
+.hero h1 em { font-style:normal; color:var(--accent); }
+.hero p { font-size:15px; color:var(--text-muted); }
+
+/* ── layout ── */
+.main-layout {
+  display:grid;
+  grid-template-columns:360px 1fr;
+  gap:20px; align-items:start;
+}
+.params-col, .results-col { min-width:0; }
+.span-all { grid-column:1/-1; }
+
+/* ── card base ── */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px; padding:24px;
+}
+.section-label {
+  font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.10em;
+  color:var(--text-muted); margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+.section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ── inputs ── */
+.field { margin-bottom:16px; }
+.field label {
+  display:block; font-size:13px; font-weight:600;
+  color:var(--text-muted); margin-bottom:6px;
+}
+.field-prefix {
+  display:flex; align-items:center;
+  border:1.5px solid var(--border); border-radius:9px;
+  background:var(--surface2); overflow:hidden;
+  transition:border-color .2s;
+}
+.field-prefix:focus-within { border-color:var(--accent); }
+.field-prefix .pfx {
+  padding:10px 12px; font-size:14px; font-weight:700;
+  color:var(--text-muted); border-right:1px solid var(--border);
+  background:var(--surface); flex-shrink:0;
+  font-family:'Inter',sans-serif;
+}
+.field-prefix input {
+  flex:1; padding:10px 12px; border:none; background:transparent;
+  color:var(--text); font-size:15px; font-weight:600;
+  font-family:'Inter',sans-serif; outline:none;
+}
+.age-input-wrap { position:relative; }
+.age-input-wrap input {
+  width:100%; padding:10px 44px 10px 12px; border-radius:9px;
+  border:1.5px solid var(--border); background:var(--surface2);
+  color:var(--text); font-size:16px; font-weight:700;
+  font-family:'Inter',sans-serif; outline:none; transition:border-color .2s;
+}
+.age-input-wrap input:focus { border-color:var(--accent); }
+.age-input-wrap .suffix {
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  font-size:13px; color:var(--text-muted); pointer-events:none;
+}
+
+.necessario-pill {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 14px; background:var(--accent-glow);
+  border:1px solid var(--border); border-radius:8px;
+  margin-top:10px; gap:8px;
+}
+.necessario-pill span { font-size:13px; color:var(--text-muted); font-weight:500; }
+.necessario-pill strong { font-size:15px; font-weight:700; color:var(--accent); white-space:nowrap; }
+
+/* ── perfil cards ── */
+.perfil-list { display:flex; flex-direction:column; gap:8px; }
+.perfil-card {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:13px 16px; border-radius:10px;
+  border:1.5px solid var(--border);
+  background:var(--surface2); cursor:pointer;
+  transition:all .2s;
+}
+.perfil-card:hover { border-color:var(--accent); }
+.perfil-card.active {
+  border-color:var(--accent); background:var(--surface);
+  box-shadow:0 0 0 3px var(--accent-glow);
+}
+.perfil-info .perfil-nome {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:15px; font-weight:700; color:var(--text);
+}
+.perfil-info .perfil-desc { font-size:12px; color:var(--text-muted); margin-top:1px; }
+.perfil-badge {
+  padding:5px 10px; border-radius:20px;
+  font-size:12px; font-weight:700; font-family:'Inter',sans-serif;
+  background:var(--accent-glow); color:var(--accent);
+  border:1px solid var(--border); white-space:nowrap;
+}
+.perfil-card.active .perfil-badge { background:var(--accent); color:#080502; border-color:var(--accent); }
+
+/* ── big cards ── */
+.big-cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.big-card {
+  border-radius:14px; padding:22px 20px;
+  min-height:140px; display:flex; flex-direction:column; justify-content:space-between;
+}
+.big-card.dark { background:#1A1410; border:1px solid rgba(201,168,76,0.25); }
+body.light .big-card.dark { background:#1E1A12; }
+.big-card.green-card { background:var(--green); border:1px solid var(--green); }
+.big-card .bc-label {
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; margin-bottom:8px;
+}
+.big-card.dark .bc-label       { color:rgba(245,239,227,0.55); }
+.big-card.green-card .bc-label { color:rgba(255,255,255,0.65); }
+.big-card .bc-value {
+  font-family:'Inter',sans-serif; font-size:26px; font-weight:700; line-height:1.15;
+}
+.big-card.dark .bc-value       { color:#F5EFE3; }
+.big-card.green-card .bc-value { color:#FFFFFF; }
+.big-card .bc-sub { font-size:12px; margin-top:6px; }
+.big-card.dark .bc-sub         { color:rgba(245,239,227,0.45); }
+.big-card.green-card .bc-sub   { color:rgba(255,255,255,0.65); }
+
+.big-card.warn { background:#3D1A0A; border:1px solid rgba(204,20,23,0.35); }
+body.light .big-card.warn { background:#F9E5E5; border-color:rgba(160,40,30,0.3); }
+.big-card.warn .bc-label { color:rgba(245,180,180,0.7); }
+body.light .big-card.warn .bc-label { color:rgba(160,40,30,0.6); }
+.big-card.warn .bc-value { color:#F4A0A0; font-size:20px; }
+body.light .big-card.warn .bc-value { color:#A0281E; }
+.big-card.warn .bc-sub { color:rgba(245,180,180,0.55); }
+body.light .big-card.warn .bc-sub { color:rgba(160,40,30,0.5); }
+
+/* ── small cards ── */
+.small-cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.small-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:18px;
+}
+.sc-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--text-muted); margin-bottom:6px; }
+.sc-value { font-family:'Inter',sans-serif; font-size:20px; font-weight:700; color:var(--text); }
+.sc-sub { font-size:12px; color:var(--text-muted); margin-top:3px; }
+
+/* ── progresso ── */
+.progress-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:18px 20px; margin-bottom:14px;
+}
+.progress-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.progress-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--text-muted); }
+.progress-pct { font-size:15px; font-weight:700; color:var(--accent); }
+.progress-bar-wrap { height:10px; background:var(--border); border-radius:99px; overflow:hidden; margin-bottom:8px; }
+.progress-bar-fill { height:100%; border-radius:99px; background:var(--green); transition:width .5s ease; }
+.progress-labels { display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); }
+
+/* ── chart ── */
+.chart-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; padding:22px; margin-bottom:14px;
+}
+.chart-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:17px; font-weight:700; color:var(--text); }
+.chart-subtitle { font-size:13px; color:var(--text-muted); margin-bottom:14px; margin-top:2px; }
+.chart-legend-row { display:flex; gap:20px; margin-bottom:16px; flex-wrap:wrap; }
+.legend-item { display:flex; align-items:center; gap:7px; font-size:13px; color:var(--text-muted); }
+.leg-line { width:24px; height:3px; border-radius:99px; flex-shrink:0; }
+.leg-dashed { height:0; width:24px; border-top:2.5px dashed; flex-shrink:0; }
+.chart-wrap { position:relative; height:260px; }
+
+/* ── nota ── */
+.nota {
+  padding:14px 18px; background:var(--surface);
+  border-radius:10px; border-left:3px solid rgba(201,168,76,0.45);
+  font-size:12px; color:var(--text-muted); line-height:1.7;
+}
+body.light .nota { border-left-color:rgba(154,123,53,0.55); }
+
+/* ── responsive ── */
+@media(max-width:800px){
+  .main-layout { grid-template-columns:1fr; }
+  .big-cards, .small-cards { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:480px){
+  .container { padding:20px 16px 48px; }
+  .hero h1 { font-size:22px; }
+  .big-card .bc-value { font-size:22px; }
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="page-header-left">
+    <h1>Calculadora de Independência</h1>
+    <p>Descubra quando você conquista sua liberdade financeira</p>
+  </div>
+  <div class="header-right">
+    <button class="theme-btn" onclick="toggleTheme()">
+      <span id="theme-label">Modo escuro</span>
+      <span id="theme-icon">🌙</span>
+    </button>
+    <a href="../" class="nav-back">← Início</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Sua <em>data de liberdade</em></h1>
+    <p>Informe a renda que deseja e descubra em quantos anos você atinge a independência financeira.</p>
+  </div>
+
+  <div class="main-layout">
+
+    <!-- ══ PARAMS ══ -->
+    <div class="params-col">
+      <div class="card">
+
+        <div class="section-label">Situação atual</div>
+
+        <div class="field">
+          <label>Idade atual</label>
+          <div class="age-input-wrap">
+            <input type="number" id="idadeAtual" value="35" min="18" max="70" oninput="render()"/>
+            <span class="suffix">anos</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Patrimônio investido hoje (R$)</label>
+          <div class="field-prefix">
+            <span class="pfx">R$</span>
+            <input type="number" id="patrimonioAtual" value="50000" min="0" step="1000" oninput="render()"/>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:20px;">
+          <label>Quanto você poupa por mês (R$)</label>
+          <div class="field-prefix">
+            <span class="pfx">R$</span>
+            <input type="number" id="aporteMensal" value="2000" min="0" step="100" oninput="render()"/>
+          </div>
+        </div>
+
+        <div class="section-label">Sua meta</div>
+
+        <div class="field" style="margin-bottom:20px;">
+          <label>Renda mensal desejada na independência (R$)</label>
+          <div class="field-prefix">
+            <span class="pfx">R$</span>
+            <input type="number" id="rendaDesejada" value="10000" min="500" step="500" oninput="render()"/>
+          </div>
+          <div class="necessario-pill">
+            <span>Patrimônio necessário (regra dos 4%)</span>
+            <strong id="val-necessario-pill">—</strong>
+          </div>
+        </div>
+
+        <div class="section-label">Perfil de investidor</div>
+
+        <div class="perfil-list">
+          <div class="perfil-card" data-perfil="conservador" onclick="setPerfil(this)">
+            <div class="perfil-info">
+              <div class="perfil-nome">Conservador</div>
+              <div class="perfil-desc">Renda fixa predominante</div>
+            </div>
+            <div class="perfil-badge">4% a.a. real</div>
+          </div>
+          <div class="perfil-card active" data-perfil="moderado" onclick="setPerfil(this)">
+            <div class="perfil-info">
+              <div class="perfil-nome">Moderado</div>
+              <div class="perfil-desc">Mix balanceado</div>
+            </div>
+            <div class="perfil-badge">6% a.a. real</div>
+          </div>
+          <div class="perfil-card" data-perfil="arrojado" onclick="setPerfil(this)">
+            <div class="perfil-info">
+              <div class="perfil-nome">Arrojado</div>
+              <div class="perfil-desc">Maior exposição em renda variável</div>
+            </div>
+            <div class="perfil-badge">8% a.a. real</div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;font-size:12px;color:var(--text-muted);line-height:1.6;">
+          Retornos em termos reais (acima da inflação). Simulação educacional — não constitui recomendação de investimento.
+        </div>
+
+      </div>
+    </div><!-- /params-col -->
+
+    <!-- ══ RESULTS ══ -->
+    <div class="results-col">
+
+      <div class="big-cards">
+        <div class="big-card dark">
+          <div>
+            <div class="bc-label">Número da liberdade</div>
+            <div class="bc-value" id="val-numero">—</div>
+          </div>
+          <div class="bc-sub">Patrimônio necessário pela regra dos 4%</div>
+        </div>
+        <div class="big-card green-card" id="card-conquista">
+          <div>
+            <div class="bc-label" id="lbl-conquista">Conquista em</div>
+            <div class="bc-value" id="val-conquista">—</div>
+          </div>
+          <div class="bc-sub" id="sub-conquista"></div>
+        </div>
+      </div>
+
+      <div class="small-cards">
+        <div class="small-card">
+          <div class="sc-label">Renda passiva hoje</div>
+          <div class="sc-value" id="val-renda-hoje">—</div>
+          <div class="sc-sub">Gerada pelo patrimônio atual</div>
+        </div>
+        <div class="small-card">
+          <div class="sc-label">Rendimentos projetados</div>
+          <div class="sc-value" id="val-rendimentos">—</div>
+          <div class="sc-sub" id="sub-rendimentos">—</div>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-header">
+          <div class="progress-title">Progresso rumo à liberdade</div>
+          <div class="progress-pct" id="val-progresso">0%</div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+        <div class="progress-labels">
+          <span>R$ 0</span>
+          <span id="lbl-meta-progress">—</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Trajetória até a Independência</div>
+        <div class="chart-subtitle">Projeção em valores reais — poder de compra de hoje</div>
+        <div class="chart-legend-row">
+          <div class="legend-item">
+            <div class="leg-line" style="background:var(--accent);height:3px;"></div>
+            Patrimônio
+          </div>
+          <div class="legend-item">
+            <div class="leg-dashed" style="border-color:#2C4A6E;"></div>
+            Aportado
+          </div>
+          <div class="legend-item">
+            <div class="leg-dashed" style="border-color:#1A7F4B;"></div>
+            Meta
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="chartIF"></canvas></div>
+      </div>
+
+    </div><!-- /results-col -->
+
+    <!-- ══ NOTA ══ -->
+    <div class="span-all">
+      <div class="nota">
+        Cálculo baseado na Regra dos 4% (Trinity Study) · Retornos reais acima da inflação · Conservador 4% · Moderado 6% · Arrojado 8% a.a. · Simulação com caráter educacional — não constitui oferta ou recomendação de investimento. Rentabilidade passada não garante rentabilidade futura.
+      </div>
+    </div>
+
+  </div><!-- /main-layout -->
+</div><!-- /container -->
+
+<script>
+const PERFIS = {
+  conservador: { real: 0.04 },
+  moderado:    { real: 0.06 },
+  arrojado:    { real: 0.08 },
+};
+let perfilAtivo = 'moderado';
+
+function setPerfil(el) {
+  document.querySelectorAll('.perfil-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  perfilAtivo = el.dataset.perfil;
+  render();
+}
+
+function fmtBRL(v) {
+  if(v >= 1e6) return 'R$ ' + (v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3}).replace(',000','') + ' mi';
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+}
+
+function calcFV(pv, pmt, rm, meses) {
+  if(rm === 0) return pv + pmt * meses;
+  return pv * Math.pow(1 + rm, meses) + pmt * (Math.pow(1 + rm, meses) - 1) / rm;
+}
+
+function calcMesesParaMeta(pv, pmt, rm, meta) {
+  if(pv >= meta) return 0;
+  if(pmt <= 0 && rm > 0) {
+    const n = Math.log(meta / pv) / Math.log(1 + rm);
+    return n <= 600 ? Math.ceil(n) : null;
+  }
+  if(pmt <= 0) return null;
+  let lo = 1, hi = 600;
+  if(calcFV(pv, pmt, rm, hi) < meta) return null;
+  while(lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if(calcFV(pv, pmt, rm, mid) >= meta) hi = mid;
+    else lo = mid + 1;
+  }
+  return lo;
+}
+
+let chart = null;
+
+const vertLinePlugin = {
+  id: 'vertLine',
+  beforeDraw(chart, _, opts) {
+    if(opts.xIdx == null) return;
+    const {ctx, chartArea, scales} = chart;
+    const xPx = scales.x.getPixelForIndex(opts.xIdx);
+    if(xPx < chartArea.left || xPx > chartArea.right) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(xPx, chartArea.top);
+    ctx.lineTo(xPx, chartArea.bottom);
+    ctx.strokeStyle = '#1A7F4B';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+};
+Chart.register(vertLinePlugin);
+
+function buildChart(labels, dataPat, dataApo, metaVal, indepIdx) {
+  const ctx = document.getElementById('chartIF').getContext('2d');
+  const light = document.body.classList.contains('light');
+  const gridC     = light ? 'rgba(0,0,0,0.06)'        : 'rgba(255,255,255,0.06)';
+  const tickC     = light ? '#6B6B6B'                  : '#A89060';
+  const gold      = light ? '#9A7B35'                  : '#C9A84C';
+  const tooltipBg = light ? '#FFFFFF'                  : '#1E1A12';
+  const tooltipBd = light ? '#E8E8E8'                  : 'rgba(201,168,76,0.3)';
+  const tooltipTx = light ? '#1A1A1A'                  : '#F5EFE3';
+
+  const dataMeta = labels.map(() => Math.round(metaVal));
+
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {
+          label:'Patrimônio',
+          data: dataPat,
+          borderColor: gold,
+          backgroundColor: light ? 'rgba(154,123,53,0.08)' : 'rgba(201,168,76,0.08)',
+          borderWidth:2.5, pointRadius:0, fill:true, tension:.35,
+        },
+        {
+          label:'Aportado',
+          data: dataApo,
+          borderColor:'#2C4A6E',
+          borderWidth:2, borderDash:[7,5],
+          pointRadius:0, fill:false, tension:0,
+        },
+        {
+          label:'Meta',
+          data: dataMeta,
+          borderColor:'#1A7F4B',
+          borderWidth:1.5, borderDash:[6,4],
+          pointRadius:0, fill:false, tension:0,
+        },
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ display:false },
+        vertLine:{ xIdx: indepIdx },
+        tooltip:{
+          backgroundColor: tooltipBg,
+          borderColor: tooltipBd, borderWidth:1,
+          titleColor: tooltipTx, bodyColor: tooltipTx, padding:12,
+          filter(item){ return item.dataset.label !== 'Meta'; },
+          callbacks:{
+            label(ctx){ return `${ctx.dataset.label}: ${fmtBRL(ctx.parsed.y)}`; }
+          }
+        }
+      },
+      scales:{
+        x:{
+          grid:{ color:gridC },
+          ticks:{ color:tickC, font:{size:12}, maxTicksLimit:10 }
+        },
+        y:{
+          grid:{ color:gridC },
+          ticks:{
+            color:tickC, font:{size:12},
+            callback(v){
+              if(v >= 1e6) return 'R$' + (v/1e6).toFixed(1) + 'M';
+              if(v >= 1e3) return 'R$' + (v/1e3).toFixed(0) + 'K';
+              return 'R$0';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function render() {
+  const idadeAtual = parseInt(document.getElementById('idadeAtual').value) || 35;
+  const patrimonio = parseFloat(document.getElementById('patrimonioAtual').value) || 0;
+  const aporte     = parseFloat(document.getElementById('aporteMensal').value) || 0;
+  const renda      = parseFloat(document.getElementById('rendaDesejada').value) || 0;
+
+  const { real } = PERFIS[perfilAtivo];
+  const rm = Math.pow(1 + real, 1/12) - 1;
+
+  const meta = renda * 300; // renda × 12 / 0.04
+
+  document.getElementById('val-necessario-pill').textContent = fmtBRL(meta);
+  document.getElementById('val-numero').textContent = fmtBRL(meta);
+  document.getElementById('lbl-meta-progress').textContent = fmtBRL(meta);
+  document.getElementById('val-renda-hoje').textContent = fmtBRL(patrimonio * 0.04 / 12) + '/mês';
+
+  const progresso = meta > 0 ? Math.min(patrimonio / meta, 1) : 0;
+  const pct = Math.max(Math.round(progresso * 100), 0);
+  document.getElementById('val-progresso').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = (pct > 0 ? Math.max(pct, 1) : 0) + '%';
+
+  const mesesMeta = calcMesesParaMeta(patrimonio, aporte, rm, meta);
+
+  const cardConquista = document.getElementById('card-conquista');
+  const valConquista  = document.getElementById('val-conquista');
+  const subConquista  = document.getElementById('sub-conquista');
+  const lblConquista  = document.getElementById('lbl-conquista');
+
+  let indepIdxAnual = null;
+
+  if(mesesMeta === 0) {
+    cardConquista.className = 'big-card green-card';
+    lblConquista.textContent = 'Status';
+    valConquista.textContent = 'Já atingido!';
+    subConquista.textContent = 'Seu patrimônio atual já supera a meta';
+    indepIdxAnual = 0;
+    document.getElementById('val-rendimentos').textContent = '—';
+    document.getElementById('sub-rendimentos').textContent = 'Meta já superada';
+  } else if(mesesMeta === null) {
+    cardConquista.className = 'big-card warn';
+    lblConquista.textContent = 'Atenção';
+    valConquista.textContent = '> 50 anos';
+    subConquista.textContent = 'Aumente o aporte ou reveja a meta de renda';
+    indepIdxAnual = null;
+    document.getElementById('val-rendimentos').textContent = '—';
+    document.getElementById('sub-rendimentos').textContent = 'Meta inalcançável com aportes atuais';
+  } else {
+    cardConquista.className = 'big-card green-card';
+    const anos = Math.ceil(mesesMeta / 12);
+    lblConquista.textContent = 'Conquista em';
+    valConquista.textContent = anos + (anos === 1 ? ' ano' : ' anos');
+    subConquista.textContent = 'Aos ' + (idadeAtual + anos) + ' anos de idade';
+    indepIdxAnual = anos;
+    const acumulado   = calcFV(patrimonio, aporte, rm, mesesMeta);
+    const totalApo    = patrimonio + aporte * mesesMeta;
+    document.getElementById('val-rendimentos').textContent = fmtBRL(acumulado - totalApo);
+    document.getElementById('sub-rendimentos').textContent = 'Sobre ' + fmtBRL(totalApo) + ' aportados';
+  }
+
+  const anosTotal = mesesMeta !== null
+    ? Math.min(Math.ceil(mesesMeta / 12) + 10, 60)
+    : 50;
+
+  const labels = [], dataPat = [], dataApo = [];
+  for(let a = 0; a <= anosTotal; a++) {
+    labels.push((idadeAtual + a) + 'a');
+    const m = a * 12;
+    dataPat.push(Math.round(calcFV(patrimonio, aporte, rm, m)));
+    dataApo.push(Math.round(patrimonio + aporte * m));
+  }
+
+  buildChart(labels, dataPat, dataApo, meta, indepIdxAnual);
+}
+
+function setThemeUI(isLight) {
+  document.getElementById('theme-label').textContent = isLight ? 'Modo escuro' : 'Modo claro';
+  document.getElementById('theme-icon').textContent  = isLight ? '🌙' : '☀️';
+}
+function toggleTheme() {
+  const isNow = document.body.classList.toggle('light');
+  localStorage.setItem('theme', isNow ? 'light' : 'dark');
+  setThemeUI(isNow);
+  render();
+}
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  const isLight = saved !== 'dark';
+  if(isLight) document.body.classList.add('light');
+  setThemeUI(isLight);
+}
+
+initTheme();
+render();
+</script>
+</body>
+</html>
