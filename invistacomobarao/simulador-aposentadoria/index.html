@@ -300,7 +300,7 @@ body.light .nota { border-left-color:rgba(154,123,53,0.55); }
 }
 </style>
 </head>
-<body>
+<body class="light">
 
 <header class="page-header">
   <div class="page-header-left">
@@ -503,6 +503,11 @@ function fmtBRL(v) {
   if(v >= 1e6) return 'R$ ' + (v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3}).replace(',000','') + ' mi';
   return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
 }
+function fmtBRLshort(v) {
+  if(v >= 1e6) return 'R$ ' + (v/1e6).toFixed(3).replace('.',',') + ' mi';
+  if(v >= 1e3) return 'R$ ' + (v/1e3).toFixed(0) + 'k';
+  return 'R$ ' + Math.round(v);
+}
 
 // FV de PV + PMT a taxa rm por meses (retorno real — valores em R$ de hoje)
 function calcFV(pv, pmt, rm, meses) {
@@ -604,6 +609,7 @@ function render() {
   const renda = acumulado * 0.04 / 12; // regra dos 4%
 
   const pctAportes = totalAportado / acumulado;
+  const pctRend    = rendimentos   / acumulado;
   const multiplicador = acumulado / Math.max(totalAportado, 1);
 
   // big cards
@@ -625,7 +631,7 @@ function render() {
   document.getElementById('pct-rendimentos').textContent = pR + '%';
   document.getElementById('retorno-real').textContent = (real * 100).toFixed(0) + '% a.a.';
 
-  // chart data — anual
+  // chart data — anual para não sobrecarregar
   const labels = [];
   const dataPatrimonio = [];
   const dataAportado   = [];
@@ -652,9 +658,8 @@ function toggleTheme() {
 }
 function initTheme() {
   const saved = localStorage.getItem('theme');
-  const isLight = saved !== 'dark';
-  if(isLight) document.body.classList.add('light');
-  setThemeUI(isLight);
+  if(saved === 'dark') document.body.classList.remove('light');
+  setThemeUI(document.body.classList.contains('light'));
 }
 
 initTheme();
