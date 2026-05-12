@@ -268,7 +268,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
 }
 </style>
 </head>
-<body>
+<body class="light">
 
 <div class="hero-bg"></div>
 <div class="hero-overlay"></div>
@@ -289,6 +289,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
 
 <div class="container">
 
+  <!-- Hero statement -->
   <div class="hero-statement">
     <h2>A poupança protege. Mas a que custo?</h2>
     <p>Com a Selic a 14,50% ao ano, manter dinheiro na poupança significa abrir mão de uma rentabilidade até <strong style="color:var(--cream)">duas vezes maior</strong> — sem sacrificar liquidez ou segurança. O FGC protege CDBs, LCIs e LCAs da mesma forma que protege a poupança.</p>
@@ -298,6 +299,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
     </div>
   </div>
 
+  <!-- Indicadores -->
   <div class="indicadores-grid">
     <div class="ind-card neutral">
       <div class="ind-label">SELIC</div>
@@ -321,6 +323,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
     </div>
   </div>
 
+  <!-- Simulador -->
   <div class="card" style="margin-bottom:16px;">
     <div class="section-label">Simulador — quanto rende cada produto</div>
     <div class="sim-controls">
@@ -348,6 +351,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
     </div>
   </div>
 
+  <!-- Gráfico -->
   <div class="card" style="margin-bottom:24px;">
     <div class="section-label">Evolução patrimonial no período</div>
     <div class="chart-wrap">
@@ -355,6 +359,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
     </div>
   </div>
 
+  <!-- Insights -->
   <div class="insights-grid">
 
     <div class="insight-card warn">
@@ -383,6 +388,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
 
   </div>
 
+  <!-- Tabela comparativa -->
   <div class="card">
     <div class="section-label">Comparativo de produtos</div>
     <div class="table-wrap">
@@ -458,6 +464,7 @@ tbody tr.row-mid td{background:var(--amber-light);}
 </div>
 
 <script>
+// ── Taxas ─────────────────────────────────────────────────────────────────────
 const CDI_AA        = 0.144;
 const SELIC_AA      = 0.145;
 const IPCA_AA       = 0.050;
@@ -487,16 +494,17 @@ function calcSerie(v0, am, meses, tributado){
   return Array.from({length:meses+1},(_,m)=>m===0?v0:calcLiquido(v0,am,m,tributado));
 }
 
+// ── Produtos ──────────────────────────────────────────────────────────────────
 const PRODUTOS = [
   {id:'poupanca', nome:'Poupança',      am:POUPANCA_AM,  trib:false, classe:'bad',
    corD:'rgba(192,57,43,0.9)',  corL:'rgba(160,40,30,0.9)'},
   {id:'cdb50',    nome:'CDB 50% CDI',  am:CDB50_AM,     trib:true,  classe:'mid',
    corD:'rgba(201,132,28,0.85)',corL:'rgba(153,96,16,0.85)'},
-  {id:'lca84',    nome:'LCA 84% CDI',  am:LCA_AM,       trib:false, classe:'winner',
+  {id:'lca84',    nome:'LCA 84% CDI', am:LCA_AM,       trib:false, classe:'winner',
    corD:'rgba(76,175,125,0.9)', corL:'rgba(26,127,75,0.9)'},
-  {id:'cdb100',   nome:'CDB 100% CDI', am:CDI_AM,       trib:true,  classe:'winner',
+  {id:'cdb100',   nome:'CDB 100% CDI',am:CDI_AM,       trib:true,  classe:'winner',
    corD:'rgba(91,143,212,0.9)', corL:'rgba(26,95,165,0.9)'},
-  {id:'tesouro',  nome:'Tesouro Selic', am:SELIC_LIQ_AM, trib:true,  classe:'winner',
+  {id:'tesouro',  nome:'Tesouro Selic',am:SELIC_LIQ_AM, trib:true,  classe:'winner',
    corD:'rgba(155,89,182,0.85)',corL:'rgba(110,50,150,0.85)'},
 ];
 
@@ -535,14 +543,18 @@ function renderResultCards(valor, meses){
 }
 
 function renderInsights(valor){
-  const poupAnual  = Math.pow(1+POUPANCA_AM,12)-1;
-  const realPoup   = ((1+poupAnual)/(1+IPCA_AA)-1)*100;
-  const cdb10Liq   = calcLiquido(10000, CDI_AM, 120, true);
+  // Ganho real poupança: ((1 + am_anual_poupanca) / (1 + IPCA_AA) - 1)
+  const poupAnual = Math.pow(1+POUPANCA_AM,12)-1;
+  const realPoup  = ((1+poupAnual)/(1+IPCA_AA)-1)*100;
+  // Ganho real CDB 100% CDI líq 10 anos, anualizado
+  const cdb10Liq  = calcLiquido(10000, CDI_AM, 120, true);
   const cdb10PctAA = (Math.pow(cdb10Liq/10000, 1/10)-1)*100;
-  const realCdb    = ((1+cdb10PctAA/100)/(1+IPCA_AA)-1)*100;
+  const realCdb   = ((1+cdb10PctAA/100)/(1+IPCA_AA)-1)*100;
+  // 5 anos
   const poup5  = calcLiquido(10000, POUPANCA_AM, 60, false);
   const cdb5   = calcLiquido(10000, CDI_AM, 60, true);
   const diff5  = cdb5 - poup5;
+  // 10 anos
   const poup10 = calcLiquido(10000, POUPANCA_AM, 120, false);
   const cdb10  = calcLiquido(10000, CDI_AM, 120, true);
   const diff10 = cdb10 - poup10;
@@ -554,6 +566,7 @@ function renderInsights(valor){
   document.getElementById('ins-10a').textContent           = brl(diff10);
   document.getElementById('ins-10a-100k').textContent      = brl(diff10*10);
 
+  // Hero stat
   const anos  = periodoMeses/12;
   const poupV = calcLiquido(10000, POUPANCA_AM, periodoMeses, false);
   const cdbV  = calcLiquido(10000, CDI_AM, periodoMeses, true);
@@ -580,6 +593,7 @@ function renderChart(valor, meses){
     tension:         0.3,
   }));
 
+  // IPCA reference dashed
   datasets.push({
     label:           'IPCA (inflação)',
     data:            calcSerie(valor, IPCA_AM_RATE, meses, false),
@@ -591,11 +605,11 @@ function renderChart(valor, meses){
     tension:         0.3,
   });
 
-  const gridClr   = isLight?'rgba(42,31,10,0.08)':'rgba(245,230,200,0.07)';
-  const tickClr   = isLight?'rgba(42,31,10,0.45)':'rgba(245,230,200,0.35)';
-  const bgTooltip = isLight?'rgba(245,239,227,0.97)':'rgba(13,10,5,0.95)';
-  const ttTitle   = isLight?'#2A1F0A':'#F5E6C8';
-  const ttBody    = isLight?'rgba(42,31,10,0.7)':'rgba(245,230,200,0.65)';
+  const gridClr  = isLight?'rgba(42,31,10,0.08)':'rgba(245,230,200,0.07)';
+  const tickClr  = isLight?'rgba(42,31,10,0.45)':'rgba(245,230,200,0.35)';
+  const bgTooltip= isLight?'rgba(245,239,227,0.97)':'rgba(13,10,5,0.95)';
+  const ttTitle  = isLight?'#2A1F0A':'#F5E6C8';
+  const ttBody   = isLight?'rgba(42,31,10,0.7)':'rgba(245,230,200,0.65)';
 
   if(chart){chart.destroy();chart=null;}
   chart = new Chart(document.getElementById('chart'),{
@@ -622,6 +636,7 @@ function renderChart(valor, meses){
   });
 }
 
+// ── Tema ──────────────────────────────────────────────────────────────────────
 function setThemeUI(isLight){
   document.getElementById('theme-label').textContent = isLight?'Modo escuro':'Modo claro';
   document.getElementById('theme-icon').textContent  = isLight?'🌙':'☀️';
@@ -634,9 +649,8 @@ function toggleTheme(){
 }
 function initTheme(){
   const saved=localStorage.getItem('theme');
-  const isLight=saved!=='dark';
-  if(isLight) document.body.classList.add('light');
-  setThemeUI(isLight);
+  if(saved==='dark') document.body.classList.remove('light');
+  setThemeUI(document.body.classList.contains('light'));
 }
 
 initTheme();
