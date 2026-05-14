@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CDB × LCA / LCI — Invista com o Barão</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230D0A05'/><text x='16' y='23' text-anchor='middle' font-family='Georgia,serif' font-size='22' font-weight='700' fill='%23C9A84C'>B</text></svg>"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --gold:#C9A84C;
+  --gold-light:rgba(201,168,76,0.12);
+  --gold-border:rgba(201,168,76,0.35);
+  --bg-deep:#0D0A05;
+  --bg-dark:#080502;
+  --bg-card:rgba(255,255,255,0.04);
+  --bg-card-hover:rgba(255,255,255,0.07);
+  --cream:#F5E6C8;
+  --cream-muted:rgba(245,230,200,0.6);
+  --cream-faint:rgba(245,230,200,0.35);
+  --border:rgba(245,230,200,0.10);
+  --border-gold:rgba(201,168,76,0.35);
+  --green:#4CAF7D;
+  --green-light:rgba(76,175,125,0.12);
+  --blue:#5B8FD4;
+  --blue-light:rgba(91,143,212,0.12);
+  --red:#C0392B;
+  --red-light:rgba(192,57,43,0.12);
+}
+body.light{
+  --bg-deep:#F5EFE3;
+  --bg-dark:#EDE4D3;
+  --bg-card:rgba(255,255,255,0.75);
+  --bg-card-hover:rgba(255,255,255,0.95);
+  --cream:#2A1F0A;
+  --cream-muted:rgba(42,31,10,0.72);
+  --cream-faint:rgba(42,31,10,0.45);
+  --border:rgba(42,31,10,0.12);
+  --border-gold:rgba(201,168,76,0.5);
+  --green:#1A7F4B;
+  --green-light:rgba(26,127,75,0.10);
+  --blue:#1A5FA5;
+  --blue-light:rgba(26,95,165,0.10);
+  --red:#A0281E;
+  --red-light:rgba(160,40,30,0.08);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;background:var(--bg-deep);color:var(--cream-muted);transition:background .3s,color .3s;}
+
+/* ── Hero background ─────────────────────────────────────────────────────── */
+.hero-bg{
+  position:fixed;inset:0;z-index:0;
+  background:url('balanca.jpg') center center / cover no-repeat;
+  transition:opacity .3s;
+}
+body.light .hero-bg{opacity:0.15;}
+.hero-overlay{
+  position:fixed;inset:0;z-index:1;
+  background:linear-gradient(to bottom,rgba(8,5,2,0.72) 0%,rgba(8,5,2,0.82) 50%,rgba(8,5,2,0.92) 100%);
+  transition:background .3s;
+}
+body.light .hero-overlay{
+  background:linear-gradient(to bottom,rgba(245,239,227,0.92) 0%,rgba(245,239,227,0.96) 50%,rgba(245,239,227,0.98) 100%);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.page-header,
+.container{position:relative;z-index:2;}
+.page-header{
+  background:rgba(8,5,2,0.90);
+  border-bottom:1px solid var(--border);
+  padding:18px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:10;
+  backdrop-filter:blur(12px);
+}
+body.light .page-header{
+  background:rgba(240,232,215,0.95);
+  border-bottom-color:rgba(201,168,76,0.4);
+}
+.page-header-left h1{
+  font-family:'Playfair Display',serif;
+  font-size:20px;font-weight:700;
+  color:var(--cream);letter-spacing:.01em;
+}
+.page-header-left p{font-size:12px;color:var(--cream-faint);margin-top:3px;letter-spacing:.02em;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.theme-btn{
+  background:none;border:1px solid var(--border-gold);color:var(--gold);
+  border-radius:8px;padding:6px 14px;
+  font-size:13px;font-weight:500;font-family:'Inter',sans-serif;
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+  transition:all .15s;line-height:1;letter-spacing:.01em;
+}
+.theme-btn:hover{background:var(--gold-light);}
+.theme-btn-emoji{font-size:15px;line-height:1;}
+.nav-back{
+  font-size:12px;font-weight:500;color:var(--cream-faint);
+  text-decoration:none;display:flex;align-items:center;gap:6px;
+  letter-spacing:.05em;text-transform:uppercase;transition:color .15s;
+}
+.nav-back:hover{color:var(--gold);}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+.container{max-width:960px;margin:0 auto;padding:28px 24px 80px;}
+
+/* Grid único: parâmetros + comparação na linha 1; demais elementos span full */
+.main-layout{
+  display:grid;
+  grid-template-columns:1fr 2fr;
+  gap:16px;
+  align-items:start;
+}
+.params-col,.compare-col{min-width:0;align-self:stretch;}
+/* Coluna direita: inputs e resultados empilhados e alinhados */
+.compare-col{display:flex;flex-direction:column;gap:16px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-2 > *{min-width:0;}
+/* Card de parâmetros estica para preencher toda a altura da coluna direita */
+.params-col{display:flex;flex-direction:column;}
+.params-col .card{flex:1;}
+/* Elementos de baixo: span em todas as colunas do grid → mesma largura exata */
+.span-all{grid-column:1/-1;}
+
+/* ── Cards ──────────────────────────────────────────────────────────────── */
+.card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:22px;
+  backdrop-filter:blur(8px);
+  transition:background .15s,border-color .15s;
+}
+.card.winner{border-color:rgba(76,175,125,.45);background:var(--green-light);}
+.card.loser{border-color:var(--border);}
+
+.section-label{
+  font-size:10px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.22em;
+  color:var(--gold);font-family:'Inter';
+  margin-bottom:16px;
+}
+
+/* ── Inputs ─────────────────────────────────────────────────────────────── */
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:13px;color:var(--cream-muted);margin-bottom:7px;font-weight:500;}
+.input-wrap{
+  display:flex;align-items:center;
+  border:1px solid var(--border);
+  border-radius:9px;padding:10px 14px;
+  background:var(--bg-dark);
+  transition:border-color .15s;
+}
+body.light .input-wrap{background:rgba(255,255,255,0.6);}
+.input-wrap:focus-within{border-color:var(--gold-border);}
+.input-wrap input{
+  flex:1;border:none;outline:none;
+  font-size:16px;font-family:'Inter',sans-serif;
+  color:var(--cream);background:transparent;min-width:0;
+}
+.input-prefix{font-size:13px;color:var(--cream-faint);margin-right:6px;flex-shrink:0;}
+.input-suffix{font-size:13px;color:var(--cream-faint);margin-left:6px;flex-shrink:0;}
+
+/* ── Quick buttons ───────────────────────────────────────────────────────── */
+.quick-btns{display:flex;gap:6px;margin-top:8px;}
+.quick-btn{
+  flex:1;padding:6px 0;border-radius:8px;
+  border:1px solid var(--border);background:transparent;
+  font-size:12px;font-weight:500;color:var(--cream-muted);
+  cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all .15s;text-align:center;
+}
+.quick-btn:hover{border-color:var(--gold-border);color:var(--gold);}
+.quick-btn.active{background:var(--gold-light);border-color:var(--gold);color:var(--gold);}
+
+/* ── Product header ──────────────────────────────────────────────────────── */
+.product-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.product-title{display:flex;align-items:center;gap:10px;}
+.product-avatar{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#0D0A05;
+  flex-shrink:0;font-family:'Inter',sans-serif;
+}
+.product-name{
+  font-family:'Playfair Display',serif;
+  font-size:16px;font-weight:700;color:var(--cream);
+}
+
+/* ── Badges ──────────────────────────────────────────────────────────────── */
+.badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.08em;font-family:'Inter';}
+.badge-ir{background:var(--bg-card);color:var(--cream-faint);border:1px solid var(--border);}
+.badge-isento{background:var(--green-light);color:var(--green);border:1px solid var(--green);}
+
+/* ── Mode toggle (% CDI / Pré) ───────────────────────────────────────────── */
+.mode-toggle{display:flex;gap:6px;margin-bottom:12px;}
+.mode-btn{
+  flex:1;padding:7px 10px;border-radius:8px;
+  border:1px solid var(--border);background:transparent;
+  font-size:12px;font-weight:500;color:var(--cream-muted);
+  cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all .15s;text-align:center;
+}
+.mode-btn:hover{border-color:var(--gold-border);color:var(--gold);}
+.mode-btn.active{background:var(--gold-light);border-color:var(--gold);color:var(--gold);}
+
+/* ── Tab toggle (LCI / LCA) ──────────────────────────────────────────────── */
+.tab-toggle{display:flex;gap:6px;}
+.tab-btn{
+  padding:5px 16px;border-radius:20px;
+  border:1px solid var(--border);background:transparent;
+  font-size:12px;font-weight:500;color:var(--cream-muted);
+  cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;
+}
+.tab-btn:hover{border-color:var(--gold-border);color:var(--gold);}
+.tab-btn.active{background:var(--gold-light);border-color:var(--gold);color:var(--gold);}
+
+/* ── Result cards ────────────────────────────────────────────────────────── */
+.result-product-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.result-product-name{
+  font-family:'Playfair Display',serif;
+  font-size:17px;font-weight:700;color:var(--cream);
+}
+.result-product-sub{font-size:12px;color:var(--cream-faint);margin-top:2px;}
+.winner-badge{
+  font-size:10px;font-weight:600;padding:3px 10px;
+  border-radius:20px;background:var(--gold);color:#0D0A05;
+  font-family:'Inter',sans-serif;letter-spacing:.04em;
+  text-transform:uppercase;vertical-align:middle;margin-left:8px;
+}
+.result-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid var(--border);
+}
+.result-row:last-of-type{border-bottom:none;}
+.result-row .rlabel{font-size:13px;color:var(--cream-muted);}
+.result-row .rvalue{font-size:13px;font-weight:600;color:var(--cream);}
+.result-row .rvalue.neg{color:var(--red);}
+.result-row .rvalue.isento-tag{color:var(--green);font-size:12px;font-weight:500;}
+.result-total{margin-top:14px;padding-top:14px;border-top:2px solid var(--border);}
+.result-total .rlabel{font-size:13px;font-weight:600;color:var(--cream-muted);}
+.result-total .rvalue{font-size:22px;font-weight:600;color:var(--cream);font-family:'Inter';}
+.result-footer{margin-top:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.result-footer span{font-size:12px;color:var(--cream-faint);}
+.result-footer strong{color:var(--cream-muted);}
+
+/* ── Summary bar ─────────────────────────────────────────────────────────── */
+.summary-bar{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px 22px;
+  margin-bottom:16px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;
+  backdrop-filter:blur(8px);
+  font-size:15px;color:var(--cream-muted);
+}
+.summary-bar strong{font-size:16px;color:var(--cream);}
+.highlight{color:var(--green);font-weight:700;}
+.highlight.red{color:var(--red);}
+
+.btn-pdf{
+  background:var(--gold);color:var(--bg-deep);border:none;
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
+  padding:8px 18px;border-radius:8px;cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+  letter-spacing:.05em;text-transform:uppercase;
+  transition:opacity .15s;flex-shrink:0;white-space:nowrap;
+}
+.btn-pdf:hover{opacity:.85;}
+.btn-pdf:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── Taxas equivalentes ──────────────────────────────────────────────────── */
+.equiv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;}
+.equiv-card{border-radius:10px;padding:16px 18px;}
+.equiv-card.blue-card{background:var(--blue-light);border:1px solid rgba(91,143,212,.3);}
+.equiv-card.green-card{background:var(--green-light);border:1px solid rgba(76,175,125,.3);}
+body.light .equiv-card.blue-card{border-color:rgba(26,95,165,.25);}
+body.light .equiv-card.green-card{border-color:rgba(26,127,75,.25);}
+.equiv-label{font-size:12px;color:var(--cream-muted);margin-bottom:8px;line-height:1.5;}
+.equiv-value{font-size:24px;font-weight:600;font-family:'Inter';color:var(--cream);}
+.ir-note{text-align:center;font-size:11px;color:var(--cream-faint);margin-top:8px;}
+
+/* ── Nota ────────────────────────────────────────────────────────────────── */
+.nota{
+  padding:16px 20px;
+  background:var(--bg-card);
+  border-radius:10px;
+  border-left:3px solid var(--border-gold);
+  font-size:12px;color:var(--cream-faint);line-height:1.7;
+  margin-top:16px;margin-bottom:48px;
+}
+
+@media(max-width:700px){
+  .main-layout{grid-template-columns:1fr;}
+  .grid-2{grid-template-columns:1fr;}
+  .equiv-grid{grid-template-columns:1fr;}
+.container{padding:20px 16px 80px;}
+  .summary-bar{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body class="light">
+
+<div class="hero-bg"></div>
+<div class="hero-overlay"></div>
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Comparador de Renda Fixa</h1>
+    <p>CDB × LCA / LCI — tributado vs. isento de IR</p>
+  </div>
+  <div class="header-right">
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Alternar tema">
+      <span id="theme-label">Modo escuro</span>
+      <span class="theme-btn-emoji" id="theme-icon">🌙</span>
+    </button>
+    <a href="../" class="nav-back">← Início</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="main-layout">
+    <!-- COLUNA ESQUERDA: Parâmetros -->
+    <div class="params-col">
+    <div class="card">
+      <div class="section-label">Parâmetros</div>
+      <div class="field">
+        <label>Valor investido</label>
+        <div class="input-wrap">
+          <span class="input-prefix">R$</span>
+          <input type="number" id="valor" value="10000" min="0" step="1000"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>Prazo (dias corridos)</label>
+        <div class="input-wrap">
+          <input type="number" id="dc" value="365" min="1" max="3650"/>
+          <span class="input-suffix">dias</span>
+        </div>
+        <div class="quick-btns">
+          <button class="quick-btn" onclick="setDC(180,this)">6 meses</button>
+          <button class="quick-btn active" onclick="setDC(365,this)">1 ano</button>
+          <button class="quick-btn" onclick="setDC(730,this)">2 anos</button>
+        </div>
+        <div class="quick-btns" style="margin-top:6px;">
+          <button class="quick-btn" onclick="setDC(1095,this)">3 anos</button>
+          <button class="quick-btn" onclick="setDC(1460,this)">4 anos</button>
+          <button class="quick-btn" onclick="setDC(1825,this)">5 anos</button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>CDI atual (% a.a.)</label>
+        <div class="input-wrap">
+          <input type="number" id="cdi" value="14.40" min="0" max="50" step="0.25"/>
+          <span class="input-suffix">% a.a.</span>
+        </div>
+      </div>
+    </div>
+    </div><!-- /params-col -->
+
+    <!-- COLUNA DIREITA: inputs CDB + Isento empilhados sobre resultados -->
+    <div class="compare-col">
+    <div class="grid-2">
+    <!-- CDB -->
+    <div class="card">
+      <div class="product-header">
+        <div class="product-title">
+          <div class="product-avatar" style="background:var(--blue)">C</div>
+          <span class="product-name">CDB</span>
+        </div>
+        <span class="badge badge-ir">Tributado</span>
+      </div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="cdb-btn-cdi" onclick="setMode('cdb','cdi')">% do CDI</button>
+        <button class="mode-btn" id="cdb-btn-pre" onclick="setMode('cdb','pre')">% a.a. Pré</button>
+      </div>
+      <div class="input-wrap">
+        <input type="number" id="cdb-val" value="100" min="0" step="0.5"/>
+        <span class="input-suffix" id="cdb-suffix">% CDI</span>
+      </div>
+    </div>
+
+    <!-- ISENTO -->
+    <div class="card">
+      <div class="product-header">
+        <div class="product-title">
+          <div class="tab-toggle" style="margin-bottom:0">
+            <button class="tab-btn" id="tab-lci" onclick="setTipo('lci')">LCI</button>
+            <button class="tab-btn active" id="tab-lca" onclick="setTipo('lca')">LCA</button>
+          </div>
+        </div>
+        <span class="badge badge-isento">Isento IR</span>
+      </div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="iso-btn-cdi" onclick="setMode('iso','cdi')">% do CDI</button>
+        <button class="mode-btn" id="iso-btn-pre" onclick="setMode('iso','pre')">% a.a. Pré</button>
+      </div>
+      <div class="input-wrap">
+        <input type="number" id="iso-val" value="86" min="0" step="0.5"/>
+        <span class="input-suffix" id="iso-suffix">% CDI</span>
+      </div>
+    </div>
+    </div><!-- /grid-2 inputs -->
+
+    <!-- RESULTADOS (mesma grade 2 colunas, alinhada aos inputs acima) -->
+    <div class="grid-2" id="results-grid"></div>
+
+    </div><!-- /compare-col -->
+
+    <!-- RESUMO: span em todas as colunas do grid -->
+    <div class="summary-bar span-all" id="summary-bar"></div>
+
+    <!-- TAXAS EQUIVALENTES: span em todas as colunas do grid -->
+    <div class="card span-all" id="taxas-card">
+      <div class="section-label">Taxas Equivalentes</div>
+      <div class="equiv-grid">
+        <div class="equiv-card blue-card">
+          <div class="equiv-label" id="eq1-label"></div>
+          <div class="equiv-value" id="eq1-value"></div>
+        </div>
+        <div class="equiv-card green-card">
+          <div class="equiv-label" id="eq2-label"></div>
+          <div class="equiv-value" id="eq2-value"></div>
+        </div>
+      </div>
+      <div class="ir-note" id="ir-note"></div>
+    </div>
+
+    <div class="nota span-all">
+      Simulação com fins informativos. Não constitui oferta ou recomendação de investimento.<br>
+      IR calculado em dias corridos sobre o ganho bruto no resgate.
+    </div>
+
+  </div><!-- /main-layout -->
+
+</div>
+
+<script>
+const DEFAULTS = {
+  cdb: { cdi: 100, pre: 13.5 },
+  iso: { cdi: 86,  pre: 11.0 }
+};
+
+let state = {
+  valor: 10000, dc: 365, cdi: 14.40,
+  cdb_mode: 'cdi', cdb_val: 100,
+  iso_mode: 'cdi', iso_val: 86,
+  tipo: 'lca'
+};
+
+function getIR(dc) {
+  if (dc <= 180) return { rate: 0.225, label: 'Até 180 dias (22,5%)' };
+  if (dc <= 360) return { rate: 0.200, label: '181–360 dias (20,0%)' };
+  if (dc <= 720) return { rate: 0.175, label: '361–720 dias (17,5%)' };
+  return { rate: 0.150, label: 'Acima de 720 dias (15,0%)' };
+}
+
+function calcBruto(valor, annual_rate_pct, dc) {
+  return valor * (Math.pow(1 + annual_rate_pct / 100, dc / 365) - 1);
+}
+
+function getAnnualRate(mode, val, cdi) {
+  return mode === 'cdi' ? cdi * val / 100 : val;
+}
+
+function brl(v) {
+  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function pct(v, decimals = 2) {
+  return v.toFixed(decimals).replace('.', ',') + '%';
+}
+
+function render() {
+  const { valor, dc, cdi, cdb_mode, cdb_val, iso_mode, iso_val, tipo } = state;
+  const ir = getIR(dc);
+
+  const cdb_rate = getAnnualRate(cdb_mode, cdb_val, cdi);
+  const iso_rate = getAnnualRate(iso_mode, iso_val, cdi);
+
+  const cdb_bruto = calcBruto(valor, cdb_rate, dc);
+  const cdb_ir    = cdb_bruto * ir.rate;
+  const cdb_liq   = cdb_bruto - cdb_ir;
+  const cdb_final = valor + cdb_liq;
+  const cdb_liq_aa = (Math.pow(1 + cdb_liq / valor, 365 / dc) - 1) * 100;
+
+  const iso_bruto = calcBruto(valor, iso_rate, dc);
+  const iso_liq   = iso_bruto;
+  const iso_final = valor + iso_liq;
+  const iso_liq_aa = (Math.pow(1 + iso_liq / valor, 365 / dc) - 1) * 100;
+
+  const cdb_wins = cdb_liq >= iso_liq;
+  const diff = Math.abs(cdb_liq - iso_liq);
+  const winner_name = cdb_wins ? 'CDB' : tipo.toUpperCase();
+
+  const cdb_label = cdb_mode === 'cdi' ? `${cdb_val}% do CDI` : `${String(cdb_val).replace('.', ',')}% a.a. Pré`;
+  const iso_label = iso_mode === 'cdi' ? `${iso_val}% do CDI` : `${String(iso_val).replace('.', ',')}% a.a. Pré`;
+
+  document.getElementById('results-grid').innerHTML = `
+    <div class="card ${cdb_wins ? 'winner' : 'loser'}">
+      <div class="result-product-header">
+        <div class="product-avatar" style="background:var(--blue)">C</div>
+        <div>
+          <div class="result-product-name">CDB${cdb_wins ? '<span class="winner-badge">★ Mais rentável</span>' : ''}</div>
+          <div class="result-product-sub">${cdb_label} · IR ${pct(ir.rate * 100, 1)}</div>
+        </div>
+      </div>
+      <div class="result-row"><span class="rlabel">Rendimento bruto</span><span class="rvalue">${brl(cdb_bruto)}</span></div>
+      <div class="result-row"><span class="rlabel">IR (${pct(ir.rate * 100, 1)})</span><span class="rvalue neg">− ${brl(cdb_ir)}</span></div>
+      <div class="result-total result-row"><span class="rlabel">Rendimento líquido</span><span class="rvalue">${brl(cdb_liq)}</span></div>
+      <div class="result-footer">
+        <span>Montante final <strong>${brl(cdb_final)}</strong></span>
+        <span>Rent. líq. a.a. <strong>${pct(cdb_liq_aa)}</strong></span>
+      </div>
+    </div>
+    <div class="card ${!cdb_wins ? 'winner' : 'loser'}">
+      <div class="result-product-header">
+        <div class="product-avatar" style="background:var(--green)">${tipo.toUpperCase().charAt(0)}</div>
+        <div>
+          <div class="result-product-name">${tipo.toUpperCase()}${!cdb_wins ? '<span class="winner-badge">★ Mais rentável</span>' : ''}</div>
+          <div class="result-product-sub">${iso_label} · Isento IR</div>
+        </div>
+      </div>
+      <div class="result-row"><span class="rlabel">Rendimento bruto</span><span class="rvalue">${brl(iso_bruto)}</span></div>
+      <div class="result-row"><span class="rlabel">IR</span><span class="rvalue isento-tag">Isento</span></div>
+      <div class="result-total result-row"><span class="rlabel">Rendimento líquido</span><span class="rvalue">${brl(iso_liq)}</span></div>
+      <div class="result-footer">
+        <span>Montante final <strong>${brl(iso_final)}</strong></span>
+        <span>Rent. líq. a.a. <strong>${pct(iso_liq_aa)}</strong></span>
+      </div>
+    </div>
+  `;
+
+  const article = cdb_wins ? 'O' : 'A';
+  document.getElementById('summary-bar').innerHTML =
+    `<span>${article} <strong>${winner_name}</strong> rende <span class="highlight ${cdb_wins ? 'red' : ''}">${brl(diff)} a mais</span> no período</span>
+     <button class="btn-pdf" id="btn-pdf" onclick="gerarPDF()">📄 Gerar PDF</button>`;
+
+  // Taxas equivalentes
+  const cdb_bruto_needed = iso_liq / (1 - ir.rate);
+  const cdb_rate_needed  = (Math.pow(1 + cdb_bruto_needed / valor, 365 / dc) - 1);
+  const cdb_pct_needed   = cdb_rate_needed / (cdi / 100);
+
+  const iso_liq_from_cdb = cdb_bruto * (1 - ir.rate);
+  const iso_rate_needed  = (Math.pow(1 + iso_liq_from_cdb / valor, 365 / dc) - 1);
+  const iso_pct_needed   = iso_rate_needed / (cdi / 100);
+
+  const tipoArt = tipo === 'lca' ? 'a LCA' : 'a LCI';
+  document.getElementById('eq1-label').textContent = `Para empatar com ${tipoArt}, o CDB precisa pagar`;
+  document.getElementById('eq1-value').textContent  = pct(cdb_pct_needed * 100) + ' CDI';
+  document.getElementById('eq2-label').textContent  = `Para empatar com o CDB, ${tipoArt} precisa pagar`;
+  document.getElementById('eq2-value').textContent  = pct(iso_pct_needed * 100) + ' CDI';
+  document.getElementById('ir-note').textContent    = `${dc} dias corridos · Faixa IR: ${ir.label}`;
+}
+
+function setMode(produto, mode) {
+  if (produto === 'cdb') {
+    state.cdb_mode = mode;
+    state.cdb_val  = DEFAULTS.cdb[mode];
+    document.getElementById('cdb-val').value = DEFAULTS.cdb[mode];
+    document.getElementById('cdb-suffix').textContent = mode === 'cdi' ? '% CDI' : '% a.a.';
+    document.getElementById('cdb-btn-cdi').classList.toggle('active', mode === 'cdi');
+    document.getElementById('cdb-btn-pre').classList.toggle('active', mode === 'pre');
+  } else {
+    state.iso_mode = mode;
+    state.iso_val  = DEFAULTS.iso[mode];
+    document.getElementById('iso-val').value = DEFAULTS.iso[mode];
+    document.getElementById('iso-suffix').textContent = mode === 'cdi' ? '% CDI' : '% a.a.';
+    document.getElementById('iso-btn-cdi').classList.toggle('active', mode === 'cdi');
+    document.getElementById('iso-btn-pre').classList.toggle('active', mode === 'pre');
+  }
+  render();
+}
+
+function setTipo(tipo) {
+  state.tipo = tipo;
+  document.getElementById('tab-lci').classList.toggle('active', tipo === 'lci');
+  document.getElementById('tab-lca').classList.toggle('active', tipo === 'lca');
+  render();
+}
+
+function setDC(dc, btn) {
+  state.dc = dc;
+  document.getElementById('dc').value = dc;
+  document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+document.getElementById('valor').addEventListener('input', e => { state.valor = parseFloat(e.target.value) || 0; render(); });
+document.getElementById('dc').addEventListener('input', e => {
+  state.dc = parseInt(e.target.value) || 1;
+  const v = state.dc;
+  const dcMap = { 180: '6 meses', 365: '1 ano', 730: '2 anos', 1095: '3 anos', 1460: '4 anos', 1825: '5 anos' };
+  document.querySelectorAll('.quick-btn').forEach(b => {
+    b.classList.toggle('active', dcMap[b.textContent] === v);
+  });
+  render();
+});
+document.getElementById('cdi').addEventListener('input', e => { state.cdi = parseFloat(e.target.value) || 0; render(); });
+document.getElementById('cdb-val').addEventListener('input', e => { state.cdb_val = parseFloat(e.target.value) || 0; render(); });
+document.getElementById('iso-val').addEventListener('input', e => { state.iso_val = parseFloat(e.target.value) || 0; render(); });
+
+// ─── PDF ────────────────────────────────────────────────────────────────────
+async function gerarPDF() {
+  const btn = document.getElementById('btn-pdf');
+  const txtOriginal = btn.innerHTML;
+  btn.innerHTML = 'Gerando...';
+  btn.disabled = true;
+
+  const eraEscuro = !document.body.classList.contains('light');
+
+  try {
+    // Força tema claro para a captura
+    if (eraEscuro) {
+      document.body.classList.add('light');
+      setThemeUI(true);
+    }
+    btn.style.visibility = 'hidden';
+    await new Promise(r => setTimeout(r, 300));
+
+    const pdfBgRGB = [255, 252, 245];
+    const pdfBgHex = '#FFFCF5';
+    const pdfTitle  = [42, 31, 10];
+    const pdfSub    = [100, 85, 55];
+    const pdfFooter = [120, 100, 65];
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const W = 210, H = 297, M = 15;
+    const contentW = W - 2 * M;
+
+    pdf.setFillColor(...pdfBgRGB);
+    pdf.rect(0, 0, W, H, 'F');
+    pdf.setFillColor(201, 168, 76);
+    pdf.rect(0, 0, W, 4, 'F');
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(18);
+    pdf.setTextColor(...pdfTitle);
+    pdf.text('Comparador de Renda Fixa', M, 18);
+
+    const tipoLabel = state.tipo.toUpperCase();
+    const dcLabels = { 180: '6 meses', 365: '1 ano', 730: '2 anos', 1095: '3 anos', 1460: '4 anos', 1825: '5 anos' };
+    const dcLabel = dcLabels[state.dc] || `${state.dc} dias`;
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10);
+    pdf.setTextColor(...pdfSub);
+    pdf.text(`CDB x ${tipoLabel} — ${dcLabel} · CDI ${String(state.cdi).replace('.', ',')}% a.a. · Investimento ${brl(state.valor)}`, M, 24);
+
+    pdf.setFontSize(9);
+    pdf.setTextColor(201, 168, 76);
+    pdf.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')}`, W - M, 18, { align: 'right' });
+
+    pdf.setDrawColor(201, 168, 76);
+    pdf.setLineWidth(0.3);
+    pdf.line(M, 28, W - M, 28);
+
+    let y = 32;
+
+    async function captureEl(el) {
+      const canvas = await html2canvas(el, {
+        scale: 2, useCORS: true,
+        backgroundColor: pdfBgHex,
+        logging: false,
+      });
+      return canvas;
+    }
+
+    const elGrid3 = document.querySelector('.grid-3');
+    if (elGrid3) {
+      const c = await captureEl(elGrid3);
+      const gH = c.height * contentW / c.width;
+      pdf.addImage(c.toDataURL('image/png'), 'PNG', M, y, contentW, gH);
+      y += gH + 8;
+    }
+
+    const rg = document.getElementById('results-grid');
+    if (rg) {
+      const c = await captureEl(rg);
+      const rH = c.height * contentW / c.width;
+      if (y + rH > H - 18) { pdf.addPage(); pdf.setFillColor(...pdfBgRGB); pdf.rect(0,0,W,H,'F'); y = M; }
+      pdf.addImage(c.toDataURL('image/png'), 'PNG', M, y, contentW, rH);
+      y += rH + 8;
+    }
+
+    const elTaxas = document.getElementById('taxas-card');
+    if (elTaxas) {
+      const c = await captureEl(elTaxas);
+      const h = c.height * contentW / c.width;
+      if (y + h > H - 18) { pdf.addPage(); pdf.setFillColor(...pdfBgRGB); pdf.rect(0,0,W,H,'F'); y = M; }
+      pdf.addImage(c.toDataURL('image/png'), 'PNG', M, y, contentW, h);
+    }
+
+    const totalPaginas = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPaginas; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(...pdfFooter);
+      pdf.text(
+        'Simulação informativa, não constitui oferta ou recomendação de investimento.',
+        M, H - 8
+      );
+      pdf.text(`Página ${i} de ${totalPaginas}`, W - M, H - 8, { align: 'right' });
+    }
+
+    pdf.save(`comparador-cdb-${state.tipo}-${new Date().toISOString().slice(0, 10)}.pdf`);
+
+  } catch (err) {
+    console.error('Erro ao gerar PDF:', err);
+    alert('Erro ao gerar PDF. Detalhes no console.');
+  } finally {
+    if (eraEscuro) {
+      document.body.classList.remove('light');
+      setThemeUI(false);
+    }
+    const b = document.getElementById('btn-pdf');
+    if (b) { b.innerHTML = txtOriginal; b.disabled = false; b.style.visibility = 'visible'; }
+  }
+}
+
+// ─── TEMA ────────────────────────────────────────────────────────────────────
+function setThemeUI(isLight) {
+  document.getElementById('theme-label').textContent = isLight ? 'Modo escuro' : 'Modo claro';
+  document.getElementById('theme-icon').textContent  = isLight ? '🌙' : '☀️';
+}
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  setThemeUI(isLight);
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  if(saved === 'dark') document.body.classList.remove('light');
+  setThemeUI(document.body.classList.contains('light'));
+}
+
+initTheme();
+render();
+</script>
+</body>
+</html>

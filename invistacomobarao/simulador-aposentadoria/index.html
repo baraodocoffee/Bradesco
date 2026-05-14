@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Simulador de Aposentadoria</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --red:         #CC1417;
+  --gold:        #C9A84C;
+  --gold-dim:    #9A7B35;
+  --gold-light:  #F5EFE3;
+
+  /* dark (default) */
+  --bg:          #080502;
+  --surface:     #13100A;
+  --surface2:    #1E1A12;
+  --border:      rgba(201,168,76,0.18);
+  --text:        #F5EFE3;
+  --text-muted:  #A89060;
+  --accent:      #C9A84C;
+  --accent-dim:  #9A7B35;
+  --accent-glow: rgba(201,168,76,0.12);
+}
+body.light {
+  --bg:          #F0EAD8;
+  --surface:     #FFFFFF;
+  --surface2:    #F5EFE3;
+  --border:      rgba(0,0,0,0.09);
+  --text:        #1A1A1A;
+  --text-muted:  #6B6B6B;
+  --accent:      #9A7B35;
+  --accent-dim:  #7A6128;
+  --accent-glow: rgba(154,123,53,0.10);
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  font-family:'Inter',sans-serif;
+  font-size:17px; line-height:1.6;
+  background:var(--bg); color:var(--text);
+  transition:background .3s,color .3s;
+  min-height:100vh;
+}
+
+/* ── header ── */
+.page-header {
+  background:rgba(8,5,2,0.90);
+  border-bottom:1px solid var(--border);
+  padding:16px 24px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+  backdrop-filter:blur(12px);
+}
+body.light .page-header {
+  background:rgba(240,232,215,0.95);
+  border-bottom-color:rgba(201,168,76,0.4);
+}
+.page-header-left h1 {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:18px; font-weight:700; color:var(--text);
+}
+.page-header-left p { font-size:12px; color:var(--text-muted); margin-top:2px; }
+.header-right { display:flex; align-items:center; gap:12px; }
+.theme-btn {
+  background:none; border:1px solid var(--border);
+  color:var(--accent); border-radius:8px; padding:6px 14px;
+  font-size:13px; font-weight:500; font-family:'Inter',sans-serif;
+  cursor:pointer; display:flex; align-items:center; gap:6px;
+  transition:all .15s;
+}
+.theme-btn:hover { background:var(--accent-glow); }
+.nav-back {
+  font-size:12px; font-weight:500; color:var(--text-muted);
+  text-decoration:none; display:flex; align-items:center; gap:6px;
+  letter-spacing:.05em; text-transform:uppercase; transition:color .15s;
+}
+.nav-back:hover { color:var(--accent); }
+
+/* ── page ── */
+/* ── Hero background (dark mode only) ── */
+.hero-bg {
+  position:fixed; inset:0; z-index:0;
+  background:url('bondinho.jpg') center center / cover no-repeat;
+  transition:opacity .3s;
+}
+body.light .hero-bg { opacity:0; pointer-events:none; }
+.hero-overlay {
+  position:fixed; inset:0; z-index:1;
+  background:linear-gradient(to bottom,rgba(8,5,2,0.70) 0%,rgba(8,5,2,0.82) 50%,rgba(8,5,2,0.92) 100%);
+  transition:opacity .3s;
+}
+body.light .hero-overlay { opacity:0; pointer-events:none; }
+
+.page-header, .container { position:relative; z-index:2; }
+.container { max-width:1060px; margin:0 auto; padding:32px 24px 64px; }
+
+.hero { margin-bottom:28px; }
+.hero h1 {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:26px; font-weight:700; color:var(--text); margin-bottom:4px;
+}
+.hero h1 em { font-style:normal; color:var(--accent); }
+.hero p { font-size:15px; color:var(--text-muted); }
+
+/* ── main layout ── */
+.main-layout {
+  display:grid;
+  grid-template-columns:360px 1fr;
+  gap:20px; align-items:start;
+}
+.params-col, .results-col { min-width:0; }
+
+/* ── card base ── */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px; padding:24px;
+  margin-bottom:0;
+}
+.section-label {
+  font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.10em;
+  color:var(--text-muted); margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+.section-label::after {
+  content:''; flex:1; height:1px; background:var(--border);
+}
+
+/* ── inputs ── */
+.field { margin-bottom:16px; }
+.field:last-child { margin-bottom:0; }
+.field label {
+  display:block; font-size:13px; font-weight:600;
+  color:var(--text-muted); margin-bottom:6px;
+}
+.field-prefix {
+  display:flex; align-items:center;
+  border:1.5px solid var(--border); border-radius:9px;
+  background:var(--surface2); overflow:hidden;
+  transition:border-color .2s;
+}
+.field-prefix:focus-within { border-color:var(--accent); }
+.field-prefix .pfx {
+  padding:10px 12px; font-size:14px; font-weight:700;
+  color:var(--text-muted); border-right:1px solid var(--border);
+  background:var(--surface); flex-shrink:0;
+  font-family:'Inter',sans-serif;
+}
+.field-prefix input {
+  flex:1; padding:10px 12px; border:none; background:transparent;
+  color:var(--text); font-size:15px; font-weight:600;
+  font-family:'Inter',sans-serif; outline:none;
+}
+.age-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.age-field label { display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:.06em; }
+.age-input {
+  width:100%; padding:10px 12px; border-radius:9px;
+  border:1.5px solid var(--border); background:var(--surface2);
+  color:var(--text); font-size:16px; font-weight:700;
+  font-family:'Inter',sans-serif; outline:none; transition:border-color .2s;
+  text-align:center;
+}
+.age-input:focus { border-color:var(--accent); }
+.prazo-pill {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 14px; background:var(--accent-glow);
+  border:1px solid var(--border); border-radius:8px;
+  margin-bottom:16px;
+}
+.prazo-pill span { font-size:13px; color:var(--text-muted); font-weight:500; }
+.prazo-pill strong { font-size:14px; font-weight:700; color:var(--accent); }
+
+/* ── perfil cards ── */
+.perfil-list { display:flex; flex-direction:column; gap:8px; }
+.perfil-card {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; border-radius:10px;
+  border:1.5px solid var(--border);
+  background:var(--surface2); cursor:pointer;
+  transition:all .2s;
+}
+.perfil-card:hover { border-color:var(--accent); }
+.perfil-card.active {
+  border-color:var(--accent);
+  background:var(--surface);
+  box-shadow:0 0 0 3px var(--accent-glow);
+}
+.perfil-info .perfil-nome {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:15px; font-weight:700; color:var(--text);
+}
+.perfil-info .perfil-desc { font-size:12px; color:var(--text-muted); margin-top:1px; }
+.perfil-badge {
+  padding:5px 10px; border-radius:20px;
+  font-size:12px; font-weight:700;
+  font-family:'Inter',sans-serif;
+  background:var(--accent-glow); color:var(--accent);
+  border:1px solid var(--border); white-space:nowrap;
+}
+.perfil-card.active .perfil-badge { background:var(--accent); color:#080502; border-color:var(--accent); }
+
+/* ── big metric cards ── */
+.big-cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.big-card {
+  border-radius:14px; padding:22px 20px;
+  min-height:130px; display:flex; flex-direction:column; justify-content:space-between;
+}
+.big-card.dark {
+  background:#1A1410; border:1px solid rgba(201,168,76,0.25);
+}
+body.light .big-card.dark { background:#1E1A12; }
+.big-card.gold { background:var(--accent); border:1px solid var(--accent); }
+.big-card .bc-label {
+  font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.12em;
+  margin-bottom:8px;
+}
+.big-card.dark .bc-label { color:rgba(245,239,227,0.55); }
+.big-card.gold .bc-label { color:rgba(8,5,2,0.60); }
+.big-card .bc-value {
+  font-family:'Inter',sans-serif;
+  font-size:26px; font-weight:700; line-height:1.15;
+}
+.big-card.dark .bc-value { color:#F5EFE3; }
+.big-card.gold .bc-value { color:#080502; }
+.big-card .bc-sub { font-size:12px; margin-top:6px; }
+.big-card.dark .bc-sub { color:rgba(245,239,227,0.45); }
+.big-card.gold .bc-sub { color:rgba(8,5,2,0.50); }
+
+/* ── small metric cards ── */
+.small-cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.small-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:18px 18px;
+}
+.small-card .sc-label {
+  font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.09em;
+  color:var(--text-muted); margin-bottom:6px;
+}
+.small-card .sc-value {
+  font-family:'Inter',sans-serif;
+  font-size:20px; font-weight:700; color:var(--text);
+}
+.small-card .sc-sub { font-size:12px; color:var(--text-muted); margin-top:3px; }
+
+/* ── composição card ── */
+.composicao-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:18px 20px; margin-bottom:14px;
+}
+.composicao-title {
+  font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.09em; color:var(--text-muted); margin-bottom:12px;
+}
+.comp-bar-wrap { height:10px; background:var(--border); border-radius:99px; overflow:hidden; margin-bottom:10px; }
+.comp-bar-inner { height:100%; display:flex; }
+.comp-seg-a { background:#2C4A6E; transition:width .5s ease; }
+.comp-seg-b { background:var(--accent); transition:width .5s ease; }
+.comp-legend { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+.comp-item { display:flex; align-items:center; gap:6px; }
+.comp-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.comp-item-label { font-size:13px; color:var(--text-muted); }
+.comp-item-val { font-size:13px; font-weight:700; color:var(--text); margin-left:3px; }
+.comp-retorno {
+  margin-left:auto; font-size:13px; color:var(--text-muted);
+}
+.comp-retorno strong { color:var(--accent); }
+
+/* ── chart ── */
+.chart-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; padding:22px 22px;
+  margin-bottom:14px;
+}
+.chart-header { margin-bottom:4px; }
+.chart-title {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:17px; font-weight:700; color:var(--text);
+}
+.chart-subtitle { font-size:13px; color:var(--text-muted); margin-bottom:14px; }
+.chart-legend-row { display:flex; gap:20px; margin-bottom:16px; flex-wrap:wrap; }
+.legend-item { display:flex; align-items:center; gap:7px; font-size:13px; color:var(--text-muted); }
+.leg-line { width:24px; height:3px; border-radius:99px; flex-shrink:0; }
+.leg-dashed { height:0; width:24px; border-top:2.5px dashed; flex-shrink:0; }
+.chart-wrap { position:relative; height:240px; }
+
+/* ── span-all elements ── */
+.span-all { grid-column:1/-1; }
+
+/* ── nota ── */
+.nota {
+  padding:14px 18px; background:var(--surface);
+  border-radius:10px; border-left:3px solid rgba(201,168,76,0.45);
+  font-size:12px; color:var(--text-muted); line-height:1.7;
+}
+body.light .nota { border-left-color:rgba(154,123,53,0.55); }
+
+/* ── responsive ── */
+@media(max-width:800px){
+  .main-layout { grid-template-columns:1fr; }
+  .big-cards { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:480px){
+  .container { padding:20px 16px 48px; }
+  .hero h1 { font-size:22px; }
+  .big-card .bc-value { font-size:22px; }
+  .small-cards { grid-template-columns:1fr 1fr; }
+  .comp-retorno { margin-left:0; margin-top:6px; }
+}
+</style>
+</head>
+<body class="light">
+
+<div class="hero-bg"></div>
+<div class="hero-overlay"></div>
+
+<header class="page-header">
+  <div class="page-header-left">
+    <h1>Simulador de Aposentadoria</h1>
+    <p>Planejamento financeiro para a independência</p>
+  </div>
+  <div class="header-right">
+    <button class="theme-btn" onclick="toggleTheme()">
+      <span id="theme-label">Modo escuro</span>
+      <span id="theme-icon">🌙</span>
+    </button>
+    <a href="../" class="nav-back">← Início</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Simule sua <em>aposentadoria</em></h1>
+    <p>Quanto você vai acumular, qual renda vai gerar e o poder dos juros compostos ao longo do tempo.</p>
+  </div>
+
+  <div class="main-layout">
+
+    <!-- ══ PARAMS ══ -->
+    <div class="params-col">
+      <div class="card">
+
+        <div class="section-label">Período</div>
+
+        <div class="age-row">
+          <div class="age-field">
+            <label>Idade atual</label>
+            <input class="age-input" type="number" id="idadeAtual" value="35" min="18" max="70" oninput="render()"/>
+          </div>
+          <div class="age-field">
+            <label>Aposentadoria</label>
+            <input class="age-input" type="number" id="idadeApo" value="60" min="30" max="85" oninput="render()"/>
+          </div>
+        </div>
+
+        <div class="prazo-pill">
+          <span>Prazo de acumulação</span>
+          <strong id="prazo-label">25 anos</strong>
+        </div>
+
+        <div class="section-label">Valores</div>
+
+        <div class="field">
+          <label>Patrimônio atual (R$)</label>
+          <div class="field-prefix">
+            <span class="pfx">R$</span>
+            <input type="number" id="patrimonioAtual" value="50000" min="0" step="1000" oninput="render()"/>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:20px;">
+          <label>Aporte mensal (R$)</label>
+          <div class="field-prefix">
+            <span class="pfx">R$</span>
+            <input type="number" id="aporteMensal" value="2000" min="0" step="100" oninput="render()"/>
+          </div>
+        </div>
+
+        <div class="section-label">Perfil de investidor</div>
+
+        <div class="perfil-list" id="perfil-list">
+          <div class="perfil-card" data-perfil="conservador" onclick="setPerfil(this)">
+            <div class="perfil-info">
+              <div class="perfil-nome">Conservador</div>
+              <div class="perfil-desc">Renda fixa predominante</div>
+            </div>
+            <div class="perfil-badge">4% a.a. real</div>
+          </div>
+          <div class="perfil-card active" data-perfil="moderado" onclick="setPerfil(this)">
+            <div class="perfil-info">
+              <div class="perfil-nome">Moderado</div>
+              <div class="perfil-desc">Mix balanceado</div>
+            </div>
+            <div class="perfil-badge">6% a.a. real</div>
+          </div>
+          <div class="perfil-card" data-perfil="arrojado" onclick="setPerfil(this)">
+            <div class="perfil-info">
+              <div class="perfil-nome">Arrojado</div>
+              <div class="perfil-desc">Maior exposição em renda variável</div>
+            </div>
+            <div class="perfil-badge">8% a.a. real</div>
+          </div>
+        </div>
+
+      </div><!-- /card -->
+    </div><!-- /params-col -->
+
+    <!-- ══ RESULTS ══ -->
+    <div class="results-col">
+
+      <!-- big 2 -->
+      <div class="big-cards">
+        <div class="big-card dark">
+          <div>
+            <div class="bc-label">Patrimônio na aposentadoria</div>
+            <div class="bc-value" id="val-patrimonio">—</div>
+          </div>
+          <div class="bc-sub">Em valores reais — poder de compra de hoje</div>
+        </div>
+        <div class="big-card gold">
+          <div>
+            <div class="bc-label">Renda mensal passiva</div>
+            <div class="bc-value" id="val-renda">—</div>
+          </div>
+          <div class="bc-sub">Pela regra dos 4% ao ano</div>
+        </div>
+      </div>
+
+      <!-- small 2 -->
+      <div class="small-cards">
+        <div class="small-card">
+          <div class="sc-label">Total aportado</div>
+          <div class="sc-value" id="val-aportado">—</div>
+          <div class="sc-sub" id="sub-aportado"></div>
+        </div>
+        <div class="small-card">
+          <div class="sc-label">Rendimentos gerados</div>
+          <div class="sc-value" id="val-rendimentos">—</div>
+          <div class="sc-sub" id="sub-rendimentos"></div>
+        </div>
+      </div>
+
+      <!-- composição -->
+      <div class="composicao-card">
+        <div class="composicao-title">Composição do patrimônio final</div>
+        <div class="comp-bar-wrap">
+          <div class="comp-bar-inner">
+            <div class="comp-seg-a" id="comp-a" style="width:50%"></div>
+            <div class="comp-seg-b" id="comp-b" style="width:50%"></div>
+          </div>
+        </div>
+        <div class="comp-legend">
+          <div class="comp-item">
+            <div class="comp-dot" style="background:#2C4A6E;"></div>
+            <span class="comp-item-label">Aportes:</span>
+            <span class="comp-item-val" id="pct-aportes">—</span>
+          </div>
+          <div class="comp-item">
+            <div class="comp-dot" style="background:var(--accent);"></div>
+            <span class="comp-item-label">Rendimentos:</span>
+            <span class="comp-item-val" id="pct-rendimentos">—</span>
+          </div>
+          <div class="comp-retorno">Retorno real: <strong id="retorno-real">—</strong></div>
+        </div>
+      </div>
+
+      <!-- chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Evolução Patrimonial</div>
+          <div class="chart-subtitle">Projeção em valores reais — poder de compra de hoje</div>
+        </div>
+        <div class="chart-legend-row">
+          <div class="legend-item">
+            <div class="leg-line" style="background:var(--accent);height:3px;"></div>
+            Patrimônio Total
+          </div>
+          <div class="legend-item">
+            <div class="leg-dashed" style="border-color:#2C4A6E;"></div>
+            Total Aportado
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="chartApo"></canvas></div>
+      </div>
+
+    </div><!-- /results-col -->
+
+    <!-- ══ SPAN-ALL: nota ══ -->
+    <div class="span-all">
+      <div class="nota">
+        Simulação com retornos reais (acima da inflação) · Regra dos 4% para renda passiva · Valores de referência: Conservador 4% a.a. · Moderado 6% a.a. · Arrojado 8% a.a. · Simulação com caráter educacional — não constitui oferta ou recomendação de investimento. Rentabilidade passada não garante rentabilidade futura.
+      </div>
+    </div>
+
+  </div><!-- /main-layout -->
+</div><!-- /container -->
+
+<script>
+const PERFIS = {
+  conservador: { real: 0.04 },
+  moderado:    { real: 0.06 },
+  arrojado:    { real: 0.08 },
+};
+let perfilAtivo = 'moderado';
+
+function setPerfil(el) {
+  document.querySelectorAll('.perfil-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  perfilAtivo = el.dataset.perfil;
+  render();
+}
+
+function fmtBRL(v) {
+  if(v >= 1e6) return 'R$ ' + (v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3}).replace(',000','') + ' mi';
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+}
+function fmtBRLshort(v) {
+  if(v >= 1e6) return 'R$ ' + (v/1e6).toFixed(3).replace('.',',') + ' mi';
+  if(v >= 1e3) return 'R$ ' + (v/1e3).toFixed(0) + 'k';
+  return 'R$ ' + Math.round(v);
+}
+
+// FV de PV + PMT a taxa rm por meses (retorno real — valores em R$ de hoje)
+function calcFV(pv, pmt, rm, meses) {
+  if(rm === 0) return pv + pmt * meses;
+  return pv * Math.pow(1 + rm, meses) + pmt * (Math.pow(1 + rm, meses) - 1) / rm;
+}
+
+let chart = null;
+
+function buildChart(labels, dataPatrimonio, dataAportado) {
+  const ctx = document.getElementById('chartApo').getContext('2d');
+  const light = document.body.classList.contains('light');
+  const gridC = light ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
+  const tickC  = light ? '#6B6B6B' : '#A89060';
+  const gold   = light ? '#9A7B35' : '#C9A84C';
+  const tooltipBg = light ? '#FFFFFF' : '#1E1A12';
+  const tooltipBd = light ? '#E8E8E8' : 'rgba(201,168,76,0.3)';
+  const tooltipTx = light ? '#1A1A1A' : '#F5EFE3';
+
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {
+          label:'Patrimônio Total',
+          data: dataPatrimonio,
+          borderColor: gold,
+          backgroundColor: light ? 'rgba(154,123,53,0.08)' : 'rgba(201,168,76,0.08)',
+          borderWidth: 2.5,
+          pointRadius: 0, fill:true, tension:.35,
+        },
+        {
+          label:'Total Aportado',
+          data: dataAportado,
+          borderColor:'#2C4A6E',
+          borderWidth: 2,
+          borderDash:[7,5],
+          pointRadius:0, fill:false, tension:0,
+          backgroundColor:'transparent',
+        }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ display:false },
+        tooltip:{
+          backgroundColor: tooltipBg,
+          borderColor: tooltipBd,
+          borderWidth:1,
+          titleColor: tooltipTx,
+          bodyColor: tooltipTx,
+          padding:12,
+          callbacks:{
+            label(ctx){ return `${ctx.dataset.label}: ${fmtBRL(ctx.parsed.y)}`; }
+          }
+        }
+      },
+      scales:{
+        x:{
+          grid:{ color:gridC },
+          ticks:{ color:tickC, font:{size:12}, maxTicksLimit:8 }
+        },
+        y:{
+          grid:{ color:gridC },
+          ticks:{
+            color:tickC, font:{size:12},
+            callback(v){
+              if(v >= 1e6) return 'R$' + (v/1e6).toFixed(1) + 'M';
+              if(v >= 1e3) return 'R$' + (v/1e3).toFixed(0) + 'K';
+              return 'R$0';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function render() {
+  const idadeAtual = parseInt(document.getElementById('idadeAtual').value) || 35;
+  const idadeApo   = parseInt(document.getElementById('idadeApo').value)   || 60;
+  const patrimonio = parseFloat(document.getElementById('patrimonioAtual').value) || 0;
+  const aporte     = parseFloat(document.getElementById('aporteMensal').value) || 0;
+
+  const anos = Math.max(idadeApo - idadeAtual, 1);
+  const meses = anos * 12;
+  document.getElementById('prazo-label').textContent = anos + ' anos';
+
+  const { real } = PERFIS[perfilAtivo];
+  const rm = Math.pow(1 + real, 1/12) - 1;
+
+  const acumulado = calcFV(patrimonio, aporte, rm, meses);
+  const totalAportado = patrimonio + aporte * meses;
+  const rendimentos = acumulado - totalAportado;
+  const renda = acumulado * 0.04 / 12; // regra dos 4%
+
+  const pctAportes = totalAportado / acumulado;
+  const pctRend    = rendimentos   / acumulado;
+  const multiplicador = acumulado / Math.max(totalAportado, 1);
+
+  // big cards
+  document.getElementById('val-patrimonio').textContent = fmtBRL(acumulado);
+  document.getElementById('val-renda').textContent = fmtBRL(renda) + '/mês';
+
+  // small cards
+  document.getElementById('val-aportado').textContent = fmtBRL(totalAportado);
+  document.getElementById('sub-aportado').textContent = `Em ${anos} anos de disciplina`;
+  document.getElementById('val-rendimentos').textContent = fmtBRL(rendimentos);
+  document.getElementById('sub-rendimentos').textContent = `Capital multiplicado por ${multiplicador.toFixed(1)}×`;
+
+  // composição
+  const pA = Math.round(pctAportes * 100);
+  const pR = 100 - pA;
+  document.getElementById('comp-a').style.width = pA + '%';
+  document.getElementById('comp-b').style.width = pR + '%';
+  document.getElementById('pct-aportes').textContent = pA + '%';
+  document.getElementById('pct-rendimentos').textContent = pR + '%';
+  document.getElementById('retorno-real').textContent = (real * 100).toFixed(0) + '% a.a.';
+
+  // chart data — anual para não sobrecarregar
+  const labels = [];
+  const dataPatrimonio = [];
+  const dataAportado   = [];
+  for(let a = 0; a <= anos; a++) {
+    labels.push((idadeAtual + a) + 'a');
+    const m = a * 12;
+    dataPatrimonio.push(Math.round(calcFV(patrimonio, aporte, rm, m)));
+    dataAportado.push(Math.round(patrimonio + aporte * m));
+  }
+
+  buildChart(labels, dataPatrimonio, dataAportado);
+}
+
+// ── theme ──
+function setThemeUI(isLight) {
+  document.getElementById('theme-label').textContent = isLight ? 'Modo escuro' : 'Modo claro';
+  document.getElementById('theme-icon').textContent  = isLight ? '🌙' : '☀️';
+}
+function toggleTheme() {
+  const isNow = document.body.classList.toggle('light');
+  localStorage.setItem('theme', isNow ? 'light' : 'dark');
+  setThemeUI(isNow);
+  render();
+}
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  if(saved === 'dark') document.body.classList.remove('light');
+  setThemeUI(document.body.classList.contains('light'));
+}
+
+initTheme();
+render();
+</script>
+</body>
+</html>
