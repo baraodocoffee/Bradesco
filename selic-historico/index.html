@@ -221,7 +221,7 @@ body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.6;background:va
 
 </div>
 <script>
-// ─── DADOS IPCA MENSAL — IBGE (Jan/2009 a Mar/2026) ───────────────────────
+// ─── DADOS IPCA MENSAL — IBGE (Jan/2009 a Abr/2026) ───────────────────────
 // Necessário a partir de Jan/2009 para calcular rolling 12m a partir de Jan/2010
 const IPCA_MENSAL = [
   // 2009
@@ -259,11 +259,11 @@ const IPCA_MENSAL = [
   // 2025
   0.16,1.31,0.56,0.43,0.26,0.24,0.26,-0.11,0.48,0.09,0.18,0.33,
   // 2026
-  0.33,0.70,0.88
+  0.33,0.70,0.88,0.67
 ];
 // IPCA_MENSAL[0]  = Jan/2009
 // IPCA_MENSAL[12] = Jan/2010  ← início do gráfico
-// IPCA_MENSAL[206]= Mar/2026  ← último dado disponível
+// IPCA_MENSAL[207]= Abr/2026  ← último dado disponível
 
 // ─── DADOS SELIC — decisões COPOM ─────────────────────────────────────────
 // Fonte: Banco Central do Brasil — bcb.gov.br/controleinflacao/historicotaxasjuros
